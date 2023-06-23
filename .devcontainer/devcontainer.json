@@ -34,6 +34,12 @@
 			]	
 		}
 	},
+	"containerEnv": {
+		"POSTGRES_PASSWORD": "${localEnv:PG_PASS}",
+		"POSTGRES_USER": "${localEnv:PG_USER}",
+		"POSTGRES_DB": "${localEnv:PG_DB}",
+		"POSTGRES_DB_URI": "${localEnv:PG_DB_URI}"
+	},
 	//"postCreateCommand": "",
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

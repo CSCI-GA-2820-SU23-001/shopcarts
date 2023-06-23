@@ -16,7 +16,7 @@ services:
       FLASK_APP: service:app
       FLASK_DEBUG: "True"
       PORT: 8000
-      DATABASE_URI: postgresql://postgres:postgres@postgres:5432/postgres
+      DATABASE_URI: ${PG_DB_URI}
     networks:
       - dev
     depends_on:
@@ -29,7 +29,9 @@ services:
     # ports:
     #   - 5432:5432
     environment:
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${PG_PASS}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_DB: ${PG_DB}
     volumes:
       - postgres:/var/lib/postgresql/data
     networks:

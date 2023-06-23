@@ -13,7 +13,7 @@
         "-p",
         "test_*.py"
     ],
-    // "cucumberautocomplete.steps": ["features/steps/*.py"],
+    "cucumberautocomplete.steps": ["features/steps/*.py"],
     "cucumberautocomplete.syncfeatures": "features/*.feature",
     "cucumberautocomplete.strictGherkinCompletion": true,
     "cucumberautocomplete.strictGherkinValidation": true,

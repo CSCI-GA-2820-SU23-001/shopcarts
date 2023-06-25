@@ -1,4 +1,4 @@
-# NYU DevOps Project Template
+# NYU DevOps Project: The Shopcarts Service
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/Language-Python-blue.svg)](https://python.org/)
@@ -54,6 +54,19 @@ tests/              - test cases package
 ├── test_models.py  - test suite for business models
 └── test_routes.py  - test suite for service routes
 ```
+
+### Database Connection
+
+#### Prerequisites
+Install at local the standard command line interface `psql` for interacting with a PostgreSQL.
+
+#### Steps
+1. Launch the PostgreSQL command-line interface by entering the following command:
+
+```
+psql -U postgres -d postgres -h localhost -p 5432
+```
+2. Enter the default pass postgres
 
 ## License
 

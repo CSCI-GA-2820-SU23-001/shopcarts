@@ -4,11 +4,11 @@ version: "3"
 
 services:
   app:
+    container_name: shopcarts.app
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile    
     hostname: nyu
-    container_name: project
     volumes:
       - ..:/app
     command: sleep infinity
@@ -23,6 +23,7 @@ services:
       - postgres
 
   postgres:
+    container_name: shopcarts.db
     image: postgres:alpine
     # Uncomment ports to access database from your computer (optional)
     # ports:

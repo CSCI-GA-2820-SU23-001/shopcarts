@@ -55,18 +55,15 @@ tests/              - test cases package
 └── test_routes.py  - test suite for service routes
 ```
 
-### Database Connection
+## Database Connection
 
-#### Prerequisites
-Install at local the standard command line interface `psql` for interacting with a PostgreSQL.
+### Steps
 
-#### Steps
-1. Launch the PostgreSQL command-line interface by entering the following command:
+1. Leveraging the Docker command to launch the PostgreSQL CLI in the shopcarts.db container using the following command:
 
-```
-psql -U postgres -d postgres -h localhost -p 5432
-```
-2. Enter the default pass postgres
+    ```bash
+    docker exec -it shopcarts.db psql -U postgres -d postgres -h localhost -p 5432
+    ```
 
 ## License
 

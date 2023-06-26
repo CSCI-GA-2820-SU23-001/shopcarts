@@ -1,4 +1,4 @@
-# NYU DevOps Project Template
+# NYU DevOps Project: The Shopcarts Service
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/Language-Python-blue.svg)](https://python.org/)
@@ -54,6 +54,16 @@ tests/              - test cases package
 ├── test_models.py  - test suite for business models
 └── test_routes.py  - test suite for service routes
 ```
+
+## Database Connection
+
+### Steps
+
+1. Leveraging the Docker command to launch the PostgreSQL CLI in the shopcarts.db container using the following command:
+
+    ```bash
+    docker exec -it shopcarts.db psql -U postgres -d postgres -h localhost -p 5432
+    ```
 
 ## License
 

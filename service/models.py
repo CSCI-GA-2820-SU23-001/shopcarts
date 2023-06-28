@@ -1,5 +1,5 @@
 """
-Models for YourResourceModel
+Models for Shopcart
 
 All of the models are stored in this module
 """
@@ -15,30 +15,34 @@ db = SQLAlchemy()
 # Function to initialize the database
 def init_db(app):
     """ Initializes the SQLAlchemy app """
-    YourResourceModel.init_db(app)
+    Shopcart.init_db(app)
+    Item.init_db(app)
 
 
 class DataValidationError(Exception):
     """ Used for an data validation errors when deserializing """
 
 
-class YourResourceModel(db.Model):
+class Shopcart(db.Model):
     """
-    Class that represents a YourResourceModel
+    Class that represents a Shopcart
     """
 
     app = None
 
     # Table Schema
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(63))
+    # customer_id (primary key), customer_name, shopcart_quantity, shopcart_price
+    customer_id = db.Column(db.Integer, primary_key=True)
+    customer_name = db.Column(db.String(63), nullable=False)
+    shopcart_quantity = db.Column(db.Integer, nullable=False, default=0)
+    shopcart_price = db.Column(db.Float, nullable=False, default=0.0)
 
     def __repr__(self):
-        return f"<YourResourceModel {self.name} id=[{self.id}]>"
+        return f"<Shopcart {self.name} id=[{self.id}]>"
 
     def create(self):
         """
-        Creates a YourResourceModel to the database
+        Creates a Shopcart to the database
         """
         logger.info("Creating %s", self.name)
         self.id = None  # pylint: disable=invalid-name
@@ -47,37 +51,45 @@ class YourResourceModel(db.Model):
 
     def update(self):
         """
-        Updates a YourResourceModel to the database
+        Updates a Shopcart to the database
         """
         logger.info("Saving %s", self.name)
         db.session.commit()
 
     def delete(self):
-        """ Removes a YourResourceModel from the data store """
-        logger.info("Deleting %s", self.name)
+        """ Removes a Shopcart from the data store """
+        logger.info("Deleting %s", self.customer_name)
         db.session.delete(self)
         db.session.commit()
 
     def serialize(self):
-        """ Serializes a YourResourceModel into a dictionary """
-        return {"id": self.id, "name": self.name}
+        """ Serializes a Shopcart into a dictionary """
+        return {
+            "customer_id": self.customer_id, 
+            "customer_name": self.customer_name,
+            "shopcart_quantity": self.shopcart_quantity,
+            "shopcart_price": self.shopcart_price
+        }
 
     def deserialize(self, data):
         """
-        Deserializes a YourResourceModel from a dictionary
+        Deserializes a Shopcart from a dictionary
 
         Args:
             data (dict): A dictionary containing the resource data
         """
         try:
-            self.name = data["name"]
+            self.customer_id = data["customer_id"]
+            self.customer_name = data["customer_name"]
+            self.shopcart_quantity = data["shopcart_quantity"]
+            self.shopcart_price = data["shopcart_price"]
         except KeyError as error:
             raise DataValidationError(
-                "Invalid YourResourceModel: missing " + error.args[0]
+                "Invalid Shopcart: missing " + error.args[0]
             ) from error
         except TypeError as error:
             raise DataValidationError(
-                "Invalid YourResourceModel: body of request contained bad or no data - "
+                "Invalid Shopcart: body of request contained bad or no data - "
                 "Error message: " + error
             ) from error
         return self
@@ -94,22 +106,128 @@ class YourResourceModel(db.Model):
 
     @classmethod
     def all(cls):
-        """ Returns all of the YourResourceModels in the database """
-        logger.info("Processing all YourResourceModels")
+        """ Returns all of the Shopcarts in the database """
+        logger.info("Processing all Shopcarts")
         return cls.query.all()
 
     @classmethod
     def find(cls, by_id):
-        """ Finds a YourResourceModel by it's ID """
+        """ Finds a Shopcart by it's ID """
         logger.info("Processing lookup for id %s ...", by_id)
         return cls.query.get(by_id)
 
     @classmethod
     def find_by_name(cls, name):
-        """Returns all YourResourceModels with the given name
+        """Returns all Shopcarts with the given name
 
         Args:
-            name (string): the name of the YourResourceModels you want to match
+            name (string): the name of the Shopcarts you want to match
+        """
+        logger.info("Processing name query for %s ...", name)
+        return cls.query.filter(cls.name == name)
+    
+class Item(db.Model):
+    """
+    Class that represents a Item
+    """
+
+    app = None
+
+    # Table Schema
+    # customer_id (primary key), item_id (primary key), item_name, item_quantity, item_price
+    customer_id = db.Column(db.Integer, primary_key=True)
+    item_id = db.Column(db.Integer, primary_key=True)
+    item_name = db.Column(db.String(128), nullable=False)
+    item_quantity = db.Column(db.Integer, nullable=False, default=0)
+    item_price = db.Column(db.Float, nullable=False, default=0.0)
+
+    def __repr__(self):
+        return f"<Item {self.name} id=[{self.id}]>"
+
+    def create(self):
+        """
+        Creates a Item to the database
+        """
+        logger.info("Creating %s", self.name)
+        self.id = None  # pylint: disable=invalid-name
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self):
+        """
+        Updates a Item to the database
+        """
+        logger.info("Saving %s", self.name)
+        db.session.commit()
+
+    def delete(self):
+        """ Removes a Item from the data store """
+        logger.info("Deleting %s", self.name)
+        db.session.delete(self)
+        db.session.commit()
+
+    def serialize(self):
+        """ Serializes a Item into a dictionary """
+        return {
+            "customer_id": self.customer_id,
+            "item_id": self.item_id, 
+            "item_name": self.item_name,
+            "item_quantity": self.item_quantity,
+            "item_price": self.item_price
+        }
+
+    def deserialize(self, data):
+        """
+        Deserializes a Item from a dictionary
+
+        Args:
+            data (dict): A dictionary containing the resource data
+        """
+        try:
+            self.customer_id = data["customer_id"]
+            self.item_id = data["item_id"]
+            self.item_name = data["item_name"]
+            self.item_quantity = data["item_quantity"]
+            self.item_price = data["item_price"]
+        except KeyError as error:
+            raise DataValidationError(
+                "Invalid Item: missing " + error.args[0]
+            ) from error
+        except TypeError as error:
+            raise DataValidationError(
+                "Invalid Item: body of request contained bad or no data - "
+                "Error message: " + error
+            ) from error
+        return self
+
+    @classmethod
+    def init_db(cls, app):
+        """ Initializes the database session """
+        logger.info("Initializing database")
+        cls.app = app
+        # This is where we initialize SQLAlchemy from the Flask app
+        db.init_app(app)
+        app.app_context().push()
+        db.create_all()  # make our sqlalchemy tables
+
+    @classmethod
+    def all(cls):
+        """ Returns all of the Items in the database """
+        logger.info("Processing all Item")
+        return cls.query.all()
+
+    @classmethod
+    def find(cls, by_id):
+        """ Finds a Item by it's ID """
+        logger.info("Processing lookup for id %s ...", by_id)
+        return cls.query.get(by_id)
+
+    @classmethod
+    def find_by_name(cls, name):
+        """Returns all Items with the given name
+
+        Args:
+            name (string): the name of the Item you want to match
         """
         logger.info("Processing name query for %s ...", name)
         return cls.query.filter(cls.name == name)

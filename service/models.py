@@ -34,31 +34,29 @@ class Shopcart(db.Model):
     # customer_id (primary key), customer_name, shopcart_quantity, shopcart_price
     customer_id = db.Column(db.Integer, primary_key=True)
     customer_name = db.Column(db.String(63), nullable=False)
-    shopcart_quantity = db.Column(db.Integer, nullable=False, default=0)
-    shopcart_price = db.Column(db.Float, nullable=False, default=0.0)
 
     def __repr__(self):
-        return f"<Shopcart {self.name} id=[{self.id}]>"
+        return f"<Shopcart for customer {self.customer_name} id=[{self.customer_id}]>"
 
-    def create(self):
+    def create(cls, self):
         """
         Creates a Shopcart to the database
         """
-        logger.info("Creating %s", self.name)
-        self.id = None  # pylint: disable=invalid-name
+        logger.info("Creating %s %s", cls.__name__, self.__repr__)
+        self.customer_id = None  # pylint: disable=invalid-name
         db.session.add(self)
         db.session.commit()
 
-    def update(self):
+    def update(cls, self):
         """
         Updates a Shopcart to the database
         """
-        logger.info("Saving %s", self.name)
+        logger.info("Saving %s %s", cls.__name__, self.__repr__)
         db.session.commit()
 
-    def delete(self):
+    def delete(cls, self):
         """ Removes a Shopcart from the data store """
-        logger.info("Deleting %s", self.customer_name)
+        logger.info("Deleting %s %s", cls.__name__, self.__repr__)
         db.session.delete(self)
         db.session.commit()
 
@@ -67,8 +65,6 @@ class Shopcart(db.Model):
         return {
             "customer_id": self.customer_id, 
             "customer_name": self.customer_name,
-            "shopcart_quantity": self.shopcart_quantity,
-            "shopcart_price": self.shopcart_price
         }
 
     def deserialize(self, data):
@@ -81,8 +77,6 @@ class Shopcart(db.Model):
         try:
             self.customer_id = data["customer_id"]
             self.customer_name = data["customer_name"]
-            self.shopcart_quantity = data["shopcart_quantity"]
-            self.shopcart_price = data["shopcart_price"]
         except KeyError as error:
             raise DataValidationError(
                 "Invalid Shopcart: missing " + error.args[0]
@@ -111,10 +105,10 @@ class Shopcart(db.Model):
         return cls.query.all()
 
     @classmethod
-    def find(cls, by_id):
+    def find(cls, id):
         """ Finds a Shopcart by it's ID """
-        logger.info("Processing lookup for id %s ...", by_id)
-        return cls.query.get(by_id)
+        logger.info("Processing lookup for id %s ...", id)
+        return cls.query.get(id)
 
     @classmethod
     def find_by_name(cls, name):
@@ -124,7 +118,7 @@ class Shopcart(db.Model):
             name (string): the name of the Shopcarts you want to match
         """
         logger.info("Processing name query for %s ...", name)
-        return cls.query.filter(cls.name == name)
+        return cls.query.filter(cls.customer_name == name) 
     
 class Item(db.Model):
     """
@@ -135,34 +129,34 @@ class Item(db.Model):
 
     # Table Schema
     # customer_id (primary key), item_id (primary key), item_name, item_quantity, item_price
-    customer_id = db.Column(db.Integer, primary_key=True)
-    item_id = db.Column(db.Integer, primary_key=True)
-    item_name = db.Column(db.String(128), nullable=False)
-    item_quantity = db.Column(db.Integer, nullable=False, default=0)
-    item_price = db.Column(db.Float, nullable=False, default=0.0)
+    customer_id = db.Column(db.Integer, primary_key=True) 
+    item_id = db.Column(db.Integer, primary_key=True) 
+    name = db.Column(db.String(128), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False, default=0)
+    price = db.Column(db.Float, nullable=False, default=0.0)
 
     def __repr__(self):
-        return f"<Item {self.name} id=[{self.id}]>"
+        return f"<Item {self.name} id=[{self.item_id}]>"
 
-    def create(self):
+    def create(cls, self):
         """
         Creates a Item to the database
         """
-        logger.info("Creating %s", self.name)
-        self.id = None  # pylint: disable=invalid-name
+        logger.info("Creating %s %s", cls.__name, self.__repr__)
+        self.item_id = None  # pylint: disable=invalid-name
         db.session.add(self)
         db.session.commit()
 
-    def update(self):
+    def update(cls, self):
         """
         Updates a Item to the database
         """
-        logger.info("Saving %s", self.name)
+        logger.info("Saving %s %s", cls.__name, self.__repr__)
         db.session.commit()
 
     def delete(self):
         """ Removes a Item from the data store """
-        logger.info("Deleting %s", self.name)
+        logger.info("Deleting %s %s", cls.__name, self.__repr__)
         db.session.delete(self)
         db.session.commit()
 
@@ -171,9 +165,9 @@ class Item(db.Model):
         return {
             "customer_id": self.customer_id,
             "item_id": self.item_id, 
-            "item_name": self.item_name,
-            "item_quantity": self.item_quantity,
-            "item_price": self.item_price
+            "name": self.name,
+            "quantity": self.quantity,
+            "price": self.price
         }
 
     def deserialize(self, data):
@@ -186,9 +180,9 @@ class Item(db.Model):
         try:
             self.customer_id = data["customer_id"]
             self.item_id = data["item_id"]
-            self.item_name = data["item_name"]
-            self.item_quantity = data["item_quantity"]
-            self.item_price = data["item_price"]
+            self.name = data["name"]
+            self.quantity = data["quantity"]
+            self.price = data["price"]
         except KeyError as error:
             raise DataValidationError(
                 "Invalid Item: missing " + error.args[0]
@@ -217,10 +211,10 @@ class Item(db.Model):
         return cls.query.all()
 
     @classmethod
-    def find(cls, by_id):
+    def find(cls, id):
         """ Finds a Item by it's ID """
-        logger.info("Processing lookup for id %s ...", by_id)
-        return cls.query.get(by_id)
+        logger.info("Processing lookup for id %s ...", id)
+        return cls.query.get(id)
 
     @classmethod
     def find_by_name(cls, name):

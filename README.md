@@ -62,7 +62,7 @@ tests/              - test cases package
 1. Leveraging the Docker command to launch the PostgreSQL CLI in the shopcarts.db container using the following command:
 
     ```bash
-    docker exec -it shopcarts.db psql -U postgres -d postgres -h localhost -p 5432
+    docker exec -it shopcarts.db psql -U shopcarts_app -d shopcarts -h localhost -p 5432
     ```
 
 ## License

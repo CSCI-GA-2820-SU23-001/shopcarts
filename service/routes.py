@@ -28,7 +28,30 @@ def index():
 #  R E S T   A P I   E N D P O I N T S
 ######################################################################
 
-# Place your REST API code here ...
+
+
+
+
+
+######################################################################
+# RETRIEVE A SHOPCART
+######################################################################
+@app.route("/shopcarts/<int:customer_id>", methods=["GET"])
+def get_shopcarts(customer_id):
+    """
+    Retrieve a single Shopcart
+    This endpoint will return an Shopcart based on related customer id
+    """
+    app.logger.info("Request for Shopcart with id: %s", customer_id)
+    # See if the shopcart exists and abort if it doesn't
+    shopcart = Shopcart.find(customer_id)
+    if not shopcart:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id '{customer_id}' could not be found.",
+        )
+    return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
+
 
 # RETRIEVE A ITEM FROM SHOPCART
 ######################################################################
@@ -40,8 +63,7 @@ def get_items(customer_id, item_id):
     This endpoint returns just a item
     """
     app.logger.info(
-        "Request to retrieve Item %s for Shopcart id: %s", (item_id, customer_id)
-    )
+        "Request to retrieve Item %s for Shopcart id: %s", item_id, customer_id)
 
     # See if the item exists and abort if it doesn't
     item = Item.find(item_id)

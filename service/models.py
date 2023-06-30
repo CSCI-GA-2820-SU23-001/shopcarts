@@ -42,17 +42,17 @@ class Shopcart(db.Model):
     app = None
 
     # Table Schema
-    customer_id = db.Column(db.Integer, primary_key=True)
-    customer_name = db.Column(db.String(63), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)    # correspond to customer_id
+    name = db.Column(db.String(63), nullable=False) # correspond to customer_name
     items = db.relationship("Item", backref="shopcart", passive_deletes=True)
 
     def __repr__(self):
-        return f"{type(self).__name__}({self.customer_id}, {self.customer_name})"
+        return f"{type(self).__name__}({self.id}, {self.name})"
 
     def create(self):
         """ Create a shopcart in DB table """
         logger.info("Create %s", self.__repr__)
-        self.customer_id = None  # pylint: disable=invalid-name
+        self.id = None  # pylint: disable=invalid-name
         db.session.add(self)
         db.session.commit()
 
@@ -69,10 +69,14 @@ class Shopcart(db.Model):
 
     def serialize(self):
         """ Serialize a shopcart object into a dictionary """
-        return {
-            "customer_id": self.customer_id,
-            "customer_name": self.customer_name,
+        shopcart = {
+            "id": self.id,
+            "name": self.name,
+            "items": list()
         }
+        for item in self.items:
+            shopcart["items"].append(item.serialize())
+        return shopcart
 
     def deserialize(self, data):
         """
@@ -82,8 +86,13 @@ class Shopcart(db.Model):
             data (dict): A dictionary containing the resource data
         """
         try:
-            self.customer_id = data["customer_id"]
-            self.customer_name = data["customer_name"]
+            self.id = data["id"]
+            self.name = data["name"]
+            items_js = data["items"]
+            for item_js in items_js:
+                item = Item()
+                item.deserialize(item_js)
+                self.items.append(item)
         except KeyError as error:
             raise DataValidationError(
                 f"Invalid {type(self).__name__}: missing {error.args[0]}"
@@ -111,20 +120,20 @@ class Shopcart(db.Model):
         return cls.query.all()
 
     @classmethod
-    def get_by_pk(cls, customer_id):
-        """ Get shopcart by primary key: customer_id """
-        logger.info(f"Get {cls.__name__} by customer_id={customer_id}")
-        return cls.query.get(customer_id)
+    def get_by_id(cls, id):
+        """ Get shopcart by primary key: id """
+        logger.info(f"Get {cls.__name__} by id={id}")
+        return cls.query.get(id)
 
     @classmethod
-    def find_by_customer_name(cls, customer_name):
-        """Find shopcart(s) by customer_name
+    def find_by_name(cls, name):
+        """Find shopcart(s) by name
 
         Args:
-            customer_name (string): the name of the Shopcarts you want to match
+            name (string): the name of the Shopcarts you want to match
         """
-        logger.info(f"Get {cls.__name__} by customer_name={customer_name}")
-        return cls.query.filter(cls.customer_name == customer_name)
+        logger.info(f"Get {cls.__name__} by name={name}")
+        return cls.query.filter(cls.name == name)
 
 
 class Item(db.Model):
@@ -133,20 +142,19 @@ class Item(db.Model):
     app = None
 
     # Table Schema
-    customer_id = db.Column(
-        db.Integer, ForeignKey('shopcart.customer_id', ondelete="CASCADE"), primary_key=True)
-    item_id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    shopcart_id = db.Column(db.Integer, ForeignKey('shopcart.id', ondelete="CASCADE"), primary_key=True)
     name = db.Column(db.String(128), nullable=False)
     quantity = db.Column(db.Integer, nullable=False, default=0)
     price = db.Column(db.Float, nullable=False, default=0.0)
 
     def __repr__(self):
-        return f"{type(self).__name__}({self.customer_id}, {self.item_id}, {self.name}, {self.quantity}, {self.price})"
+        return f"{type(self).__name__}({self.shopcart_id}, {self.id}, {self.name}, {self.quantity}, {self.price})"
 
     def create(self):
         """ Create an item in DB table """
         logger.info("Create %s", self.__repr__)
-        self.item_id = None  # pylint: disable=invalid-name
+        self.id = None  # pylint: disable=invalid-name
         db.session.add(self)
         db.session.commit()
 
@@ -164,8 +172,8 @@ class Item(db.Model):
     def serialize(self):
         """ Serialize an item object into a dictionary """
         return {
-            "customer_id": self.customer_id,
-            "item_id": self.item_id,
+            "id": self.id,
+            "shopcart_id": self.shopcart_id,
             "name": self.name,
             "quantity": self.quantity,
             "price": self.price
@@ -179,18 +187,18 @@ class Item(db.Model):
             data (dict): A dictionary containing the resource data
         """
         try:
-            self.customer_id = data["customer_id"]
-            self.item_id = data["item_id"]
+            self.id = data["id"]
+            self.shopcart_id = data["shopcart_id"]
             self.name = data["name"]
             self.quantity = data["quantity"]
             self.price = data["price"]
         except KeyError as error:
             raise DataValidationError(
-                f"Invalid {self.__class__.__name__}: missing {error.args[0]}"
+                f"Invalid {type(self).__name__}: missing {error.args[0]}"
             ) from error
         except TypeError as error:
             raise DataValidationError(
-                f"Invalid {self.__class__.__name__}: failed to deserialize request body\nError message: {error}"
+                f"Invalid {type(self).__name__}: failed to deserialize request body\nError message: {error}"
             ) from error
         return self
 

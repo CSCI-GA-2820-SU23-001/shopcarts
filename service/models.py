@@ -16,6 +16,8 @@ Designed to support queries of the following APIs:
 """
 
 import logging
+from abc import abstractmethod
+
 from flask_sqlalchemy import SQLAlchemy
 
 logger = logging.getLogger("flask.app")
@@ -35,40 +37,70 @@ class DataValidationError(Exception):
     """ Used for object deserialization data validation errors """
 
 
-# TODO: create a shared base class for Shopcart and Item
-class Shopcart(db.Model):
-    """ The Shopcart Table """
+class ModelBase:
+    """ The shared base for models """
 
-    app = None
+    def __init__(self):
+        self.id = None
 
-    # Table Schema
-    id = db.Column(db.Integer, primary_key=True)    # correspond to customer_id
-    name = db.Column(db.String(63), nullable=False) # correspond to customer_name
-    items = db.relationship("Item", backref="shopcart", passive_deletes=True)
+    @abstractmethod
+    def serialize(self) -> dict:
+        """ Transform the self object into a dictionary """
 
-    def __repr__(self):
-        return f"{type(self).__name__}({self.id}, {self.name})"
+    @abstractmethod
+    def deserialize(self, data: dict) -> None:
+        """ Transform the dictionary into object """
+
+    @classmethod
+    def init_db(cls, app):
+        """ Initialize DB Table """
+        logger.info(f"Start initializing the {cls.__name__} Table")
+        cls.app = app
+        db.init_app(app)  # init the Flask app for SQLAlchemy
+        app.app_context().push()
+        db.create_all()  # create SQLAlchemy table
+        logger.info(f"Done initializing the {cls.__name__} Table")
+
+    @classmethod
+    def get_all(cls):
+        """ Get all objects in DB table """
+        logger.info(f"Get all {cls.__name__}s")
+        return cls.query.all()
 
     def create(self):
-        """ Create a shopcart in DB table """
+        """ Create an object in DB table """
         logger.info("Create %s", self.__repr__)
         self.id = None  # pylint: disable=invalid-name
         db.session.add(self)
         db.session.commit()
 
     def update(self):
-        """ Update a shopcart in DB table """
+        """ Update an object in DB table """
         logger.info("Update %s", self.__repr__)
         db.session.commit()
 
     def delete(self):
-        """ Delete a shopcart in DB table """
+        """ Delete an object in DB table """
         logger.info("Delete %s", self.__repr__)
         db.session.delete(self)
         db.session.commit()
 
-    def serialize(self):
-        """ Serialize a shopcart object into a dictionary """
+
+class Shopcart(db.Model, ModelBase):
+    """ The Shopcart Table """
+
+    app = None
+
+    # Table Schema
+    id = db.Column(db.Integer, primary_key=True)  # correspond to customer_id
+    name = db.Column(db.String(63), nullable=False)  # correspond to customer_name
+    items = db.relationship("Item", backref="shopcart", passive_deletes=True)
+
+    def __repr__(self):
+        return f"{type(self).__name__}({self.id}, {self.name})"
+
+    def serialize(self) -> dict:
+        """ Transform the self object into a shopcart dictionary """
         shopcart = {
             "id": self.id,
             "name": self.name,
@@ -78,9 +110,9 @@ class Shopcart(db.Model):
             shopcart["items"].append(item.serialize())
         return shopcart
 
-    def deserialize(self, data):
+    def deserialize(self, data: dict) -> None:
         """
-        Deserialize a shopcart dictionary to object
+        Transform data dictionary into a shopcart object
 
         Args:
             data (dict): A dictionary containing the resource data
@@ -101,23 +133,6 @@ class Shopcart(db.Model):
             raise DataValidationError(
                 f"Invalid {type(self).__name__}: failed to deserialize request body\nError message: {error}"
             ) from error
-        return self
-
-    @classmethod
-    def init_db(cls, app):
-        """ Initialize the Shopcart Table """
-        logger.info(f"Start initializing the {cls.__name__} Table")
-        cls.app = app
-        db.init_app(app)  # init the Flask app for SQLAlchemy
-        app.app_context().push()
-        db.create_all()  # make our sqlalchemy tables
-        logger.info(f"Done initializing the {cls.__name__} Table")
-
-    @classmethod
-    def get_all(cls):
-        """ Get all shopcarts in DB table """
-        logger.info(f"Get all {cls.__name__}s")
-        return cls.query.all()
 
     @classmethod
     def get_by_id(cls, id):
@@ -136,7 +151,7 @@ class Shopcart(db.Model):
         return cls.query.filter(cls.name == name)
 
 
-class Item(db.Model):
+class Item(db.Model, ModelBase):
     """ The Item Table """
 
     app = None
@@ -151,26 +166,8 @@ class Item(db.Model):
     def __repr__(self):
         return f"{type(self).__name__}({self.shopcart_id}, {self.id}, {self.name}, {self.quantity}, {self.price})"
 
-    def create(self):
-        """ Create an item in DB table """
-        logger.info("Create %s", self.__repr__)
-        self.id = None  # pylint: disable=invalid-name
-        db.session.add(self)
-        db.session.commit()
-
-    def update(self):
-        """ Update an item in DB table """
-        logger.info("Update %s", self.__repr__)
-        db.session.commit()
-
-    def delete(self):
-        """ Delete an item in DB table """
-        logger.info("Delete %s", self.__repr__)
-        db.session.delete(self)
-        db.session.commit()
-
-    def serialize(self):
-        """ Serialize an item object into a dictionary """
+    def serialize(self) -> dict:
+        """ Transform the self object into an item dictionary """
         return {
             "id": self.id,
             "shopcart_id": self.shopcart_id,
@@ -179,9 +176,9 @@ class Item(db.Model):
             "price": self.price
         }
 
-    def deserialize(self, data):
+    def deserialize(self, data: dict) -> None:
         """
-        Deserialize an item dictionary to object
+        Transform data dictionary into an item object
 
         Args:
             data (dict): A dictionary containing the resource data
@@ -200,20 +197,3 @@ class Item(db.Model):
             raise DataValidationError(
                 f"Invalid {type(self).__name__}: failed to deserialize request body\nError message: {error}"
             ) from error
-        return self
-
-    @classmethod
-    def init_db(cls, app):
-        """ Initialize the Item Table """
-        logger.info(f"Start initializing the {cls.__name__} Table")
-        cls.app = app
-        db.init_app(app)  # init the Flask app for SQLAlchemy
-        app.app_context().push()
-        db.create_all()  # make our sqlalchemy tables
-        logger.info(f"Done initializing the {cls.__name__} Table")
-
-    @classmethod
-    def get_all(cls):
-        """ Get all items in DB table """
-        logger.info(f"Get all {cls.__name__}s")
-        return cls.query.all()

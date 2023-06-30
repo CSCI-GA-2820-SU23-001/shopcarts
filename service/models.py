@@ -16,7 +16,7 @@ Designed to support queries of the following APIs:
 """
 
 import logging
-from flask_sqlalchemy import SQLAlchemy, ForeignKey
+from flask_sqlalchemy import SQLAlchemy
 
 logger = logging.getLogger("flask.app")
 
@@ -143,7 +143,7 @@ class Item(db.Model):
 
     # Table Schema
     id = db.Column(db.Integer, primary_key=True)
-    shopcart_id = db.Column(db.Integer, ForeignKey('shopcart.id', ondelete="CASCADE"), primary_key=True)
+    shopcart_id = db.Column(db.Integer, db.ForeignKey('shopcart.id', ondelete="CASCADE"), primary_key=True)
     name = db.Column(db.String(128), nullable=False)
     quantity = db.Column(db.Integer, nullable=False, default=0)
     price = db.Column(db.Float, nullable=False, default=0.0)

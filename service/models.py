@@ -138,10 +138,10 @@ class Shopcart(db.Model):
     @classmethod
     def find_id(cls):
 
-        result = cls.query.with_entities(Shopcart.customer_id).all()
+        result = cls.query.with_entities(Shopcart.id).all()
         ids = []
-        for id in result:
-            ids.append(id.customer_id)
+        for res in result:
+            ids.append(res.id)
         return len(ids)
 
 class Item(db.Model):

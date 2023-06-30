@@ -104,7 +104,7 @@ class Shopcart(db.Model, ModelBase):
         shopcart = {
             "id": self.id,
             "name": self.name,
-            "items": list()
+            "items": []
         }
         for item in self.items:
             shopcart["items"].append(item.serialize())
@@ -150,6 +150,14 @@ class Shopcart(db.Model, ModelBase):
         logger.info(f"Get {cls.__name__} by name={name}")
         return cls.query.filter(cls.name == name)
 
+    @classmethod
+    def find_id(cls):
+
+        result = cls.query.with_entities(Shopcart.id).all()
+        ids = []
+        for res in result:
+            ids.append(res.id)
+        return len(ids)
 
 class Item(db.Model, ModelBase):
     """ The Item Table """

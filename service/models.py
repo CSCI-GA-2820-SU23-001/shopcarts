@@ -135,6 +135,14 @@ class Shopcart(db.Model):
         logger.info(f"Get {cls.__name__} by name={name}")
         return cls.query.filter(cls.name == name)
 
+    @classmethod
+    def find_id(cls):
+
+        result = cls.query.with_entities(Shopcart.customer_id).all()
+        ids = []
+        for id in result:
+            ids.append(id.customer_id)
+        return len(ids)
 
 class Item(db.Model):
     """ The Item Table """

@@ -72,7 +72,7 @@ class Shopcart(db.Model):
         shopcart = {
             "id": self.id,
             "name": self.name,
-            "items": list()
+            "items": []
         }
         for item in self.items:
             shopcart["items"].append(item.serialize())

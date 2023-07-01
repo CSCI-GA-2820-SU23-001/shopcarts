@@ -99,3 +99,11 @@ class TestShopcartsService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 0)
+
+    def test_list_shopcart_items(self):
+        """ It should get a list of only one item """
+        shopcart = self._create_a_shopcart_with_items(1)
+        resp = self.client.get(f"{BASE_URL}/{shopcart.id}/items")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 1)

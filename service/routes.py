@@ -23,9 +23,11 @@ DELETE /shopcarts/{shopcart_id}/items/{item_id} - Delete the item from the shopc
 """
 
 from flask import jsonify, request, url_for, make_response, abort
-from service.common import status  # HTTP Status Codes
-from service.models import Shopcart, Item
 
+from service.common import status  # HTTP Status Codes
+from service.common.error_handlers import request_validation_error, bad_request, not_found, internal_server_error, \
+    mediatype_not_supported
+from service.models import Shopcart, Item, DataValidationError
 from . import app
 
 DEFAULT_CONTENT_TYPE = "application/json"
@@ -59,6 +61,30 @@ def is_expected_content_type(expected_content_type):
 ######################################################################
 # S H O P C A R T   A P I S
 ######################################################################
+
+@app.route("/shopcarts", methods=["POST"])
+def create_shopcart():
+    """ Creates a new shopcart """
+    if not is_expected_content_type(DEFAULT_CONTENT_TYPE):
+        return mediatype_not_supported(f"Content-Type must be {DEFAULT_CONTENT_TYPE}")
+
+    try:
+        app.logger.info(f"Start creating a shopcart")
+        shopcart = Shopcart()
+        shopcart.deserialize(request.get_json())
+        app.logger.info(f"Request body deserialized to shopcart")
+    except DataValidationError as e:
+        return request_validation_error(e)
+    except Exception as e:
+        return internal_server_error(e)
+
+    try:
+        shopcart.create()
+        app.logger.info(f"New shopcart created with id={shopcart.id}")
+        shopcart_js = shopcart.serialize()
+        return make_response(jsonify(shopcart_js), status.HTTP_201_CREATED)
+    except Exception as e:
+        return internal_server_error(e)
 
 ######################################################################
 # I T E M   A P I S

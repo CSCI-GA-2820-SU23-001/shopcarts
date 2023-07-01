@@ -44,6 +44,43 @@ class TestShopcartsService(TestCase):
         db.session.remove()
 
     ######################################################################
+    #  H E L P E R   M E T H O D S
+    ######################################################################
+
+    def _create_an_empty_shopcart(self):
+        """ Factory method to create an empty shopcart """
+        shopcart = ShopcartFactory()
+        resp = self.client.post(
+            BASE_URL, json=shopcart.serialize(), content_type="application/json")
+        self.assertEqual(
+            resp.status_code,
+            status.HTTP_201_CREATED,
+            "Could not create test Shopcart",
+        )
+        new_shopcart = resp.get_json()
+        shopcart.id = new_shopcart["id"]
+        shopcart.name = new_shopcart["name"]
+        logging.info(f"{shopcart.__repr__()} created for test")
+        return shopcart
+
+    # TODO: add different types of item to shopcart
+    def _create_a_shopcart_with_items(self, item_count):
+        """ Factory method to create a shopcart with items """
+        shopcart = self._create_an_empty_shopcart()
+        for _ in range(item_count):
+            item = ItemFactory()
+            resp = self.client.post(
+                f"{BASE_URL}/{shopcart.id}/items", json=item.serialize(), content_type="application/json")
+            self.assertEqual(
+                resp.status_code,
+                status.HTTP_201_CREATED,
+                "Could not create test Item",
+            )
+            shopcart.items.append(item)
+            logging.info(f"{item.__repr__()} created for test")
+        return shopcart
+
+    ######################################################################
     #  T E S T   C A S E S
     ######################################################################
 

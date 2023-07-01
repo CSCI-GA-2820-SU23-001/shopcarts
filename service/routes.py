@@ -22,7 +22,7 @@ PUT  /shopcarts/{shopcart_id}/items/{item_id} - Updates the item in the shopcart
 DELETE /shopcarts/{shopcart_id}/items/{item_id} - Delete the item from the shopcart
 """
 
-from flask import Flask, jsonify, request, url_for, make_response, abort
+from flask import jsonify, request, url_for, make_response, abort
 from service.common import status  # HTTP Status Codes
 from service.models import Shopcart, Item
 

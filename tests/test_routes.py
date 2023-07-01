@@ -91,3 +91,11 @@ class TestShopcartsService(TestCase):
         """ It should call the home page """
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+    def test_list_empty_shopcart_items(self):
+        """ It should get an empty list of items """
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        resp = self.client.get(f"{BASE_URL}/{shopcart.id}/items")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 0)

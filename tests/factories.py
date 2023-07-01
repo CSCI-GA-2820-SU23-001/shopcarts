@@ -17,7 +17,9 @@ Test Factory to make fake objects for testing
 """
 
 import factory
+
 from service.models import Shopcart, Item
+
 
 class ShopcartFactory(factory.Factory):
     """Creates fake Shopcarts"""
@@ -32,16 +34,17 @@ class ShopcartFactory(factory.Factory):
     def items(self, create, extracted, **kwargs):
         if not create:
             return
-        
+
         if extracted:
-            self.addresses = extracted
+            self.items = extracted
+
 
 class ItemFactory(factory.Factory):
     """Creates fake Items"""
-    
+
     class Meta:
         model = Item
-    
+
     id = factory.Faker("pyint")
     shopcart_id = None
     name = factory.Faker("job")

@@ -28,6 +28,8 @@ from service.models import Shopcart, Item
 
 from . import app
 
+DEFAULT_CONTENT_TYPE = "application/json"
+
 
 ######################################################################
 # GET INDEX
@@ -44,6 +46,15 @@ def index():
 ######################################################################
 #  R E S T   A P I   E N D P O I N T S
 ######################################################################
+
+def is_expected_content_type(expected_content_type):
+    """ Verify and abort if not expected content type """
+    content_type = request.headers.get("Content-Type")
+    if not content_type or content_type != expected_content_type:
+        app.logger.error("Invalid Content-Type: %s", content_type)
+        return False
+    return True
+
 
 ######################################################################
 # S H O P C A R T   A P I S

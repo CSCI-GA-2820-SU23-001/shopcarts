@@ -12,9 +12,11 @@ DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@postgres:5432/postgres"
 )
 
+
 ######################################################################
 #  S H O P C A R T   M O D E L   T E S T   C A S E S
 ######################################################################
+
 class TestShopcart(unittest.TestCase):
     """ Test Cases for Shopcart Model """
 
@@ -34,8 +36,8 @@ class TestShopcart(unittest.TestCase):
 
     def setUp(self):
         """ This runs before each test """
-        db.drop_all() # clean up the last tests
-        db.create_all() # make our sqlalchemy tables
+        db.drop_all()  # clean up the last tests
+        db.create_all()  # make our sqlalchemy tables
 
     def tearDown(self):
         """ This runs after each test """
@@ -50,9 +52,11 @@ class TestShopcart(unittest.TestCase):
         """ It should always be true """
         self.assertTrue(True)
 
+
 ######################################################################
 #  I T E M   M O D E L   T E S T   C A S E S
 ######################################################################
+
 class TestItem(unittest.TestCase):
     """ Test Cases for Item Model """
 
@@ -72,8 +76,8 @@ class TestItem(unittest.TestCase):
 
     def setUp(self):
         """ This runs before each test """
-        db.drop_all() # clean up the last tests
-        db.create_all() # make our sqlalchemy tables
+        db.drop_all()  # clean up the last tests
+        db.create_all()  # make our sqlalchemy tables
 
     def tearDown(self):
         """ This runs after each test """

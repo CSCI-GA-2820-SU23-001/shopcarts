@@ -7,6 +7,7 @@ import logging
 import unittest
 from service.models import Shopcart, Item, DataValidationError, db
 from service import app
+from tests.factories import ShopcartFactory, ItemFactory
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@postgres:5432/postgres"
@@ -39,18 +40,42 @@ class TestShopcart(unittest.TestCase):
         db.drop_all()  # clean up the last tests
         db.create_all()  # make our sqlalchemy tables
 
-    def tearDown(self):
-        """ This runs after each test """
-        db.session.remove()
-        db.drop_all()
+    # def tearDown(self):
+    #     """ This runs after each test """
+    #     db.session.remove()
+    #     db.drop_all()
 
     ######################################################################
     #  T E S T   C A S E S
     ######################################################################
 
-    def test_example_replace_this(self):
-        """ It should always be true """
-        self.assertTrue(True)
+     ######################################################################
+    #  TEST CREATE / ADD SHOPCART
+    ######################################################################
+    def test_create_an_shopcart(self):
+        """ It should Create an Shopcart and assert that it exists """
+        fake_shopcart = ShopcartFactory()
+        # pylint: disable=unexpected-keyword-arg
+        shopcart = Shopcart(
+            name=fake_shopcart.name,
+        )
+        self.assertIsNotNone(shopcart)
+        self.assertEqual(shopcart.id, None)
+        self.assertEqual(shopcart.name, fake_shopcart.name)
+    
+    def test_read_an_shopcart(self):
+        """It should Read a Shopcart"""
+        shopcart = ShopcartFactory()
+        shopcart.create()
+        found_shopcart = Shopcart.get_by_id(shopcart.id)
+
+        self.assertIsNotNone(shopcart)
+        self.assertEqual(found_shopcart.id, shopcart.id)
+        self.assertEqual(found_shopcart.name, shopcart.name)
+       
+
+        
+
 
 
 ######################################################################
@@ -88,6 +113,4 @@ class TestItem(unittest.TestCase):
     #  T E S T   C A S E S
     ######################################################################
 
-    def test_example_replace_this(self):
-        """ It should always be true """
-        self.assertTrue(True)
+   

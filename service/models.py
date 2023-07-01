@@ -1,9 +1,23 @@
 """
-Models for Shopcart
+Shopcarts Service Models
 
-All of the models are stored in this module
+Designed to support queries of the following APIs:
+    GET  /shopcarts
+    POST /shopcarts
+    GET  /shopcarts/{shopcart_id}
+    PUT  /shopcarts/{shopcart_id}
+    DELETE /shopcarts/{shopcart_id}
+
+    GET  /shopcarts/{shopcart_id}/items
+    POST /shopcarts{shopcart_id}/items
+    GET  /shopcarts/{shopcart_id}/items/{item_id}
+    PUT  /shopcarts/{shopcart_id}/items/{item_id}
+    DELETE /shopcarts/{shopcart_id}/items/{item_id}
 """
+
 import logging
+from abc import abstractmethod
+
 from flask_sqlalchemy import SQLAlchemy
 
 logger = logging.getLogger("flask.app")
@@ -12,216 +26,182 @@ logger = logging.getLogger("flask.app")
 db = SQLAlchemy()
 
 
-# Function to initialize the database
+# Function to initialize the tables in DB
 def init_db(app):
-    """ Initializes the SQLAlchemy app """
+    """ Initialize the Shopcart and the Item tables through SQLAlchemy """
     Shopcart.init_db(app)
     Item.init_db(app)
 
 
 class DataValidationError(Exception):
-    """ Used for an data validation errors when deserializing """
+    """ Used for object deserialization data validation errors """
 
 
-class Shopcart(db.Model):
-    """
-    Class that represents a Shopcart
-    """
+class ModelBase:
+    """ The shared base for models """
+
+    def __init__(self):
+        self.id = None
+
+    @abstractmethod
+    def serialize(self) -> dict:
+        """ Transform the self object into a dictionary """
+
+    @abstractmethod
+    def deserialize(self, data: dict) -> None:
+        """ Transform the dictionary into object """
+
+    @classmethod
+    def init_db(cls, app):
+        """ Initialize DB Table """
+        logger.info(f"Start initializing the {cls.__name__} Table")
+        cls.app = app
+        db.init_app(app)  # init the Flask app for SQLAlchemy
+        app.app_context().push()
+        db.create_all()  # create SQLAlchemy table
+        logger.info(f"Done initializing the {cls.__name__} Table")
+
+    @classmethod
+    def get_all(cls):
+        """ Get all objects in DB table """
+        logger.info(f"Get all {cls.__name__}s")
+        return cls.query.all()
+
+    def create(self):
+        """ Create an object in DB table """
+        logger.info("Create %s", self.__repr__)
+        self.id = None  # pylint: disable=invalid-name
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self):
+        """ Update an object in DB table """
+        logger.info("Update %s", self.__repr__)
+        db.session.commit()
+
+    def delete(self):
+        """ Delete an object in DB table """
+        logger.info("Delete %s", self.__repr__)
+        db.session.delete(self)
+        db.session.commit()
+
+
+class Shopcart(db.Model, ModelBase):
+    """ The Shopcart Table """
 
     app = None
 
     # Table Schema
-    # customer_id (primary key), customer_name, shopcart_quantity, shopcart_price
-    customer_id = db.Column(db.Integer, primary_key=True)
-    customer_name = db.Column(db.String(63), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)  # correspond to customer_id
+    name = db.Column(db.String(63), nullable=False)  # correspond to customer_name
+    items = db.relationship("Item", backref="shopcart", passive_deletes=True)
 
     def __repr__(self):
-        return f"<Shopcart for customer {self.customer_name} id=[{self.customer_id}]>"
+        return f"{type(self).__name__}({self.id}, {self.name})"
 
-    def create(cls, self):
-        """
-        Creates a Shopcart to the database
-        """
-        logger.info("Creating %s %s", cls.__name__, self.__repr__)
-        self.customer_id = None  # pylint: disable=invalid-name
-        db.session.add(self)
-        db.session.commit()
-
-    def update(cls, self):
-        """
-        Updates a Shopcart to the database
-        """
-        logger.info("Saving %s %s", cls.__name__, self.__repr__)
-        db.session.commit()
-
-    def delete(cls, self):
-        """ Removes a Shopcart from the data store """
-        logger.info("Deleting %s %s", cls.__name__, self.__repr__)
-        db.session.delete(self)
-        db.session.commit()
-
-    def serialize(self):
-        """ Serializes a Shopcart into a dictionary """
-        return {
-            "customer_id": self.customer_id, 
-            "customer_name": self.customer_name,
+    def serialize(self) -> dict:
+        """ Transform the self object into a shopcart dictionary """
+        shopcart = {
+            "id": self.id,
+            "name": self.name,
+            "items": []
         }
+        for item in self.items:
+            shopcart["items"].append(item.serialize())
+        return shopcart
 
-    def deserialize(self, data):
+    def deserialize(self, data: dict) -> None:
         """
-        Deserializes a Shopcart from a dictionary
+        Transform data dictionary into a shopcart object
 
         Args:
             data (dict): A dictionary containing the resource data
         """
         try:
-            self.customer_id = data["customer_id"]
-            self.customer_name = data["customer_name"]
+            self.id = data["id"]
+            self.name = data["name"]
+            items_js = data["items"]
+            for item_js in items_js:
+                item = Item()
+                item.deserialize(item_js)
+                self.items.append(item)
         except KeyError as error:
             raise DataValidationError(
-                "Invalid Shopcart: missing " + error.args[0]
+                f"Invalid {type(self).__name__}: missing {error.args[0]}"
             ) from error
         except TypeError as error:
             raise DataValidationError(
-                "Invalid Shopcart: body of request contained bad or no data - "
-                "Error message: " + error
+                f"Invalid {type(self).__name__}: failed to deserialize request body\nError message: {error}"
             ) from error
-        return self
 
     @classmethod
-    def init_db(cls, app):
-        """ Initializes the database session """
-        logger.info("Initializing database")
-        cls.app = app
-        # This is where we initialize SQLAlchemy from the Flask app
-        db.init_app(app)
-        app.app_context().push()
-        db.create_all()  # make our sqlalchemy tables
-
-    @classmethod
-    def all(cls):
-        """ Returns all of the Shopcarts in the database """
-        logger.info("Processing all Shopcarts")
-        return cls.query.all()
-
-    @classmethod
-    def find(cls, id):
-        """ Finds a Shopcart by it's ID """
-        logger.info("Processing lookup for id %s ...", id)
+    def get_by_id(cls, id):
+        """ Get shopcart by primary key: id """
+        logger.info(f"Get {cls.__name__} by id={id}")
         return cls.query.get(id)
 
     @classmethod
     def find_by_name(cls, name):
-        """Returns all Shopcarts with the given name
+        """Find shopcart(s) by name
 
         Args:
             name (string): the name of the Shopcarts you want to match
         """
-        logger.info("Processing name query for %s ...", name)
-        return cls.query.filter(cls.customer_name == name) 
-    
-class Item(db.Model):
-    """
-    Class that represents a Item
-    """
+        logger.info(f"Get {cls.__name__} by name={name}")
+        return cls.query.filter(cls.name == name)
+
+    @classmethod
+    def find_id(cls):
+
+        result = cls.query.with_entities(Shopcart.id).all()
+        ids = []
+        for res in result:
+            ids.append(res.id)
+        return len(ids)
+
+class Item(db.Model, ModelBase):
+    """ The Item Table """
 
     app = None
 
     # Table Schema
-    # customer_id (primary key), item_id (primary key), item_name, item_quantity, item_price
-    customer_id = db.Column(db.Integer, primary_key=True) 
-    item_id = db.Column(db.Integer, primary_key=True) 
+    id = db.Column(db.Integer, primary_key=True)
+    shopcart_id = db.Column(db.Integer, db.ForeignKey('shopcart.id', ondelete="CASCADE"), primary_key=True)
     name = db.Column(db.String(128), nullable=False)
     quantity = db.Column(db.Integer, nullable=False, default=0)
     price = db.Column(db.Float, nullable=False, default=0.0)
 
     def __repr__(self):
-        return f"<Item {self.name} id=[{self.item_id}]>"
+        return f"{type(self).__name__}({self.shopcart_id}, {self.id}, {self.name}, {self.quantity}, {self.price})"
 
-    def create(cls, self):
-        """
-        Creates a Item to the database
-        """
-        logger.info("Creating %s %s", cls.__name, self.__repr__)
-        self.item_id = None  # pylint: disable=invalid-name
-        db.session.add(self)
-        db.session.commit()
-
-    def update(cls, self):
-        """
-        Updates a Item to the database
-        """
-        logger.info("Saving %s %s", cls.__name, self.__repr__)
-        db.session.commit()
-
-    def delete(self):
-        """ Removes a Item from the data store """
-        logger.info("Deleting %s %s", cls.__name, self.__repr__)
-        db.session.delete(self)
-        db.session.commit()
-
-    def serialize(self):
-        """ Serializes a Item into a dictionary """
+    def serialize(self) -> dict:
+        """ Transform the self object into an item dictionary """
         return {
-            "customer_id": self.customer_id,
-            "item_id": self.item_id, 
+            "id": self.id,
+            "shopcart_id": self.shopcart_id,
             "name": self.name,
             "quantity": self.quantity,
             "price": self.price
         }
 
-    def deserialize(self, data):
+    def deserialize(self, data: dict) -> None:
         """
-        Deserializes a Item from a dictionary
+        Transform data dictionary into an item object
 
         Args:
             data (dict): A dictionary containing the resource data
         """
         try:
-            self.customer_id = data["customer_id"]
-            self.item_id = data["item_id"]
+            self.id = data["id"]
+            self.shopcart_id = data["shopcart_id"]
             self.name = data["name"]
             self.quantity = data["quantity"]
             self.price = data["price"]
         except KeyError as error:
             raise DataValidationError(
-                "Invalid Item: missing " + error.args[0]
+                f"Invalid {type(self).__name__}: missing {error.args[0]}"
             ) from error
         except TypeError as error:
             raise DataValidationError(
-                "Invalid Item: body of request contained bad or no data - "
-                "Error message: " + error
+                f"Invalid {type(self).__name__}: failed to deserialize request body\nError message: {error}"
             ) from error
-        return self
-
-    @classmethod
-    def init_db(cls, app):
-        """ Initializes the database session """
-        logger.info("Initializing database")
-        cls.app = app
-        # This is where we initialize SQLAlchemy from the Flask app
-        db.init_app(app)
-        app.app_context().push()
-        db.create_all()  # make our sqlalchemy tables
-
-    @classmethod
-    def all(cls):
-        """ Returns all of the Items in the database """
-        logger.info("Processing all Item")
-        return cls.query.all()
-
-    @classmethod
-    def find(cls, id):
-        """ Finds a Item by it's ID """
-        logger.info("Processing lookup for id %s ...", id)
-        return cls.query.get(id)
-
-    @classmethod
-    def find_by_name(cls, name):
-        """Returns all Items with the given name
-
-        Args:
-            name (string): the name of the Item you want to match
-        """
-        logger.info("Processing name query for %s ...", name)
-        return cls.query.filter(cls.name == name)

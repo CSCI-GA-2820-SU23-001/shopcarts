@@ -113,10 +113,13 @@ def add_shopcart_item(shopcart_id):
     except DataValidationError as e:
         return request_validation_error(e)
 
-    # item quantity should be greater than zero
-    if item.quantity <= 0:
+    # # item quantity should be greater than zero
+    # if item.quantity <= 0:
+    #     app.logger.error(f"Invalid item quantity assignment to {item.quantity}.")
+    #     return bad_request(f"Item quantity should be a positive number.")
+    if item.quantity != 1:
         app.logger.error(f"Invalid item quantity assignment to {item.quantity}.")
-        return bad_request(f"Item quantity should be a positive number.")
+        return bad_request(f"Quantity of a new item should always be one.")
 
     try:
         # item.create()

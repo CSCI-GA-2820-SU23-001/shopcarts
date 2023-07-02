@@ -120,7 +120,7 @@ class Shopcart(db.Model, ModelBase):
         try:
             # self.id = data["id"]
             self.name = data["name"]
-            items_js = data["items"]
+            items_js = data.get("items", [])
             for item_js in items_js:
                 item = Item()
                 item.deserialize(item_js)

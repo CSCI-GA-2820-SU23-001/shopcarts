@@ -105,55 +105,32 @@ def add_shopcart_item(shopcart_id):
         return not_found(f"Shopcart with id='{shopcart_id}' was not found.")
     app.logger.info(f"Found shopcart with id={shopcart.id}")
 
-    # search for the designated item in shopcart
-    request_body_js = request.get_json()
-    item = None
-    for item_ in shopcart.items:
-        if item_.id == request_body_js["id"]:
-            item = item_
-            break
-
-    # if not found, add a new item to shopcart
-    if item is None:
-        try:
-            # item quantity should be greater than zero
-            if request_body_js["quantity"] <= 0:
-                app.logger.error(f"Invalid item quantity assignment to {request_body_js['quantity']}.")
-                return bad_request(f"Invalid item quantity={request_body_js['quantity']} <= 0.")
-
-            app.logger.info(f"Start creating an item")
-            item = Item()
-            item.deserialize(request_body_js)
-            app.logger.info(f"Request body deserialized to item.")
-
-            # item.create()
-            # app.logger.info(f"New item with id={item.id} created.")
-
-            shopcart.items.append(item)
-            shopcart.update()
-            app.logger.info(f"New item with id={item.id} added to shopcart with id={shopcart.id}.")
-
-            item_js = item.serialize()
-            return make_response(jsonify(item_js), status.HTTP_201_CREATED)
-        except DataValidationError as e:
-            return request_validation_error(e)
-        except Exception as e:
-            return internal_server_error(e)
-
-    # otherwise, update its quantity
     try:
-        # item quantity can only increase in add_shopcart_item API
-        if item.quantity >= request_body_js["quantity"]:
-            app.logger.error(f"Invalid item quantity change from {item.quantity} to {request_body_js['quantity']}.")
-            return bad_request(f"Item quantity can not decrease. Must increase at least by one.")
+        app.logger.info(f"Start creating an item")
+        item = Item()
+        item.deserialize(request.get_json())   # validate request body schema
+        app.logger.info(f"Request body deserialized to item.")
+    except DataValidationError as e:
+        return request_validation_error(e)
 
-        item.quantity = request_body_js["quantity"]
-        item.update()
-        app.logger.info(f"Quantity updated to {item.quantity} for the existing item with id={item.id}.")
+    # # item quantity should be greater than zero
+    # if item.quantity <= 0:
+    #     app.logger.error(f"Invalid item quantity assignment to {item.quantity}.")
+    #     return bad_request(f"Item quantity should be a positive number.")
+    if item.quantity != 1:
+        app.logger.error(f"Invalid item quantity assignment to {item.quantity}.")
+        return bad_request(f"Quantity of a new item should always be one.")
+
+    try:
+        # item.create()
+        # app.logger.info(f"New item with id={item.id} created.")
+        shopcart.items.append(item)
+        shopcart.update()
+        app.logger.info(f"New item with id={item.id} added to shopcart with id={shopcart.id}.")
 
         item_js = item.serialize()
-        return make_response(jsonify(item_js), status.HTTP_200_OK)
-    except KeyError as e:
+        return make_response(jsonify(item_js), status.HTTP_201_CREATED)
+    except DataValidationError as e:
         return request_validation_error(e)
     except Exception as e:
         return internal_server_error(e)

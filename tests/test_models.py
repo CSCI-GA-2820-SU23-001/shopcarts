@@ -2,16 +2,16 @@
 Test cases for Shopcart Model
 
 """
-import os
 import logging
 import unittest
-from service.models import Shopcart, Item, DataValidationError, db
-from service import app
-from tests.factories import ShopcartFactory, ItemFactory
 
-DATABASE_URI = os.getenv(
-    "DATABASE_URI", "postgresql://postgres:postgres@postgres:5432/postgres"
-)
+
+from service import app
+from service.models import Shopcart, Item, DataValidationError, db
+from tests.factories import ShopcartFactory,ItemFactory
+
+from . import DATABASE_URI
+
 
 
 ######################################################################
@@ -33,7 +33,6 @@ class TestShopcart(unittest.TestCase):
     # @classmethod
     # def tearDownClass(cls):
     #     """ This runs once after the entire test suite """
-    #     db.session.close()
 
     def setUp(self):
         """ This runs before each test """
@@ -74,9 +73,6 @@ class TestShopcart(unittest.TestCase):
         self.assertEqual(found_shopcart.name, shopcart.name)
        
 
-        
-
-
 
 ######################################################################
 #  I T E M   M O D E L   T E S T   C A S E S
@@ -97,7 +93,6 @@ class TestItem(unittest.TestCase):
     # @classmethod
     # def tearDownClass(cls):
     #     """ This runs once after the entire test suite """
-    #     pass
 
     def setUp(self):
         """ This runs before each test """
@@ -112,5 +107,3 @@ class TestItem(unittest.TestCase):
     ######################################################################
     #  T E S T   C A S E S
     ######################################################################
-
-   

@@ -18,7 +18,10 @@ Test Factory to make fake objects for testing
 """
 
 import factory
+from factory.fuzzy import FuzzyChoice
+
 from service.models import Shopcart, Item
+
 
 class ShopcartFactory(factory.Factory):
     """Creates fake Shopcarts"""
@@ -30,21 +33,25 @@ class ShopcartFactory(factory.Factory):
     name = factory.Faker("name")
 
     @factory.post_generation
-    def items(self, create, extracted, **kwargs):
+    def items(self, create, extracted, **kwargs):   # pylint: disable=method-hidden, unused-argument
+        """Creates the addresses list"""
         if not create:
             return
-        
+
         if extracted:
             self.addresses = extracted
 
+
+
 class ItemFactory(factory.Factory):
     """Creates fake Items"""
-    
+
     class Meta:
         model = Item
-    
-    id = factory.Faker("pyint")
+
+    id = factory.Sequence(lambda n: n)
     shopcart_id = None
-    name = factory.Faker("job")
+    name = FuzzyChoice(choices=["Air Pods", "iPhone SE", "Macbook Air"])
     quantity = factory.Faker("pyint")
-    price = factory.Faker("pyfloat")
+    price = factory.Faker("pyfloat", positive=True)
+    # shopcart = factory.SubFactory(ShopcartFactory)

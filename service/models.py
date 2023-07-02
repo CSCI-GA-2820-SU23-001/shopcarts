@@ -118,7 +118,7 @@ class Shopcart(db.Model, ModelBase):
             data (dict): A dictionary containing the resource data
         """
         try:
-            self.id = data["id"]
+            # self.id = data["id"]
             self.name = data["name"]
             items_js = data["items"]
             for item_js in items_js:
@@ -159,6 +159,7 @@ class Shopcart(db.Model, ModelBase):
             ids.append(res.id)
         return len(ids)
 
+
 class Item(db.Model, ModelBase):
     """ The Item Table """
 
@@ -166,7 +167,8 @@ class Item(db.Model, ModelBase):
 
     # Table Schema
     id = db.Column(db.Integer, primary_key=True)
-    shopcart_id = db.Column(db.Integer, db.ForeignKey('shopcart.id', ondelete="CASCADE"), primary_key=True)
+    # shopcart_id = db.Column(db.Integer, db.ForeignKey('shopcart.id', ondelete="CASCADE"), primary_key=True)
+    shopcart_id = db.Column(db.Integer, db.ForeignKey('shopcart.id', ondelete="CASCADE"), nullable=False)
     name = db.Column(db.String(128), nullable=False)
     quantity = db.Column(db.Integer, nullable=False, default=0)
     price = db.Column(db.Float, nullable=False, default=0.0)
@@ -192,8 +194,8 @@ class Item(db.Model, ModelBase):
             data (dict): A dictionary containing the resource data
         """
         try:
-            self.id = data["id"]
-            self.shopcart_id = data["shopcart_id"]
+            # self.id = data["id"]
+            # self.shopcart_id = data["shopcart_id"]
             self.name = data["name"]
             self.quantity = data["quantity"]
             self.price = data["price"]

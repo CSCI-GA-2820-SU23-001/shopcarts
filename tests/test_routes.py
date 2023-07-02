@@ -107,3 +107,9 @@ class TestShopcartsService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 1)
+
+    def test_list_items_in_non_existent_shopcart(self):
+        """ It should not read a shopcart that is not found """
+        shopcart_id = -1
+        resp = self.client.get(f"{BASE_URL}/{shopcart_id}/items")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)

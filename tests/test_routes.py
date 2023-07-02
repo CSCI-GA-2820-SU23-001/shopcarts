@@ -113,3 +113,9 @@ class TestShopcartsService(TestCase):
         shopcart_id = -1
         resp = self.client.get(f"{BASE_URL}/{shopcart_id}/items")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    @patch.object(Shopcart, 'get_by_id', MagicMock(side_effect=Exception("DBAPIErr")))
+    def test_list_shopcart_items_shopcart_get_by_id_error(self):
+        """ It should get internal server error if there's exception in Shopcart.get_by_id """
+        resp = self.client.get(f"{BASE_URL}/0/items")
+        self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)

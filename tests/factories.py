@@ -34,12 +34,12 @@ class ShopcartFactory(factory.Factory):
 
     @factory.post_generation
     def items(self, create, extracted, **kwargs):   # pylint: disable=method-hidden, unused-argument
-        """Creates the addresses list"""
+        """Creates the items list"""
         if not create:
             return
 
         if extracted:
-            self.addresses = extracted
+            self.items = extracted
 
 
 

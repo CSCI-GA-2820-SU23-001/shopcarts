@@ -7,7 +7,7 @@ Test cases can be run with the following:
 """
 import logging
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 from service import app
 from service.common import status  # HTTP Status Codes
@@ -117,5 +117,13 @@ class TestShopcartsService(TestCase):
     @patch.object(Shopcart, 'get_by_id', MagicMock(side_effect=Exception("DBAPIErr")))
     def test_list_shopcart_items_shopcart_get_by_id_error(self):
         """ It should get internal server error if there's exception in Shopcart.get_by_id """
+        resp = self.client.get(f"{BASE_URL}/0/items")
+        self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @patch('service.models.Shopcart.get_by_id')
+    def test_list_shopcart_items_none_items_error(self, mock_shopcart_get_by_id):
+        """ It should get internal server error if Shopcart.items is None """
+        mock_shopcart = Mock(items=None)
+        mock_shopcart_get_by_id.return_value = mock_shopcart
         resp = self.client.get(f"{BASE_URL}/0/items")
         self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)

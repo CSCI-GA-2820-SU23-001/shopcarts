@@ -47,26 +47,29 @@ class TestShopcartsService(TestCase):
     #  H E L P E R   M E T H O D S
     ######################################################################
 
-    def _create_an_empty_shopcart(self):
-        """ Factory method to create an empty shopcart """
-        shopcart = ShopcartFactory()
-        resp = self.client.post(
-            BASE_URL, json=shopcart.serialize(), content_type="application/json")
-        self.assertEqual(
-            resp.status_code,
-            status.HTTP_201_CREATED,
-            "Could not create test Shopcart",
-        )
-        new_shopcart = resp.get_json()
-        shopcart.id = new_shopcart["id"]
-        shopcart.name = new_shopcart["name"]
-        logging.info(f"{shopcart.__repr__()} created for test")
-        return shopcart
+    def _create_an_empty_shopcart(self, shopcart_count):
+        """ Factory method to create empty shopcarts """
+        shopcarts = list()
+        for _ in range(shopcart_count):
+            shopcart = ShopcartFactory()
+            resp = self.client.post(
+                BASE_URL, json=shopcart.serialize(), content_type="application/json")
+            self.assertEqual(
+                resp.status_code,
+                status.HTTP_201_CREATED,
+                "Could not create test Shopcart",
+            )
+            new_shopcart = resp.get_json()
+            shopcart.id = new_shopcart["id"]
+            shopcart.name = new_shopcart["name"]
+            logging.info(f"{shopcart.__repr__()} created for test")
+            shopcarts.append(shopcart)
+        return shopcarts
 
     # TODO: add different types of item to shopcart
     def _create_a_shopcart_with_items(self, item_count):
         """ Factory method to create a shopcart with items """
-        shopcart = self._create_an_empty_shopcart()
+        shopcart = self._create_an_empty_shopcart(1)[0]
         for _ in range(item_count):
             item = ItemFactory()
             resp = self.client.post(

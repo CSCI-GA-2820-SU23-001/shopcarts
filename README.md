@@ -78,6 +78,64 @@ delete_items      DELETE   /shopcarts/<shopcart_id>/items/<item_id>
 
 The test cases can be run with `green`.
 
+### Create Shopcart Item
+Add a new item to shopcart.
+
+#### API Endpoint
+POST /shopcarts/<shopcart_id>/items
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Request Body
+```json
+{
+  "name": "iPhone SE",
+  "price": 500.0,
+  "quantity": 1
+}
+```
+
+#### Response
+##### 200 OK
+```json
+{
+  "id": 1,
+  "name": "iPhone SE",
+  "price": 500.0,
+  "quantity": 1,
+  "shopcart_id": 1
+}
+```
+
+##### 400 Bad Request
+```json
+{
+  "error": "Bad Request",
+  "message": "Quantity of a new item should always be one.",
+  "status": 400
+}
+```
+
+##### 404 Not Found
+```json
+{
+  "error": "Not Found",
+  "message": "Shopcart with id='3' was not found.",
+  "status": 404
+}
+```
+
+##### 500 Internal Server Error
+```json
+{
+  "error": "Internal Server Error",
+  "message": "${error_message}",
+  "status": 500
+}
+```
 
 ## Database Connection
 

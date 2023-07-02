@@ -107,7 +107,7 @@ class TestShopcartsService(TestCase):
         self.assertEqual(data["id"], test_shopcart.id)
 
     def test_get_shopcart_not_found(self):
-        """It should not Read an Shopcart that is not found"""
+        """It should not Read a Shopcart that is not found"""
         response = self.client.get(f"{BASE_URL}/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
     

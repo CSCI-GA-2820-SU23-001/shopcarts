@@ -1,4 +1,4 @@
-# NYU DevOps Project: The Shopcarts Service
+# The Shopcarts Service
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/Language-Python-blue.svg)](https://python.org/)
@@ -54,6 +54,30 @@ tests/              - test cases package
 ├── test_models.py  - test suite for business models
 └── test_routes.py  - test suite for service routes
 ```
+
+## RESTful routes
+
+These are the RESTful routes for `shopcarts` and `items`
+```markdown
+Endpoint          Methods  Rule
+----------------  -------  -----------------------------------------------------
+index             GET      /
+
+list_shopcarts    GET      /shopcarts
+create_shopcarts  POST     /shopcarts
+get_shopcarts     GET      /shopcarts/<shopcart_id>
+update_shopcarts  PUT      /shopcarts/<shopcart_id>
+delete_shopcarts  DELETE   /shopcarts/<shopcart_id>
+
+list_items        GET      /shopcarts/<shopcart_id>/items
+create_items      POST     /shopcarts/<shopcart_id>/items
+get_items         GET      /shopcarts/<shopcart_id>/items/<item_id>
+update_items      PUT      /shopcarts/<shopcart_id>/items/<item_id>
+delete_items      DELETE   /shopcarts/<shopcart_id>/items/<item_id>
+```
+
+The test cases can be run with `green`.
+
 
 ## Database Connection
 

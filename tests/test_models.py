@@ -2,15 +2,12 @@
 Test cases for Shopcart Model
 
 """
-import os
 import logging
 import unittest
-from service.models import Shopcart, Item, DataValidationError, db
-from service import app
 
-DATABASE_URI = os.getenv(
-    "DATABASE_URI", "postgresql://postgres:postgres@postgres:5432/postgres"
-)
+from service import app
+from service.models import Shopcart, Item, DataValidationError, db
+from . import DATABASE_URI
 
 
 ######################################################################
@@ -32,7 +29,6 @@ class TestShopcart(unittest.TestCase):
     # @classmethod
     # def tearDownClass(cls):
     #     """ This runs once after the entire test suite """
-    #     db.session.close()
 
     def setUp(self):
         """ This runs before each test """
@@ -72,7 +68,6 @@ class TestItem(unittest.TestCase):
     # @classmethod
     # def tearDownClass(cls):
     #     """ This runs once after the entire test suite """
-    #     pass
 
     def setUp(self):
         """ This runs before each test """
@@ -87,7 +82,3 @@ class TestItem(unittest.TestCase):
     ######################################################################
     #  T E S T   C A S E S
     ######################################################################
-
-    def test_example_replace_this(self):
-        """ It should always be true """
-        self.assertTrue(True)

@@ -157,3 +157,24 @@ def add_shopcart_item(shopcart_id):
         return request_validation_error(e)
     except Exception as e:
         return internal_server_error(e)
+
+
+@app.route("/shopcarts/<int:shopcart_id>/items", methods=["GET"])
+def list_shopcart_items(shopcart_id):
+    """ Returns a list of items in the shopcart """
+    app.logger.info(f"Get items in the shopcart with id={shopcart_id}")
+
+    try:
+        shopcart = Shopcart.get_by_id(shopcart_id)
+    except Exception as e:
+        return internal_server_error(e)
+
+    if not shopcart:
+        return not_found(f"Shopcart with id='{shopcart_id}' was not found.")
+    app.logger.info(f"Found shopcart with id={shopcart.id}")
+
+    try:
+        items = [item.serialize() for item in shopcart.items]
+        return make_response(jsonify(items), status.HTTP_200_OK)
+    except Exception as e:
+        return internal_server_error(e)

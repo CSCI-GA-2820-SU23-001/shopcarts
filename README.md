@@ -55,7 +55,7 @@ tests/              - test cases package
 └── test_routes.py  - test suite for service routes
 ```
 
-## RESTful routes
+## RESTful Routes
 
 These are the RESTful routes for `shopcarts` and `items`
 ```markdown

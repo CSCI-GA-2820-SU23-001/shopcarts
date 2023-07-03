@@ -267,6 +267,42 @@ PUT /shopcarts/{shopcarts_id}
 ```
 
 
+### Delete Shopcart
+Delete an existing shopcart.
+
+#### API Endpoint
+DELETE /shopcarts/{shopcarts_id}
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Response
+##### 200 OK
+```json
+TBA
+```
+
+##### 404 Not Found
+```json
+{
+  "error": "Not Found",
+  "message": "Shopcart with id='0' was not found.",
+  "status": 404
+}
+```
+
+##### 500 Internal Server Error
+```json
+{
+  "error": "Internal Server Error",
+  "message": "${error_message}",
+  "status": 500
+}
+```
+
+
 ### List Shopcart Items
 Get a list of items in the shopcart.
 

@@ -71,7 +71,8 @@ class TestShopcart(unittest.TestCase):
         self.assertIsNotNone(shopcart)
         self.assertEqual(found_shopcart.id, shopcart.id)
         self.assertEqual(found_shopcart.name, shopcart.name)
-       
+        self.assertEqual(found_shopcart.items, [])
+
 
 
 ######################################################################

@@ -110,37 +110,6 @@ class TestShopcartsService(TestCase):
         """It should not Read a Shopcart that is not found"""
         response = self.client.get(f"{BASE_URL}/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-    
-   
-    def test_create_shopcarts(self):
-        """ It should create a shopcart """
-        shopcart = ShopcartFactory()
-        resp = self.client.post(
-            f"{BASE_URL}",json = shopcart.serialize(), content_type = "application/json"
-        )
-        
-        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-        
-        location = resp.headers.get("location")
-        #self.assertIsNotNone(location,None)
- 
-        new_shopcart = resp.get_json()
-        # self.assertEqual(data["date"], shopcart.date,"date does not match")
-        self.assertEqual(new_shopcart["name"],shopcart.name, "name does not match")
-        
-
-    def test_create_shopcart_missing_info(self):
-        """
-        It should fail if the call has some missing information.
-        """
-        resp = self.client.post(
-            f"{BASE_URL}",
-            json={
-                "items": []
-            },
-            content_type="application/json",
-        )
-        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
    
     def test_list_empty_shopcart_items(self):

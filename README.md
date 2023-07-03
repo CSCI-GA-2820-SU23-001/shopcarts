@@ -162,6 +162,54 @@ POST /shopcarts
 ```
 
 
+### Get Shopcart
+Get a shopcart by id.
+
+#### API Endpoint
+GET /shopcarts/{shopcarts_id}
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Response
+##### 200 OK
+```json
+{
+  "id": 5,
+  "items": [
+    {
+      "id": 2,
+      "name": "Macbook Air",
+      "price": 600.0,
+      "quantity": 1,
+      "shopcart_id": 5
+    }
+  ],
+  "name": "Elizabeth"
+}
+```
+
+##### 404 Not Found
+```json
+{
+  "error": "Not Found",
+  "message": "Shopcart with id='0' was not found.",
+  "status": 404
+}
+```
+
+##### 500 Internal Server Error
+```json
+{
+  "error": "Internal Server Error",
+  "message": "${error_message}",
+  "status": 500
+}
+```
+
+
 ### List Shopcart Items
 Get a list of items in the shopcart.
 

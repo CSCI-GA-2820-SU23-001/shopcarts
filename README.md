@@ -210,6 +210,63 @@ GET /shopcarts/{shopcarts_id}
 ```
 
 
+### Update Shopcart
+Update an existing shopcart.
+
+#### API Endpoint
+PUT /shopcarts/{shopcarts_id}
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Request Body
+```json
+{
+   "id": 34,
+   "name": "Fitzwilliam Darcy"
+}
+```
+
+#### Response
+##### 200 OK
+```json
+{
+  "id": 34,
+  "items": [],
+  "name": "Fitzwilliam Darcy"
+}
+```
+
+##### 400 Bad Request
+```json
+{
+  "error": "Bad Request",
+  "message": "Invalid Shopcart: missing name",
+  "status": 400
+}
+```
+
+##### 415 Unsupported Media Type
+```json
+{
+  "error": "Unsupported media type",
+  "message": "Content-Type must be application/json",
+  "status": 415
+}
+```
+
+##### 500 Internal Server Error
+```json
+{
+  "error": "Internal Server Error",
+  "message": "${error_message}",
+  "status": 500
+}
+```
+
+
 ### List Shopcart Items
 Get a list of items in the shopcart.
 

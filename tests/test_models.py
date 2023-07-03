@@ -108,3 +108,37 @@ class TestItem(unittest.TestCase):
     ######################################################################
     #  T E S T   C A S E S
     ######################################################################
+    ######################################################################
+    #  TEST ADD SHOPCART ITEMS
+    ######################################################################
+    def test_add_shopcart_item(self):
+        """It should create an shopcart with an item and add it to the database"""
+        shopcart = ShopcartFactory()
+        shopcart.create()
+        item = ItemFactory(shopcart_id=shopcart.id)
+        shopcart.items.append(item)
+        self.assertIsNotNone(shopcart.id)
+        new_shopcart = Shopcart.get_by_id(shopcart.id)
+        self.assertEqual(len(new_shopcart.items), 1)
+        self.assertEqual(new_shopcart.items[0].id, item.id)
+        self.assertEqual(new_shopcart.items[0].quantity, item.quantity)
+        self.assertEqual(new_shopcart.items[0].name, item.name)
+        self.assertEqual(new_shopcart.items[0].price, item.price)
+
+    ######################################################################
+    #  TEST SERIALIZE ITEM
+    ######################################################################
+    def test_serialize_a_shopcart(self):
+        """It should Serialize items into shopcart"""
+        shopcart = ShopcartFactory()
+        item = ItemFactory()
+        shopcart.items.append(item)
+        serial_shopcart = shopcart.serialize()
+        self.assertEqual(serial_shopcart["id"], shopcart.id)
+        self.assertEqual(serial_shopcart["name"], shopcart.name)
+        self.assertEqual(len(serial_shopcart["items"]), 1)
+        items = serial_shopcart["items"]
+        self.assertEqual(items[0]["id"], item.id)
+        self.assertEqual(items[0]["price"],item.price)
+        self.assertEqual(items[0]["quantity"], item.quantity)
+        self.assertEqual(items[0]["name"], item.name)

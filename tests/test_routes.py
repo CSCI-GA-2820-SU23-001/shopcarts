@@ -39,8 +39,7 @@ class TestShopcartsService(TestCase):
         db.session.commit()
 
         self.client = app.test_client()
-        db.session.query(Shopcart).delete()  # clean up the last tests
-        db.session.commit()
+        
 
     def tearDown(self):
         """ This runs after each test """
@@ -52,7 +51,8 @@ class TestShopcartsService(TestCase):
 
     def _create_an_empty_shopcart(self, shopcart_count):
         """ Factory method to create empty shopcarts """
-        shopcarts = list()
+        #shopcarts = list()
+        shopcarts = []
         for _ in range(shopcart_count):
             shopcart = ShopcartFactory()
             resp = self.client.post(
@@ -68,6 +68,7 @@ class TestShopcartsService(TestCase):
             logging.info(f"{shopcart.__repr__()} created for test")
             shopcarts.append(shopcart)
         return shopcarts
+
 
     # TODO: add different types of item to shopcart
     def _create_a_shopcart_with_items(self, item_count):
@@ -111,53 +112,22 @@ class TestShopcartsService(TestCase):
         response = self.client.get(f"{BASE_URL}/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
     
-    # @patch.object(Shopcart, 'get_by_id', MagicMock(side_effect=Exception("DBAPIErr")))
-    # def test_list_shopcart_items_shopcart_get_by_id_error(self):
-    #     """ It should get internal server error if there's exception in Shopcart.get_by_id """
-    #     resp = self.client.get(f"{BASE_URL}/0/items")
-    #     self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-    # def test_create_shopcart(self):
-    #     """It should Create a new Shopcart"""
-    #     shopcart = ShopcartFactory()
-    #     resp = self.client.post(
-    #         BASE_URL, json=shopcart.serialize(), content_type="application/json"
-    #     )
-    #     self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-
-    #     # Make sure location header is set
-    #     location = resp.headers.get("Location", None)
-    #     self.assertIsNotNone(location)
-
-    #     # Check the data is correct
-    #     new_shopcart = resp.get_json()
-    #     self.assertEqual(new_shopcart["name"], shopcart.name, "Names does not match")
+   
+    def test_create_shopcarts(self):
+        """ It should create a shopcart """
+        shopcart = ShopcartFactory()
+        resp = self.client.post(
+            f"{BASE_URL}",json = shopcart.serialize(), content_type = "application/json"
+        )
         
-
-    #     # Check that the location header was correct by getting it
-    #     resp = self.client.get(location, content_type="application/json")
-    #     self.assertEqual(resp.status_code, status.HTTP_200_OK)
-    #     new_shopcart = resp.get_json()
-    #     self.assertEqual(new_shopcart["name"], shopcart.name, "Names does not match")
-    
-
-    # def test_create_shopcarts(self):
-    #     """ It should create an shopcart """
-    #     shopcart = ShopcartFactory()
-    #     resp = self.client.post(
-    #         f"{BASE_URL}",json = shopcart.serialize(), content_type = "application/json"
-    #     )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         
-    #     self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-        
-
-    #     location = resp.headers.get("location", None)
-    #     self.assertIsNotNone(location)
-
-    #     new_shopcart = resp.get_json()
-    #     # self.assertEqual(data["date"], shopcart.date,"date does not match")
-    #     self.assertEqual(new_shopcart["name"],shopcart.name, "name does not match")
+        location = resp.headers.get("location")
+        #self.assertIsNotNone(location,None)
+ 
+        new_shopcart = resp.get_json()
+        # self.assertEqual(data["date"], shopcart.date,"date does not match")
+        self.assertEqual(new_shopcart["name"],shopcart.name, "name does not match")
         
 
     def test_create_shopcart_missing_info(self):
@@ -173,38 +143,4 @@ class TestShopcartsService(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
-       
-
-    # def test_get_item(self):
-    #     """It should Read an item from a shopcart"""
-
-    #     test_shopcart = self._create_shopcarts(1)
-    #     item = ItemFactory()
-    #     response = self.client.post(
-    #         f"{BASE_URL}/{test_shopcart.customer_id}/items",
-    #         json=item.serialize(),
-    #         content_type="application/json",
-    #     )
-    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    #     data = response.get_json()
-    #     logging.debug(data)
-    #     item_id = data["id"]
-
-    #     resp = self.client.get(
-    #         f"{BASE_URL}/{test_shopcart.customer_id}/items/{item_id}",
-    #         content_type="application/json",
-    #     )
-    #     self.assertEqual(resp.status_code, status.HTTP_200_OK)
-
-    #     data = resp.get_json()
-    #     logging.debug(data)
-    #     self.assertEqual(data["shopcart_id"], test_shopcart.customer_id)
-    #     self.assertEqual(data["id"], item.item_id)
-
-    #      # retrieve it back and make sure address is not there
-    #     resp = self.client.get(
-    #         f"{BASE_URL}/{test_shopcart.customer_id}/items/{item_id}",
-    #         content_type="application/json",
-    #     )
-    #     self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+   

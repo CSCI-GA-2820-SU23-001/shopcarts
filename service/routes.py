@@ -91,7 +91,50 @@ def create_shopcart():
 ######################################################################
 # I T E M   A P I S
 ######################################################################
+@app.route("/shopcarts/<int:shopcart_id>/items", methods=["POST"])
+def add_shopcart_item(shopcart_id):
+    """ Adds a new item to shopcart, and return the newly created or updated item """
+    if not is_expected_content_type(DEFAULT_CONTENT_TYPE):
+        return mediatype_not_supported(f"Content-Type must be {DEFAULT_CONTENT_TYPE}")
 
+    try:
+        shopcart = Shopcart.get_by_id(shopcart_id)
+    except Exception as e:
+        return internal_server_error(e)
+
+    if not shopcart:
+        return not_found(f"Shopcart with id='{shopcart_id}' was not found.")
+    app.logger.info(f"Found shopcart with id={shopcart.id}")
+
+    try:
+        app.logger.info(f"Start creating an item")
+        item = Item()
+        item.deserialize(request.get_json())   # validate request body schema
+        app.logger.info(f"Request body deserialized to item.")
+    except DataValidationError as e:
+        return request_validation_error(e)
+
+    # # item quantity should be greater than zero
+    # if item.quantity <= 0:
+    #     app.logger.error(f"Invalid item quantity assignment to {item.quantity}.")
+    #     return bad_request(f"Item quantity should be a positive number.")
+    if item.quantity != 1:
+        app.logger.error(f"Invalid item quantity assignment to {item.quantity}.")
+        return bad_request(f"Quantity of a new item should always be one.")
+
+    try:
+        # item.create()
+        # app.logger.info(f"New item with id={item.id} created.")
+        shopcart.items.append(item)
+        shopcart.update()
+        app.logger.info(f"New item with id={item.id} added to shopcart with id={shopcart.id}.")
+
+        item_js = item.serialize()
+        return make_response(jsonify(item_js), status.HTTP_201_CREATED)
+    except DataValidationError as e:
+        return request_validation_error(e)
+    except Exception as e:
+        return internal_server_error(e)
 
 
 ######################################################################
@@ -105,7 +148,7 @@ def get_shopcarts(shopcart_id):
     """
     app.logger.info("Request for Shopcart with id: %s", shopcart_id)
 
-    # See if the shopcart exists and abort if it doesn't
+    #See if the shopcart exists and abort if it doesn't
     # try:
     #     shopcart = Shopcart.get_by_id(shopcart_id)
     # except Exception as e:
@@ -125,28 +168,33 @@ def get_shopcarts(shopcart_id):
 
 
 
-# # RETRIEVE A ITEM FROM SHOPCART
-# ######################################################################
-# @app.route("/shopcarts/<int:customer_id>/items/<int:item_id>", methods=["GET"])
-# def get_items(customer_id, item_id):
-#     """
-#     Get a Item
+# RETRIEVE A ITEM FROM SHOPCART
+######################################################################
+@app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["GET"])
+def get_items(shopcart_id, item_id):
+    """
+    Get a Item
 
-#     This endpoint returns just a item
-#     """
-#     app.logger.info(
-#         "Request to retrieve Item %s for Shopcart id: %s", item_id, customer_id)
+    This endpoint returns just a item
+    """
+    app.logger.info(
+        "Request to retrieve Item %s for Shopcart id: %s", item_id, shopcart_id)
 
-#     # See if the item exists and abort if it doesn't
-#     item = Item.find(item_id)
-#     if not item:
-#         abort(
-#             status.HTTP_404_NOT_FOUND,
-#             f"Shopcart with id '{item_id}' could not be found.",
-#         )
+    # See if the item exists and abort if it doesn't
+    item = Item.get_by_id(item_id)
+    if not item:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Item with id '{item_id}' could not be found.",
+        )
 
-#     app.logger.info("Returning item: %s", item.id)
-#     return make_response(jsonify(item.serialize()), status.HTTP_200_OK)
+    app.logger.info("Returning item: %s", item.id)
+    return make_response(jsonify(item.serialize()), status.HTTP_200_OK)
+
+
+
+
+
 
 
 # def check_content_type(content_type):

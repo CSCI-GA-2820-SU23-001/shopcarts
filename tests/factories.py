@@ -50,8 +50,8 @@ class ItemFactory(factory.Factory):
         model = Item
 
     id = factory.Sequence(lambda n: n)
-    shopcart_id = None
+    shopcart_id = factory.Sequence(lambda n: n)
     name = FuzzyChoice(choices=["Air Pods", "iPhone SE", "Macbook Air"])
-    quantity = factory.Faker("pyint")
+    quantity = 1
     price = factory.Faker("pyfloat", positive=True)
     # shopcart = factory.SubFactory(ShopcartFactory)

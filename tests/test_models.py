@@ -39,10 +39,10 @@ class TestShopcart(unittest.TestCase):
         db.drop_all()  # clean up the last tests
         db.create_all()  # make our sqlalchemy tables
 
-    # def tearDown(self):
-    #     """ This runs after each test """
-    #     db.session.remove()
-    #     db.drop_all()
+    def tearDown(self):
+        """ This runs after each test """
+        db.session.remove()
+        db.drop_all()
 
     ######################################################################
     #  T E S T   C A S E S

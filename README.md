@@ -407,6 +407,54 @@ POST /shopcarts/<shopcart_id>/items
 ```
 
 
+### Get Shopcart Item
+Get the contents of a shopcart item.
+
+#### API Endpoint
+GET /shopcarts/{shopcart_id}/items/{item_id}
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Response
+##### 200 OK
+```json
+{
+ "id": 2,
+ "name": "iPhone SE",
+ "price": 500.0,
+ "quantity": 1,
+ "shopcart_id": 3
+}
+```
+
+##### 404 Not Found
+```json
+{
+  "error": "Not Found",
+  "message": "Shopcart with id='0' was not found.",
+  "status": 404
+}
+```
+
+```json
+{
+  "error": "Not Found",
+  "message": "Item with id='123' was not found.",
+  "status": 404
+}
+```
+
+##### 500 Internal Server Error
+```json
+{
+  "error": "Internal Server Error",
+  "message": "${error_message}",
+  "status": 500
+}
+```
 
 
 ### Update Shopcart Item

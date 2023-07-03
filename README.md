@@ -1,4 +1,4 @@
-# NYU DevOps Project: The Shopcarts Service
+# The Shopcarts Service
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/Language-Python-blue.svg)](https://python.org/)
@@ -55,17 +55,132 @@ tests/              - test cases package
 └── test_routes.py  - test suite for service routes
 ```
 
-## RESTful routes for orders and items
-```text
-Endpoint          Method       Rule
-----------------  -------      -----------------------------------------------------
+## RESTful Routes
 
-get_shopcarts        GET          /shopcarts/<order_id>        
- 
- 
- 
+These are the RESTful routes for `shopcarts` and `items`
+```markdown
+Endpoint          Methods  Rule
+----------------  -------  -----------------------------------------------------
+index             GET      /
+
+list_shopcarts    GET      /shopcarts
+create_shopcarts  POST     /shopcarts
+get_shopcarts     GET      /shopcarts/<shopcart_id>
+update_shopcarts  PUT      /shopcarts/<shopcart_id>
+delete_shopcarts  DELETE   /shopcarts/<shopcart_id>
+
+list_items        GET      /shopcarts/<shopcart_id>/items
+create_items      POST     /shopcarts/<shopcart_id>/items
+get_items         GET      /shopcarts/<shopcart_id>/items/<item_id>
+update_items      PUT      /shopcarts/<shopcart_id>/items/<item_id>
+delete_items      DELETE   /shopcarts/<shopcart_id>/items/<item_id>
 ```
 
+The test cases can be run with `green`.
+
+
+### List Shopcart Items
+Get a list of items in the shopcart.
+
+#### API Endpoint
+GET /shopcarts/{shopcart_id}/items
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Response
+##### 200 OK
+```json
+[
+  {
+    "id": 2,
+    "name": "iPhone SE",
+    "price": 500.0,
+    "quantity": 1,
+    "shopcart_id": 3
+  }
+]
+```
+
+##### 400 Bad Request
+```json
+{
+  "error": "Not Found",
+  "message": "Shopcart with id='0' was not found.",
+  "status": 404
+}
+```
+
+##### 500 Internal Server Error
+```json
+{
+  "error": "Internal Server Error",
+  "message": "${error_message}",
+  "status": 500
+}
+```
+
+
+### Create Shopcart Item
+Add a new item to shopcart.
+
+#### API Endpoint
+POST /shopcarts/<shopcart_id>/items
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Request Body
+```json
+{
+  "name": "iPhone SE",
+  "price": 500.0,
+  "quantity": 1
+}
+```
+
+#### Response
+##### 200 OK
+```json
+{
+  "id": 1,
+  "name": "iPhone SE",
+  "price": 500.0,
+  "quantity": 1,
+  "shopcart_id": 1
+}
+```
+
+##### 400 Bad Request
+```json
+{
+  "error": "Bad Request",
+  "message": "Quantity of a new item should always be one.",
+  "status": 400
+}
+```
+
+##### 404 Not Found
+```json
+{
+  "error": "Not Found",
+  "message": "Shopcart with id='3' was not found.",
+  "status": 404
+}
+```
+
+##### 500 Internal Server Error
+```json
+{
+  "error": "Internal Server Error",
+  "message": "${error_message}",
+  "status": 500
+}
+```
 
 ## Database Connection
 

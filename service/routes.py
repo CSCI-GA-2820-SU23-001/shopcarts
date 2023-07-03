@@ -91,6 +91,7 @@ def create_shopcart():
 ######################################################################
 # I T E M   A P I S
 ######################################################################
+
 @app.route("/shopcarts/<int:shopcart_id>/items", methods=["POST"])
 def add_shopcart_item(shopcart_id):
     """ Adds a new item to shopcart, and return the newly created or updated item """
@@ -164,51 +165,23 @@ def get_shopcarts(shopcart_id):
     return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
 
 
-    
 
+@app.route("/shopcarts/<int:shopcart_id>/items", methods=["GET"])
+def list_shopcart_items(shopcart_id):
+    """ Returns a list of items in the shopcart """
+    app.logger.info(f"Get items in the shopcart with id={shopcart_id}")
 
+    try:
+        shopcart = Shopcart.get_by_id(shopcart_id)
+    except Exception as e:
+        return internal_server_error(e)
 
-# RETRIEVE A ITEM FROM SHOPCART
-######################################################################
-@app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["GET"])
-def get_items(shopcart_id, item_id):
-    """
-    Get a Item
+    if not shopcart:
+        return not_found(f"Shopcart with id='{shopcart_id}' was not found.")
+    app.logger.info(f"Found shopcart with id={shopcart.id}")
 
-    This endpoint returns just a item
-    """
-    app.logger.info(
-        "Request to retrieve Item %s for Shopcart id: %s", item_id, shopcart_id)
-
-    # See if the item exists and abort if it doesn't
-    item = Item.get_by_id(item_id)
-    if not item:
-        abort(
-            status.HTTP_404_NOT_FOUND,
-            f"Item with id '{item_id}' could not be found.",
-        )
-
-    app.logger.info("Returning item: %s", item.id)
-    return make_response(jsonify(item.serialize()), status.HTTP_200_OK)
-
-
-
-
-
-
-
-# def check_content_type(content_type):
-#     """Checks that the media type is correct"""
-#     if "Content-Type" not in request.headers:
-#         app.logger.error("No Content-Type specified.")
-#         abort(
-#             status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-#             f"Content-Type must be {content_type}",
-#         )
-#     if request.headers["Content-Type"] == content_type:
-#         return
-#     app.logger.error("Invalid Content-Type: %s", request.headers["Content-Type"])
-#     abort(
-#         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-#         f"Content-Type must be {content_type}",
-#     )
+    try:
+        items = [item.serialize() for item in shopcart.items]
+        return make_response(jsonify(items), status.HTTP_200_OK)
+    except Exception as e:
+        return internal_server_error(e)

@@ -7,7 +7,7 @@ Test cases can be run with the following:
 """
 import logging
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 from service import app
 from service.common import status  # HTTP Status Codes
@@ -144,3 +144,38 @@ class TestShopcartsService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
    
+    def test_list_empty_shopcart_items(self):
+        """ It should get an empty list of items """
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        resp = self.client.get(f"{BASE_URL}/{shopcart.id}/items")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 0)
+
+    def test_list_shopcart_items(self):
+        """ It should get a list of only one item """
+        shopcart = self._create_a_shopcart_with_items(1)
+        resp = self.client.get(f"{BASE_URL}/{shopcart.id}/items")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 1)
+
+    def test_list_items_in_non_existent_shopcart(self):
+        """ It should not read a shopcart that is not found """
+        shopcart_id = -1
+        resp = self.client.get(f"{BASE_URL}/{shopcart_id}/items")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    @patch.object(Shopcart, 'get_by_id', MagicMock(side_effect=Exception("DBAPIErr")))
+    def test_list_shopcart_items_shopcart_get_by_id_error(self):
+        """ It should get internal server error if there's exception in Shopcart.get_by_id """
+        resp = self.client.get(f"{BASE_URL}/0/items")
+        self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @patch('service.models.Shopcart.get_by_id')
+    def test_list_shopcart_items_none_items_error(self, mock_shopcart_get_by_id):
+        """ It should get internal server error if Shopcart.items is None """
+        mock_shopcart = Mock(items=None)
+        mock_shopcart_get_by_id.return_value = mock_shopcart
+        resp = self.client.get(f"{BASE_URL}/0/items")
+        self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)

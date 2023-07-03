@@ -5,9 +5,13 @@ Test cases for Shopcart Model
 import logging
 import unittest
 
+
 from service import app
 from service.models import Shopcart, Item, DataValidationError, db
+from tests.factories import ShopcartFactory,ItemFactory
+
 from . import DATABASE_URI
+
 
 
 ######################################################################
@@ -44,9 +48,31 @@ class TestShopcart(unittest.TestCase):
     #  T E S T   C A S E S
     ######################################################################
 
-    def test_example_replace_this(self):
-        """ It should always be true """
-        self.assertTrue(True)
+     ######################################################################
+    #  TEST CREATE / ADD SHOPCART
+    ######################################################################
+    def test_create_an_shopcart(self):
+        """ It should Create an Shopcart and assert that it exists """
+        fake_shopcart = ShopcartFactory()
+        # pylint: disable=unexpected-keyword-arg
+        shopcart = Shopcart(
+            name=fake_shopcart.name,
+        )
+        self.assertIsNotNone(shopcart)
+        self.assertEqual(shopcart.id, None)
+        self.assertEqual(shopcart.name, fake_shopcart.name)
+    
+    def test_read_an_shopcart(self):
+        """It should Read a Shopcart"""
+        shopcart = ShopcartFactory()
+        shopcart.create()
+        found_shopcart = Shopcart.get_by_id(shopcart.id)
+
+        self.assertIsNotNone(shopcart)
+        self.assertEqual(found_shopcart.id, shopcart.id)
+        self.assertEqual(found_shopcart.name, shopcart.name)
+        self.assertEqual(found_shopcart.items, [])
+
 
 
 ######################################################################

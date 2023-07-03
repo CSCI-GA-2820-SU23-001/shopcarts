@@ -34,10 +34,12 @@ class TestShopcartsService(TestCase):
         db.session.close()
 
     def setUp(self):
-        """ This runs before each test """
-        self.client = app.test_client()
+        """Runs before each test"""
         db.session.query(Shopcart).delete()  # clean up the last tests
         db.session.commit()
+
+        self.client = app.test_client()
+        
 
     def tearDown(self):
         """ This runs after each test """
@@ -66,6 +68,7 @@ class TestShopcartsService(TestCase):
             shopcarts.append(shopcart)
         return shopcarts
 
+
     # TODO: add different types of item to shopcart
     def _create_a_shopcart_with_items(self, item_count):
         """ Factory method to create a shopcart with items """
@@ -92,6 +95,23 @@ class TestShopcartsService(TestCase):
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
+    def test_get_shopcart(self):
+        """It should Read a single Shopcart"""
+        # get the id of a shopcart
+        test_shopcart = self._create_an_empty_shopcart(1)[0]
+        resp = self.client.get(
+            f"{BASE_URL}/{test_shopcart.id}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(data["id"], test_shopcart.id)
+
+    def test_get_shopcart_not_found(self):
+        """It should not Read a Shopcart that is not found"""
+        response = self.client.get(f"{BASE_URL}/0")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+   
     def test_list_empty_shopcart_items(self):
         """ It should get an empty list of items """
         shopcart = self._create_an_empty_shopcart(1)[0]

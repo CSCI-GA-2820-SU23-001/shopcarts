@@ -30,6 +30,7 @@ from service.common.error_handlers import request_validation_error, bad_request,
 from service.models import Shopcart, Item, DataValidationError
 from . import app
 
+
 DEFAULT_CONTENT_TYPE = "application/json"
 
 
@@ -43,6 +44,7 @@ def index():
         "Reminder: return some useful information in json format about the service here",
         status.HTTP_200_OK,
     )
+
 
 
 ######################################################################
@@ -134,6 +136,34 @@ def add_shopcart_item(shopcart_id):
         return request_validation_error(e)
     except Exception as e:
         return internal_server_error(e)
+
+
+######################################################################
+# READ A SHOPCART
+######################################################################
+@app.route("/shopcarts/<int:shopcart_id>", methods=["GET"])
+def get_shopcarts(shopcart_id):
+    """
+    Retrieve a single Shopcart
+    This endpoint will return an Shopcart based on its id
+    """
+    app.logger.info("Request for Shopcart with id: %s", shopcart_id)
+
+    #See if the shopcart exists and abort if it doesn't
+    # try:
+    #     shopcart = Shopcart.get_by_id(shopcart_id)
+    # except Exception as e:
+    #     return internal_server_error(e)
+    shopcart = Shopcart.get_by_id(shopcart_id)
+
+    if not shopcart:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id '{shopcart_id}' could not be found.",
+        )
+    app.logger.info("Returning shopcart: %s", shopcart.id)
+    return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
+
 
 
 @app.route("/shopcarts/<int:shopcart_id>/items", methods=["GET"])

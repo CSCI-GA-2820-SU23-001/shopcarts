@@ -85,7 +85,13 @@ class ModelBase:
         db.session.delete(self)
         db.session.commit()
 
+    @classmethod
+    def get_by_id(cls, id):
+        """ Get shopcart by primary key: id """
+        logger.info(f"Get {cls.__name__} by id={id}")
+        return cls.query.get(id)
 
+    
 class Shopcart(db.Model, ModelBase):
     """ The Shopcart Table """
 
@@ -118,7 +124,6 @@ class Shopcart(db.Model, ModelBase):
             data (dict): A dictionary containing the resource data
         """
         try:
-            # self.id = data["id"]
             self.name = data["name"]
             items_js = data.get("items", [])
             for item_js in items_js:
@@ -133,12 +138,6 @@ class Shopcart(db.Model, ModelBase):
             raise DataValidationError(
                 f"Invalid {type(self).__name__}: failed to deserialize request body\nError message: {error}"
             ) from error
-
-    @classmethod
-    def get_by_id(cls, id):
-        """ Get shopcart by primary key: id """
-        logger.info(f"Get {cls.__name__} by id={id}")
-        return cls.query.get(id)
 
     @classmethod
     def find_by_name(cls, name):
@@ -194,8 +193,7 @@ class Item(db.Model, ModelBase):
             data (dict): A dictionary containing the resource data
         """
         try:
-            # self.id = data["id"]
-            # self.shopcart_id = data["shopcart_id"]
+            self.shopcart_id = data["shopcart_id"]
             self.name = data["name"]
             self.quantity = data["quantity"]
             self.price = data["price"]

@@ -1,3 +1,4 @@
+
 # Copyright 2016, 2019 John J. Rofrano. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,12 +33,14 @@ class ShopcartFactory(factory.Factory):
     name = factory.Faker("name")
 
     @factory.post_generation
-    def items(self, create, extracted, **kwargs):
+    def items(self, create, extracted, **kwargs):   # pylint: disable=method-hidden, unused-argument
+        """Creates the items list"""
         if not create:
             return
 
         if extracted:
             self.items = extracted
+
 
 
 class ItemFactory(factory.Factory):

@@ -406,6 +406,84 @@ POST /shopcarts/<shopcart_id>/items
 }
 ```
 
+
+
+
+### Update Shopcart Item
+Update an existing item in shopcart.
+
+#### API Endpoint
+PUT /shopcarts/<shopcart_id>/items/{item_id}
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Request Body
+> e.g. Increase item quantity from 1 to 2
+
+```json
+{
+  "name": "iPhone SE",
+  "price": 500.0,
+  "quantity": 2
+}
+```
+
+#### Response
+##### 200 OK
+```json
+{
+  "id": 1,
+  "name": "iPhone SE",
+  "price": 500.0,
+  "quantity": 2,
+  "shopcart_id": 1
+}
+```
+
+##### 400 Bad Request
+```json
+TBA
+```
+
+##### 404 Not Found
+```json
+{
+  "error": "Not Found",
+  "message": "Shopcart with id='0' was not found.",
+  "status": 404
+}
+```
+
+```json
+{
+  "error": "Not Found",
+  "message": "Item with id='123' was not found.",
+  "status": 404
+}
+```
+
+##### 415 Unsupported Media Type
+```json
+{
+  "error": "Unsupported media type",
+  "message": "Content-Type must be application/json",
+  "status": 415
+}
+```
+
+##### 500 Internal Server Error
+```json
+{
+  "error": "Internal Server Error",
+  "message": "${error_message}",
+  "status": 500
+}
+```
+
+
 ## Database Connection
 
 ### Steps

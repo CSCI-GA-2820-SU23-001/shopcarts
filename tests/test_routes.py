@@ -51,8 +51,7 @@ class TestShopcartsService(TestCase):
 
     def _create_an_empty_shopcart(self, shopcart_count):
         """ Factory method to create empty shopcarts """
-        #shopcarts = list()
-        shopcarts = []
+        shopcarts = list()
         for _ in range(shopcart_count):
             shopcart = ShopcartFactory()
             resp = self.client.post(

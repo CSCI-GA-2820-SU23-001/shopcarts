@@ -328,7 +328,7 @@ GET /shopcarts/{shopcart_id}/items
 ]
 ```
 
-##### 400 Bad Request
+##### 404 Not Found
 ```json
 {
   "error": "Not Found",

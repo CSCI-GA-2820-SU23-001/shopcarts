@@ -55,7 +55,7 @@ tests/              - test cases package
 └── test_routes.py  - test suite for service routes
 ```
 
-## RESTful routes
+## RESTful Routes
 
 These are the RESTful routes for `shopcarts` and `items`
 ```markdown
@@ -77,6 +77,51 @@ delete_items      DELETE   /shopcarts/<shopcart_id>/items/<item_id>
 ```
 
 The test cases can be run with `green`.
+
+
+### List Shopcart Items
+Get a list of items in the shopcart.
+
+#### API Endpoint
+GET /shopcarts/{shopcart_id}/items
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Response
+##### 200 OK
+```json
+[
+  {
+    "id": 2,
+    "name": "iPhone SE",
+    "price": 500.0,
+    "quantity": 1,
+    "shopcart_id": 3
+  }
+]
+```
+
+##### 400 Bad Request
+```json
+{
+  "error": "Not Found",
+  "message": "Shopcart with id='0' was not found.",
+  "status": 404
+}
+```
+
+##### 500 Internal Server Error
+```json
+{
+  "error": "Internal Server Error",
+  "message": "${error_message}",
+  "status": 500
+}
+```
+
 
 ### Create Shopcart Item
 Add a new item to shopcart.

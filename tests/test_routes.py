@@ -127,3 +127,41 @@ class TestShopcartsService(TestCase):
         mock_shopcart_get_by_id.return_value = mock_shopcart
         resp = self.client.get(f"{BASE_URL}/0/items")
         self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def test_add_items_to_shopcart(self):
+        """ It should return a list of added items """
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        item = ItemFactory()
+        res = self.client.post(
+            f"{BASE_URL}/{shopcart.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        data = res.get_json()
+        logging.debug(data)
+        self.assertEqual(data["id"], item.id)
+        self.assertEqual(data["quantity"], item.quantity)
+        self.assertEqual(data["name"], item.name)
+        self.assertEqual(data["shopcart_id"], shopcart.id)
+
+    def test_add_items_to_non_existent_shopcart(self):
+        """ It should not read a shopcart that is not found """
+        invalid_shopcart = -1
+        item = ItemFactory()
+        resp = self.client.post(
+            f"{BASE_URL}/{invalid_shopcart}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_add_items_with_invalid_request_body(self):
+        """ It should not be added with invalid request body """
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        res = self.client.post(
+            f"{BASE_URL}/{shopcart.id}/items",
+            json={},  # Empty request body
+            content_type="application/json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

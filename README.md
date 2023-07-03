@@ -79,6 +79,33 @@ delete_items      DELETE   /shopcarts/<shopcart_id>/items/<item_id>
 The test cases can be run with `green`.
 
 
+### List Shopcarts
+List all shopcarts in the system.
+
+#### API Endpoint
+GET /shopcarts
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Response
+##### 200 OK
+```json
+TBA
+```
+
+##### 500 Internal Server Error
+```json
+{
+  "error": "Internal Server Error",
+  "message": "${error_message}",
+  "status": 500
+}
+```
+
+
 ### List Shopcart Items
 Get a list of items in the shopcart.
 

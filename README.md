@@ -397,6 +397,15 @@ POST /shopcarts/<shopcart_id>/items
 }
 ```
 
+##### 415 Unsupported Media Type
+```json
+{
+  "error": "Unsupported media type",
+  "message": "Content-Type must be application/json",
+  "status": 415
+}
+```
+
 ##### 500 Internal Server Error
 ```json
 {

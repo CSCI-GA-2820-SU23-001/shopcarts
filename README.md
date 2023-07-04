@@ -503,7 +503,11 @@ PUT /shopcarts/<shopcart_id>/items/{item_id}
 
 ##### 400 Bad Request
 ```json
-TBA
+{
+  "error": "Bad Request",
+  "message": "Missing key \"name\" in request body.",
+  "status": 400
+}
 ```
 
 ##### 404 Not Found

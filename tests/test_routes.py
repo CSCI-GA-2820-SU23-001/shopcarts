@@ -518,3 +518,43 @@ class TestShopcartsService(TestCase):
                 content_type="application/json",
             )
             self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_delete_item(self):
+        """It should Delete an Item"""
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        item = ItemFactory()
+        resp = self.client.post(
+            f"{BASE_URL}/{shopcart.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        data = resp.get_json()
+        logging.debug(data)
+        item_id = data["id"]
+
+        # send delete request
+        resp = self.client.delete(
+            f"{BASE_URL}/{shopcart.id}/items/{item_id}",
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
+        # retrieve it back and make sure item is not there
+        resp = self.client.get(
+            f"{BASE_URL}/{shopcart.id}/items/{item_id}",
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_item_not_found(self):
+        """It should not Delete an Item that is not found"""
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        response = self.client.get(f"{BASE_URL}/{shopcart.id}/items/0")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_delete_item_shopcart_not_found(self):
+        """It should not Delete an Item when the Shopcart is not found"""
+        item = ItemFactory()
+        response = self.client.get(f"{BASE_URL}/0/items/{item.id}")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

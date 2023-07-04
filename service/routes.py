@@ -254,3 +254,43 @@ def update_shopcart_item(shopcart_id, item_id):
         return request_validation_error(e)
     except Exception as e:
         return internal_server_error(e)
+
+
+######################################################################
+# DELETE AN ITEM
+######################################################################
+@app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["DELETE"])
+def delete_items(shopcart_id, item_id):
+    """
+    Delete an item
+
+    This endpoint will delete an item based the id specified in the path
+    """
+   
+    app.logger.info(f"Request to delete item with id='{item_id}' in shopcart with id='{shopcart_id}'.")
+     # See if the shopcart exists and abort if it doesn't
+    shopcart = Shopcart.get_by_id(shopcart_id)
+    if not shopcart:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id '{shopcart_id}' could not be found.",
+        )
+
+    # See if the item exists and abort if it doesn't
+    item = None
+    for item_ in shopcart.items:
+        if item_.id == item_id:
+            item = item_
+            break
+
+    if item is None:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Item with id '{item_id}' could not be found.",
+        )
+    
+    # See if the item exists and delete it if it does
+    if item:
+        item.delete()
+
+    return make_response("", status.HTTP_204_NO_CONTENT)

@@ -159,3 +159,26 @@ class TestItem(unittest.TestCase):
         self.assertEqual(items[0]["price"], item.price)
         self.assertEqual(items[0]["quantity"], item.quantity)
         self.assertEqual(items[0]["name"], item.name)
+    
+    def test_delete_shopcart_item(self):
+        """It should Delete a shopcart item"""
+        shopcarts = Shopcart.get_all()
+        self.assertEqual(shopcarts, [])
+
+        shopcart = ShopcartFactory()
+        item = ItemFactory(shopcart=shopcart)
+        shopcart.create()
+        # Assert that it was assigned an id and shows up in the database
+        self.assertIsNotNone(shopcart.id)
+        shopcarts = Shopcart.get_all()
+        self.assertEqual(len(shopcarts), 1)
+
+        # Fetch it back
+        shopcart = Shopcart.get_by_id(shopcart.id)
+        item = shopcart.items[0]
+        item.delete()
+        shopcart.update()
+
+        # Fetch it back again
+        shopcart = Shopcart.get_by_id(shopcart.id)
+        self.assertEqual(len(shopcart.items), 0)

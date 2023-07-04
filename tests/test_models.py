@@ -68,6 +68,65 @@ class TestShopcart(unittest.TestCase):
         self.assertEqual(found_shopcart.name, shopcart.name)
         self.assertEqual(found_shopcart.items, [])
 
+    def test_update_name_of_a_shopcart(self):
+        """It should update the name of a Shopcart"""
+        shopcarts = Shopcart.get_all()
+        self.assertEqual(len(shopcarts), 0)
+
+        shopcart = ShopcartFactory()
+        shopcart.create()
+        shopcarts = Shopcart.get_all()
+        self.assertEqual(len(shopcarts), 1)
+        self.assertIsNotNone(shopcart.id)
+        self.assertIsNotNone(shopcart.name)
+
+        shopcart = Shopcart.get_by_id(shopcart.id)
+        shopcart.name = "Dev Ops"
+        shopcart.update()
+
+        shopcart = Shopcart.get_by_id(shopcart.id)
+        self.assertEqual(shopcart.name, "Dev Ops")
+
+    def test_update_an_item_of_a_shopcart(self):
+        """It should update an item of a Shopcart"""
+        shopcarts = Shopcart.get_all()
+        self.assertEqual(len(shopcarts), 0)
+        
+        shopcart = ShopcartFactory()
+        shopcart.create()
+        shopcarts = Shopcart.get_all()
+        self.assertEqual(len(shopcarts), 1)
+        self.assertIsNotNone(shopcart.id)
+        self.assertIsNotNone(shopcart.name)
+
+        items = Item.get_all()
+        self.assertEqual(len(items), 0)
+        item = ItemFactory(shopcart_id = shopcart.id)
+        item.create()
+        items = Item.get_all()
+        self.assertEqual(len(items), 1)
+        self.assertIsNotNone(item.id)
+        self.assertEqual(item.shopcart_id, shopcart.id)
+        
+        shopcart = Shopcart.get_by_id(shopcart.id)
+        self.assertEqual(len(shopcart.items), 1)
+        # self.assertEqual(type(shopcart.items[0].id), "int")
+        item_id = shopcart.items[0].id
+        self.assertEqual(item.id, item_id)
+        
+        item.name = "Switch"
+        item.price = 399.0
+        item.quantity = 2
+        item.update()
+
+        shopcart = Shopcart.get_by_id(shopcart.id)
+        self.assertEqual(len(shopcart.items), 1)
+        item_name =  shopcart.items[0].name
+        item_price =  shopcart.items[0].price
+        item_quantity =  shopcart.items[0].quantity
+        self.assertEqual(item.name, item_name)
+        self.assertEqual(item.price, item_price)
+        self.assertEqual(item.quantity, item_quantity)
 
 ######################################################################
 #  I T E M   M O D E L   T E S T   C A S E S

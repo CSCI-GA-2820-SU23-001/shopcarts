@@ -180,7 +180,11 @@ def get_items(shopcart_id, item_id):
     shopcart = Shopcart.get_by_id(shopcart_id)
 
     if not shopcart:
-        return not_found(f"Shopcart with id '{shopcart_id}' could not be found.")
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id '{shopcart_id}' could not be found.",
+        )
+
 
     # See if the item exists and abort if it doesn't
     item = Item.get_by_id(item_id)

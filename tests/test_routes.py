@@ -406,3 +406,24 @@ class TestShopcartsService(TestCase):
             content_type="application/json",
         )
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_shopcart_item_with_non_existent_item(self):
+        """ It should return a 404 Not Found response for non-existent item """
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        item = ItemFactory()
+        res = self.client.post(
+            f"{BASE_URL}/{shopcart.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        data = res.get_json()
+        logging.debug(data)
+
+        # update name
+        data["name"] = data["name"] + " II"
+        res = self.client.put(
+            f'{BASE_URL}/{shopcart.id}/items/-1',
+            json=data,
+            content_type="application/json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)

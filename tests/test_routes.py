@@ -41,7 +41,6 @@ class TestShopcartsService(TestCase):
         db.session.commit()
 
         self.client = app.test_client()
-        
 
     def tearDown(self):
         """ This runs after each test """
@@ -69,7 +68,6 @@ class TestShopcartsService(TestCase):
             logging.info(f"{shopcart.__repr__()} created for test")
             shopcarts.append(shopcart)
         return shopcarts
-
 
     # TODO: add different types of item to shopcart
     def _create_a_shopcart_with_items(self, item_count):
@@ -112,7 +110,7 @@ class TestShopcartsService(TestCase):
         """It should not Read a Shopcart that is not found"""
         response = self.client.get(f"{BASE_URL}/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-    
+
     def test_get_item(self):
         """It should Read an item from a shopcart"""
         test_shopcart = self._create_an_empty_shopcart(1)[0]
@@ -137,22 +135,22 @@ class TestShopcartsService(TestCase):
         data = response.get_json()
         logging.debug(data)
         self.assertEqual(data["shopcart_id"], test_shopcart.id)
-        self.assertEqual(data["quantity"],item.quantity)
-        self.assertEqual(data["price"],item.price)
-        self.assertEqual(data["name"],item.name)
+        self.assertEqual(data["quantity"], item.quantity)
+        self.assertEqual(data["price"], item.price)
+        self.assertEqual(data["name"], item.name)
 
     def test_get_item_not_found(self):
         """It should not Read an Item that is not found"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         response = self.client.get(f"{BASE_URL}/{shopcart.id}/items/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-    
+
     def test_get_item_shopcart_not_found(self):
         """It should not Read an Item when the Shopcart is not found"""
         item = ItemFactory()
         response = self.client.get(f"{BASE_URL}/0/items/{item.id}")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-   
+
     def test_list_empty_shopcart_items(self):
         """ It should get an empty list of items """
         shopcart = self._create_an_empty_shopcart(1)[0]
@@ -226,7 +224,7 @@ class TestShopcartsService(TestCase):
             content_type="application/json",
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-    
+
     def test_add_items_with_invalid_data_type(self):
         """ It should not be added with invalid data type """
         shopcart = self._create_an_empty_shopcart(1)[0]
@@ -244,10 +242,10 @@ class TestShopcartsService(TestCase):
         item = ItemFactory()
         item.quantity = 0
         res = self.client.post(
-                f"{BASE_URL}/{shopcart.id}/items",
-                json=item.serialize(),
-                content_type="application/json",
-                )
+            f"{BASE_URL}/{shopcart.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     @patch.object(Shopcart, 'get_by_id', MagicMock(side_effect=Exception("DBAPIErr")))
@@ -256,10 +254,10 @@ class TestShopcartsService(TestCase):
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
         res = self.client.post(
-                f"{BASE_URL}/{shopcart.id}/items",
-                json=item.serialize(),
-                content_type="application/json",
-                )
+            f"{BASE_URL}/{shopcart.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
         self.assertEqual(res.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @patch('service.models.Shopcart.get_by_id')
@@ -269,12 +267,12 @@ class TestShopcartsService(TestCase):
         mock_shopcart_get_by_id.return_value = mock_shopcart
         item = ItemFactory()
         res = self.client.post(
-                f"{BASE_URL}/0/items",
-                json=item.serialize(),
-                content_type="application/json",
-                )
+            f"{BASE_URL}/0/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
         self.assertEqual(res.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
     @patch.object(Shopcart, 'update')
     def test_add_shopcart_items_data_validation_error(self, mock_shopcart_update):
         """It should return a 400 Bad Request response for DataValidationError"""

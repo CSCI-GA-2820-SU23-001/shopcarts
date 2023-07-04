@@ -363,12 +363,13 @@ POST /shopcarts/<shopcart_id>/items
 {
   "name": "iPhone SE",
   "price": 500.0,
-  "quantity": 1
+  "quantity": 1,
+  "shopcart_id": 1
 }
 ```
 
 #### Response
-##### 200 OK
+##### 201 Created
 ```json
 {
   "id": 1,

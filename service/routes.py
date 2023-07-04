@@ -266,7 +266,7 @@ def delete_items(shopcart_id, item_id):
 
     This endpoint will delete an item based the id specified in the path
     """
-   
+    
     app.logger.info(f"Request to delete item with id='{item_id}' in shopcart with id='{shopcart_id}'.")
      # See if the shopcart exists and abort if it doesn't
     shopcart = Shopcart.get_by_id(shopcart_id)

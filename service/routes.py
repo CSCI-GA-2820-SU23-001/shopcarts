@@ -22,7 +22,7 @@ PUT  /shopcarts/{shopcart_id}/items/{item_id} - Updates the item in the shopcart
 DELETE /shopcarts/{shopcart_id}/items/{item_id} - Delete the item from the shopcart
 """
 
-from flask import jsonify, request, make_response, abort
+from flask import jsonify, request, url_for, make_response, abort
 
 from service.common import status  # HTTP Status Codes
 from service.common.error_handlers import request_validation_error, bad_request, not_found, internal_server_error, \
@@ -36,13 +36,17 @@ DEFAULT_CONTENT_TYPE = "application/json"
 ######################################################################
 # GET INDEX
 ######################################################################
+
 @app.route("/")
 def index():
-    """ Root URL response """
+    """Root URL response"""
     return (
-        "Reminder: return some useful information in json format about the service here",
-        status.HTTP_200_OK,
-    )
+        jsonify(
+            name="Shopcarts REST API Service",
+            version="1.0",
+            paths=url_for("list_shopcarts", _external=True),
+        ),
+        status.HTTP_200_OK)
 
 
 ######################################################################

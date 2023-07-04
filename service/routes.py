@@ -88,6 +88,33 @@ def create_shopcart():
     except Exception as e:
         return internal_server_error(e)
 
+
+######################################################################
+# READ A SHOPCART
+######################################################################
+@app.route("/shopcarts/<int:shopcart_id>", methods=["GET"])
+def get_shopcarts(shopcart_id):
+    """
+    Retrieve a single Shopcart
+    This endpoint will return an Shopcart based on its id
+    """
+    app.logger.info("Request for Shopcart with id: %s", shopcart_id)
+
+    #See if the shopcart exists and abort if it doesn't
+    # try:
+    #     shopcart = Shopcart.get_by_id(shopcart_id)
+    # except Exception as e:
+    #     return internal_server_error(e)
+    shopcart = Shopcart.get_by_id(shopcart_id)
+
+    if not shopcart:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id '{shopcart_id}' could not be found.",
+        )
+    app.logger.info("Returning shopcart: %s", shopcart.id)
+    return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
+
 ######################################################################
 # I T E M   A P I S
 ######################################################################
@@ -138,22 +165,18 @@ def add_shopcart_item(shopcart_id):
         return internal_server_error(e)
 
 
+# RETRIEVE A ITEM FROM SHOPCART
 ######################################################################
-# READ A SHOPCART
-######################################################################
-@app.route("/shopcarts/<int:shopcart_id>", methods=["GET"])
-def get_shopcarts(shopcart_id):
+@app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["GET"])
+def get_items(shopcart_id, item_id):
     """
-    Retrieve a single Shopcart
-    This endpoint will return an Shopcart based on its id
-    """
-    app.logger.info("Request for Shopcart with id: %s", shopcart_id)
+    Get a Item
 
-    #See if the shopcart exists and abort if it doesn't
-    # try:
-    #     shopcart = Shopcart.get_by_id(shopcart_id)
-    # except Exception as e:
-    #     return internal_server_error(e)
+    This endpoint returns just a item
+    """
+    app.logger.info(
+        "Request to retrieve Item %s for Shopcart id: %s", item_id, shopcart_id)
+
     shopcart = Shopcart.get_by_id(shopcart_id)
 
     if not shopcart:
@@ -161,10 +184,18 @@ def get_shopcarts(shopcart_id):
             status.HTTP_404_NOT_FOUND,
             f"Shopcart with id '{shopcart_id}' could not be found.",
         )
-    app.logger.info("Returning shopcart: %s", shopcart.id)
-    return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
 
 
+    # See if the item exists and abort if it doesn't
+    item = Item.get_by_id(item_id)
+    if not item:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Item with id '{item_id}' could not be found.",
+        )
+
+    app.logger.info("Returning item: %s", item.id)
+    return make_response(jsonify(item.serialize()), status.HTTP_200_OK)
 
 @app.route("/shopcarts/<int:shopcart_id>/items", methods=["GET"])
 def list_shopcart_items(shopcart_id):

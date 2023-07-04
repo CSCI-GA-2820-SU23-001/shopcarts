@@ -112,7 +112,46 @@ class TestShopcartsService(TestCase):
         """It should not Read a Shopcart that is not found"""
         response = self.client.get(f"{BASE_URL}/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_get_item(self):
+        """It should Read an item from a shopcart"""
+        test_shopcart = self._create_an_empty_shopcart(1)[0]
+        item = ItemFactory()
+        response = self.client.post(
+            f"{BASE_URL}/{test_shopcart.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+        data = response.get_json()
+        logging.debug(data)
+        item_id = data["id"]
+
+        response = self.client.get(
+            f"{BASE_URL}/{test_shopcart.id}/items/{item_id}",
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        data = response.get_json()
+        logging.debug(data)
+        self.assertEqual(data["shopcart_id"], test_shopcart.id)
+        self.assertEqual(data["quantity"],item.quantity)
+        self.assertEqual(data["price"],item.price)
+        self.assertEqual(data["name"],item.name)
+
+    def test_get_item_not_found(self):
+        """It should not Read an Item that is not found"""
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        response = self.client.get(f"{BASE_URL}/{shopcart.id}/items/0")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_get_item_shopcart_not_found(self):
+        """It should not Read an Item when the Shopcart is not found"""
+        item = ItemFactory()
+        response = self.client.get(f"{BASE_URL}/0/items/{item.id}")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
    
     def test_list_empty_shopcart_items(self):
         """ It should get an empty list of items """

@@ -496,3 +496,25 @@ class TestShopcartsService(TestCase):
         )
         logging.debug(res.get_json())
         self.assertEqual(res.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def test_update_shopcart_item_with_none_shopcart(self):
+        """ It should return a 404 Not Found response when shopcart is None """
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        item = ItemFactory()
+        res = self.client.post(
+            f"{BASE_URL}/{shopcart.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        data = res.get_json()
+        logging.debug(data)
+
+        with patch('service.models.Shopcart.get_by_id', return_value=None):
+            # update name
+            data["name"] = data["name"] + " II"
+            res = self.client.put(
+                f'{BASE_URL}/{shopcart.id}/items/{data["id"]}',
+                json=data,
+                content_type="application/json",
+            )
+            self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)

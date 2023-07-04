@@ -79,6 +79,230 @@ delete_items      DELETE   /shopcarts/<shopcart_id>/items/<item_id>
 The test cases can be run with `green`.
 
 
+### List Shopcarts
+List all shopcarts in the system.
+
+#### API Endpoint
+GET /shopcarts
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Response
+##### 200 OK
+```json
+TBA
+```
+
+##### 500 Internal Server Error
+```json
+{
+  "error": "Internal Server Error",
+  "message": "${error_message}",
+  "status": 500
+}
+```
+
+
+### Create Shopcart
+Create a new shopcart.
+
+#### API Endpoint
+POST /shopcarts
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Request Body
+```json
+{
+   "name": "Darcy"
+}
+```
+
+#### Response
+##### 200 OK
+```json
+{
+  "id": 34,
+  "items": [],
+  "name": "Darcy"
+}
+```
+
+##### 400 Bad Request
+```json
+{
+  "error": "Bad Request",
+  "message": "Invalid Shopcart: missing name",
+  "status": 400
+}
+```
+
+##### 415 Unsupported Media Type
+```json
+{
+  "error": "Unsupported media type",
+  "message": "Content-Type must be application/json",
+  "status": 415
+}
+```
+
+##### 500 Internal Server Error
+```json
+{
+  "error": "Internal Server Error",
+  "message": "${error_message}",
+  "status": 500
+}
+```
+
+
+### Get Shopcart
+Get a shopcart by id.
+
+#### API Endpoint
+GET /shopcarts/{shopcarts_id}
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Response
+##### 200 OK
+```json
+{
+  "id": 5,
+  "items": [
+    {
+      "id": 2,
+      "name": "Macbook Air",
+      "price": 600.0,
+      "quantity": 1,
+      "shopcart_id": 5
+    }
+  ],
+  "name": "Elizabeth"
+}
+```
+
+##### 404 Not Found
+```json
+{
+  "error": "Not Found",
+  "message": "Shopcart with id='0' was not found.",
+  "status": 404
+}
+```
+
+##### 500 Internal Server Error
+```json
+{
+  "error": "Internal Server Error",
+  "message": "${error_message}",
+  "status": 500
+}
+```
+
+
+### Update Shopcart
+Update an existing shopcart.
+
+#### API Endpoint
+PUT /shopcarts/{shopcarts_id}
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Request Body
+```json
+{
+   "id": 34,
+   "name": "Fitzwilliam Darcy"
+}
+```
+
+#### Response
+##### 200 OK
+```json
+{
+  "id": 34,
+  "items": [],
+  "name": "Fitzwilliam Darcy"
+}
+```
+
+##### 400 Bad Request
+```json
+{
+  "error": "Bad Request",
+  "message": "Invalid Shopcart: missing name",
+  "status": 400
+}
+```
+
+##### 415 Unsupported Media Type
+```json
+{
+  "error": "Unsupported media type",
+  "message": "Content-Type must be application/json",
+  "status": 415
+}
+```
+
+##### 500 Internal Server Error
+```json
+{
+  "error": "Internal Server Error",
+  "message": "${error_message}",
+  "status": 500
+}
+```
+
+
+### Delete Shopcart
+Delete an existing shopcart.
+
+#### API Endpoint
+DELETE /shopcarts/{shopcarts_id}
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Response
+##### 200 OK
+```json
+TBA
+```
+
+##### 404 Not Found
+```json
+{
+  "error": "Not Found",
+  "message": "Shopcart with id='0' was not found.",
+  "status": 404
+}
+```
+
+##### 500 Internal Server Error
+```json
+{
+  "error": "Internal Server Error",
+  "message": "${error_message}",
+  "status": 500
+}
+```
+
+
 ### List Shopcart Items
 Get a list of items in the shopcart.
 
@@ -104,7 +328,7 @@ GET /shopcarts/{shopcart_id}/items
 ]
 ```
 
-##### 400 Bad Request
+##### 404 Not Found
 ```json
 {
   "error": "Not Found",
@@ -173,6 +397,15 @@ POST /shopcarts/<shopcart_id>/items
 }
 ```
 
+##### 415 Unsupported Media Type
+```json
+{
+  "error": "Unsupported media type",
+  "message": "Content-Type must be application/json",
+  "status": 415
+}
+```
+
 ##### 500 Internal Server Error
 ```json
 {
@@ -181,6 +414,176 @@ POST /shopcarts/<shopcart_id>/items
   "status": 500
 }
 ```
+
+
+### Get Shopcart Item
+Get the contents of a shopcart item.
+
+#### API Endpoint
+GET /shopcarts/{shopcart_id}/items/{item_id}
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Response
+##### 200 OK
+```json
+{
+ "id": 2,
+ "name": "iPhone SE",
+ "price": 500.0,
+ "quantity": 1,
+ "shopcart_id": 3
+}
+```
+
+##### 404 Not Found
+```json
+{
+  "error": "Not Found",
+  "message": "Shopcart with id='0' was not found.",
+  "status": 404
+}
+```
+
+```json
+{
+  "error": "Not Found",
+  "message": "Item with id='123' was not found.",
+  "status": 404
+}
+```
+
+##### 500 Internal Server Error
+```json
+{
+  "error": "Internal Server Error",
+  "message": "${error_message}",
+  "status": 500
+}
+```
+
+
+### Update Shopcart Item
+Update an existing item in shopcart.
+
+#### API Endpoint
+PUT /shopcarts/<shopcart_id>/items/{item_id}
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Request Body
+> e.g. Increase item quantity from 1 to 2
+
+```json
+{
+  "name": "iPhone SE",
+  "price": 500.0,
+  "quantity": 2
+}
+```
+
+#### Response
+##### 200 OK
+```json
+{
+  "id": 1,
+  "name": "iPhone SE",
+  "price": 500.0,
+  "quantity": 2,
+  "shopcart_id": 1
+}
+```
+
+##### 400 Bad Request
+```json
+TBA
+```
+
+##### 404 Not Found
+```json
+{
+  "error": "Not Found",
+  "message": "Shopcart with id='0' was not found.",
+  "status": 404
+}
+```
+
+```json
+{
+  "error": "Not Found",
+  "message": "Item with id='123' was not found.",
+  "status": 404
+}
+```
+
+##### 415 Unsupported Media Type
+```json
+{
+  "error": "Unsupported media type",
+  "message": "Content-Type must be application/json",
+  "status": 415
+}
+```
+
+##### 500 Internal Server Error
+```json
+{
+  "error": "Internal Server Error",
+  "message": "${error_message}",
+  "status": 500
+}
+```
+
+
+### Delete Shopcart Item
+Delete an existing item in shopcart.
+
+#### API Endpoint
+DELETE /shopcarts/<shopcart_id>/items/{item_id}
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Response
+##### 200 OK
+```json
+TBA
+```
+
+##### 404 Not Found
+```json
+{
+  "error": "Not Found",
+  "message": "Shopcart with id='0' was not found.",
+  "status": 404
+}
+```
+
+```json
+{
+  "error": "Not Found",
+  "message": "Item with id='123' was not found.",
+  "status": 404
+}
+```
+
+##### 500 Internal Server Error
+```json
+{
+  "error": "Internal Server Error",
+  "message": "${error_message}",
+  "status": 500
+}
+```
+
 
 ## Database Connection
 

@@ -62,6 +62,12 @@ def is_expected_content_type(expected_content_type):
 # S H O P C A R T   A P I S
 ######################################################################
 
+@app.route("/shopcarts", methods=["GET"])
+def list_shopcarts():
+    # TODO: implement list API logic
+    return make_response(jsonify([]), status.HTTP_200_OK)
+
+
 @app.route("/shopcarts", methods=["POST"])
 def create_shopcart():
     """ Creates a new shopcart """

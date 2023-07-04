@@ -139,6 +139,7 @@ class TestShopcartsService(TestCase):
         self.assertEqual(data["shopcart_id"], test_shopcart.id)
         self.assertEqual(data["quantity"],item.quantity)
         self.assertEqual(data["price"],item.price)
+        self.assertEqual(data["name"],item.name)
 
     def test_get_item_not_found(self):
         """It should not Read an Item that is not found"""

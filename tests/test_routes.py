@@ -11,7 +11,7 @@ from unittest.mock import MagicMock, Mock, patch
 
 from service import app
 from service.common import status  # HTTP Status Codes
-from service.models import db, init_db, Shopcart
+from service.models import db, init_db, Shopcart, Item
 from tests.factories import ShopcartFactory, ItemFactory
 from . import DATABASE_URI, BASE_URL
 
@@ -472,3 +472,27 @@ class TestShopcartsService(TestCase):
         )
         logging.debug(res.get_json())
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @patch.object(Item, 'update', MagicMock(side_effect=Exception("DBAPIErr")))
+    def test_update_shopcart_item_with_item_update_error(self):
+        """ It should return a 500 Internal Server Error response if Item.update() errors """
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        item = ItemFactory()
+        res = self.client.post(
+            f"{BASE_URL}/{shopcart.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        data = res.get_json()
+        logging.debug(data)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        # missing name
+        data["name"] = data["name"] + " II"
+        res = self.client.put(
+            f'{BASE_URL}/{shopcart.id}/items/{data["id"]}',
+            json=data,
+            content_type="application/json",
+        )
+        logging.debug(res.get_json())
+        self.assertEqual(res.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -204,3 +204,53 @@ def list_shopcart_items(shopcart_id):
         return make_response(jsonify(items), status.HTTP_200_OK)
     except Exception as e:
         return internal_server_error(e)
+
+
+@app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["PUT"])
+def update_shopcart_item(shopcart_id, item_id):
+    """ Updates an existing item in shopcart, and return the updated item """
+    try:
+        if not is_expected_content_type(DEFAULT_CONTENT_TYPE):
+            return mediatype_not_supported(f"Content-Type must be {DEFAULT_CONTENT_TYPE}")
+
+        req_body = request.get_json()
+        req_body["shopcart_id"] = shopcart_id
+        req_body["id"] = item_id
+        req_item = Item()
+        req_item.deserialize(req_body)  # validate request body schema
+        app.logger.info("Request body deserialized to item.")
+
+        if req_item.quantity < 1:
+            app.logger.error(f'Invalid item quantity {req_item.quantity}.')
+            return bad_request("Item quantity should be at least one.")
+
+        shopcart = Shopcart.get_by_id(shopcart_id)
+
+        if not shopcart:
+            return not_found(f"Shopcart with id='{shopcart_id}' was not found.")
+        app.logger.info(f"Found shopcart with id={shopcart_id}")
+
+        # search for the corresponding item in shopcart
+        item = None
+        for item_ in shopcart.items:
+            if item_.id == item_id:
+                item = item_
+                break
+
+        if item is None:
+            return bad_request(f"Item with id='{item_id}' was not found in shopcart with id='{shopcart_id}'.")
+        app.logger.info(f"Found item with id='{item_id}' in shopcart with id='{shopcart_id}'.")
+
+        app.logger.info(f"Start updating item with id='{item_id}' in shopcart with id='{shopcart_id}'.")
+        item.name = req_item.name
+        item.quantity = req_item.quantity
+        item.price = req_item.price
+        item.update()
+        app.logger.info(f"Done updating item with id='{item_id}' in shopcart with id='{shopcart_id}'.")
+
+        item_js = item.serialize()
+        return make_response(jsonify(item_js), status.HTTP_200_OK)
+    except DataValidationError as e:
+        return request_validation_error(e)
+    except Exception as e:
+        return internal_server_error(e)

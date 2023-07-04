@@ -342,3 +342,25 @@ class TestShopcartsService(TestCase):
         self.assertEqual(updated_data["name"], data["name"])
         self.assertEqual(updated_data["quantity"], data["quantity"])
         self.assertEqual(updated_data["price"], data["price"])
+
+    def test_update_shopcart_item_with_invalid_content_type(self):
+        """ It should return a 415 Unsupported Media Type response for Content-Type not equal to application/json """
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        item = ItemFactory()
+        res = self.client.post(
+            f"{BASE_URL}/{shopcart.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        data = res.get_json()
+        logging.debug(data)
+
+        # update name
+        data["name"] = data["name"] + " II"
+        res = self.client.put(
+            f'{BASE_URL}/{shopcart.id}/items/{data["id"]}',
+            json=data,
+            content_type="application/xml",
+        )
+        logging.debug(res.get_json())
+        self.assertEqual(res.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)

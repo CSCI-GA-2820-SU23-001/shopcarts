@@ -121,6 +121,28 @@ def get_shopcarts(shopcart_id):
     return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
 
 
+<<<<<<< HEAD
+=======
+######################################################################
+# DELETE A SHOPCART
+######################################################################
+@app.route("/shopcarts/<int:shopcart_id>", methods=["DELETE"])
+def delete_shopcart(shopcart_id):
+    """Deletes a shopcart
+        Args:
+            user_id (str): the user_id of the shopcart to delete
+        Returns:
+            str: always returns an empty string
+    """
+    app.logger.info("Start deleting shopcart %s...", shopcart_id)
+    shopcart = Shopcart.get_by_id(shopcart_id)
+    if shopcart:
+        shopcart.delete()
+        app.logger.info("Shopcart deleted with id= %s ", shopcart_id)
+    return make_response("", status.HTTP_204_NO_CONTENT)
+    
+
+>>>>>>> 7afb3bd (delete shopcart)
 ######################################################################
 # I T E M   A P I S
 ######################################################################

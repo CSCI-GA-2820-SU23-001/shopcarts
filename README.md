@@ -560,14 +560,14 @@ DELETE /shopcarts/<shopcart_id>/items/{item_id}
 #### Response
 ##### 200 OK
 ```json
-TBA
+
 ```
 
 ##### 404 Not Found
 ```json
 {
   "error": "Not Found",
-  "message": "Shopcart with id='0' was not found.",
+  "message": "404 Not Found: Shopcart with id '2' could not be found.",
   "status": 404
 }
 ```
@@ -575,7 +575,7 @@ TBA
 ```json
 {
   "error": "Not Found",
-  "message": "Item with id='123' was not found.",
+  "message": "404 Not Found: Item with id '45' could not be found.",
   "status": 404
 }
 ```

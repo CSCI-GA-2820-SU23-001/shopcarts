@@ -572,3 +572,4 @@ class TestShopcartsService(TestCase):
             content_type="application/json",
         )
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+        

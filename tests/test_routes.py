@@ -427,3 +427,48 @@ class TestShopcartsService(TestCase):
             content_type="application/json",
         )
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_shopcart_item_with_invalid_request_body(self):
+        """ It should return a 404 Not Found response for invalid request body """
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        item = ItemFactory()
+        res = self.client.post(
+            f"{BASE_URL}/{shopcart.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        data = res.get_json()
+        logging.debug(data)
+
+        # missing name
+        no_name_data = data.copy()
+        no_name_data.pop("name")
+        res = self.client.put(
+            f'{BASE_URL}/{shopcart.id}/items/{data["id"]}',
+            json=no_name_data,
+            content_type="application/json",
+        )
+        logging.debug(res.get_json())
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # missing quantity
+        no_quantity_data = data.copy()
+        no_quantity_data.pop("quantity")
+        res = self.client.put(
+            f'{BASE_URL}/{shopcart.id}/items/{data["id"]}',
+            json=no_quantity_data,
+            content_type="application/json",
+        )
+        logging.debug(res.get_json())
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # missing price
+        no_price_data = data.copy()
+        no_price_data.pop("price")
+        res = self.client.put(
+            f'{BASE_URL}/{shopcart.id}/items/{data["id"]}',
+            json=no_price_data,
+            content_type="application/json",
+        )
+        logging.debug(res.get_json())
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

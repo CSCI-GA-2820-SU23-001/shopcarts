@@ -5,13 +5,11 @@ Test cases for Shopcart Model
 import logging
 import unittest
 
-
 from service import app
-from service.models import Shopcart, Item, DataValidationError, db
-from tests.factories import ShopcartFactory,ItemFactory
+from service.models import Shopcart, Item, db
+from tests.factories import ShopcartFactory, ItemFactory
 
 from . import DATABASE_URI
-
 
 
 ######################################################################
@@ -48,9 +46,6 @@ class TestShopcart(unittest.TestCase):
     #  T E S T   C A S E S
     ######################################################################
 
-     ######################################################################
-    #  TEST CREATE / ADD SHOPCART
-    ######################################################################
     def test_create_an_shopcart(self):
         """ It should Create an Shopcart and assert that it exists """
         fake_shopcart = ShopcartFactory()
@@ -61,7 +56,7 @@ class TestShopcart(unittest.TestCase):
         self.assertIsNotNone(shopcart)
         self.assertEqual(shopcart.id, None)
         self.assertEqual(shopcart.name, fake_shopcart.name)
-    
+
     def test_read_an_shopcart(self):
         """It should Read a Shopcart"""
         shopcart = ShopcartFactory()
@@ -72,7 +67,6 @@ class TestShopcart(unittest.TestCase):
         self.assertEqual(found_shopcart.id, shopcart.id)
         self.assertEqual(found_shopcart.name, shopcart.name)
         self.assertEqual(found_shopcart.items, [])
-
 
 
 ######################################################################
@@ -108,9 +102,7 @@ class TestItem(unittest.TestCase):
     ######################################################################
     #  T E S T   C A S E S
     ######################################################################
-    ######################################################################
-    #  TEST ADD SHOPCART ITEMS
-    ######################################################################
+
     def test_add_shopcart_item(self):
         """It should create an shopcart with an item and add it to the database"""
         shopcart = ShopcartFactory()
@@ -126,9 +118,33 @@ class TestItem(unittest.TestCase):
         self.assertEqual(new_shopcart.items[0].name, item.name)
         self.assertEqual(new_shopcart.items[0].price, item.price)
 
+    def test_update_shopcart_item(self):
+        """ It should update an item in shopcart """
+        shopcarts = Shopcart.get_all()
+        self.assertEqual(len(shopcarts), 0)
+
+        shopcart = ShopcartFactory()
+        new_item = ItemFactory(shopcart_id=shopcart.id)
+        shopcart.items.append(new_item)
+        shopcart.create()
+        self.assertIsNotNone(shopcart.id)
+        shopcarts = Shopcart.get_all()
+        self.assertEqual(len(shopcarts), 1)
+
+        shopcart = Shopcart.get_by_id(shopcart.id)
+        self.assertEqual(len(shopcart.items), 1)
+        item = shopcart.items[0]
+        item.name = item.name + " II"
+        item.update()
+
+        shopcart = Shopcart.get_by_id(shopcart.id)
+        updated_item = shopcart.items[0]
+        self.assertEqual(updated_item.name, item.name)
+
     ######################################################################
     #  TEST SERIALIZE ITEM
     ######################################################################
+
     def test_serialize_a_shopcart(self):
         """It should Serialize items into shopcart"""
         shopcart = ShopcartFactory()
@@ -140,6 +156,6 @@ class TestItem(unittest.TestCase):
         self.assertEqual(len(serial_shopcart["items"]), 1)
         items = serial_shopcart["items"]
         self.assertEqual(items[0]["id"], item.id)
-        self.assertEqual(items[0]["price"],item.price)
+        self.assertEqual(items[0]["price"], item.price)
         self.assertEqual(items[0]["quantity"], item.quantity)
         self.assertEqual(items[0]["name"], item.name)

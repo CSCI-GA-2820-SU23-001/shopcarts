@@ -125,7 +125,7 @@ POST /shopcarts
 ```
 
 #### Response
-##### 200 OK
+##### 201 Created
 ```json
 {
   "id": 34,
@@ -363,12 +363,13 @@ POST /shopcarts/<shopcart_id>/items
 {
   "name": "iPhone SE",
   "price": 500.0,
-  "quantity": 1
+  "quantity": 1,
+  "shopcart_id": 1
 }
 ```
 
 #### Response
-##### 200 OK
+##### 201 Created
 ```json
 {
   "id": 1,
@@ -502,7 +503,11 @@ PUT /shopcarts/<shopcart_id>/items/{item_id}
 
 ##### 400 Bad Request
 ```json
-TBA
+{
+  "error": "Bad Request",
+  "message": "Missing key \"name\" in request body.",
+  "status": 400
+}
 ```
 
 ##### 404 Not Found

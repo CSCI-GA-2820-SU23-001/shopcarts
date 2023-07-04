@@ -91,7 +91,7 @@ class ModelBase:
         logger.info(f"Get {cls.__name__} by id={id}")
         return cls.query.get(id)
 
-    
+
 class Shopcart(db.Model, ModelBase):
     """ The Shopcart Table """
 

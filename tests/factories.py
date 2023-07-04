@@ -42,7 +42,6 @@ class ShopcartFactory(factory.Factory):
             self.items = extracted
 
 
-
 class ItemFactory(factory.Factory):
     """Creates fake Items"""
 

@@ -117,6 +117,7 @@ class TestItem(unittest.TestCase):
         shopcart.create()
         item = ItemFactory(shopcart_id=shopcart.id)
         shopcart.items.append(item)
+        shopcart.update()
         self.assertIsNotNone(shopcart.id)
         new_shopcart = Shopcart.get_by_id(shopcart.id)
         self.assertEqual(len(new_shopcart.items), 1)

@@ -73,6 +73,28 @@ class TestShopcart(unittest.TestCase):
         self.assertEqual(found_shopcart.items, [])
 
     ######################################################################
+    #  TEST UPDATE SHOPCART
+    ######################################################################
+    def test_update_name_of_a_shopcart(self):
+        """It should update the name of a Shopcart"""
+        shopcarts = Shopcart.get_all()
+        self.assertEqual(len(shopcarts), 0)
+
+        shopcart = ShopcartFactory()
+        shopcart.create()
+        shopcarts = Shopcart.get_all()
+        self.assertEqual(len(shopcarts), 1)
+        self.assertIsNotNone(shopcart.id)
+        self.assertIsNotNone(shopcart.name)
+
+        shopcart = Shopcart.get_by_id(shopcart.id)
+        shopcart.name = "Dev Ops"
+        shopcart.update()
+
+        shopcart = Shopcart.get_by_id(shopcart.id)
+        self.assertEqual(shopcart.name, "Dev Ops")
+
+    ######################################################################
     #  TEST DELETE SHOPCART
     ######################################################################
     def test_delete_a_shopcart(self):

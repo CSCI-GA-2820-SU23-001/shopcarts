@@ -97,7 +97,7 @@ GET /shopcarts
     {
         "id": 27,
         "items": [],
-        "name": Yuzhao
+        "name": "Yuzhao"
     },
     {
         "id": 1,
@@ -117,7 +117,7 @@ GET /shopcarts
                 "shopcart_id": 1
             }
         ],
-        "name": Wanyu
+        "name": "Wanyu"
 ]
 ```
 

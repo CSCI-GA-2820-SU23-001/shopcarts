@@ -93,7 +93,32 @@ GET /shopcarts
 #### Response
 ##### 200 OK
 ```json
-TBA
+[
+    {
+        "id": 27,
+        "items": [],
+        "name": Yuzhao
+    },
+    {
+        "id": 1,
+        "items": [
+            {
+                "id": 2,
+                "name": "iPad",
+                "price": 500.0,
+                "quantity": 2
+                "shopcart_id": 1
+            },
+            {
+                "id": 5,
+                "name": "Switch",
+                "price": 399.0,
+                "quantity": 1
+                "shopcart_id": 1
+            }
+        ],
+        "name": Wanyu
+]
 ```
 
 ##### 500 Internal Server Error

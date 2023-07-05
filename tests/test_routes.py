@@ -639,47 +639,6 @@ class TestShopcartsService(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
-    def test_update_shopcart_if_containing_item_is_the_same_as_in_database(self):
-        """"It should return a 400 Bad Request response for this situation if there isn't any change to the items in request body"""
-        shopcart = ShopcartFactory()
-        self.assertEqual(type(shopcart.serialize()), dict)
-        resp = self.client.post(
-                BASE_URL, json=shopcart.serialize(), content_type="application/json")
-        self.assertEqual(
-            resp.status_code,
-            status.HTTP_201_CREATED,
-            "Could not create test Shopcart",
-        )
-        new_shopcart = resp.get_json()
-        shopcart.id = new_shopcart["id"]
-        shopcart.name = new_shopcart["name"]
-
-        self.assertEqual(type(shopcart.id), int)
-
-        item = ItemFactory(shopcart_id = shopcart.id)
-        self.assertEqual(type(item.serialize()), dict)
-        item_resp = self.client.post(
-            f"{BASE_URL}/{shopcart.id}/items",
-            json=item.serialize(),
-            content_type="application/json",
-        )
-        self.assertEqual(item_resp.status_code, status.HTTP_201_CREATED)
-        
-        shopcart_data = resp.get_json()
-        item_data = item_resp.get_json()
-        logging.debug(item_data)
-        
-        self.assertEqual(shopcart_data["items"], [])
-        shopcart_data["items"].append(item_data)
-        self.assertEqual(type(shopcart_data["items"]), list)
-
-        resp = self.client.put(
-            f"{BASE_URL}/{shopcart.id}",
-            json=shopcart_data,
-            content_type="application/json"
-        )
-        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
-
     def test_update_non_existent_shopcart(self):
         """It should return a 404 not Found response for non-existent shopcart"""
         shopcart = ShopcartFactory()

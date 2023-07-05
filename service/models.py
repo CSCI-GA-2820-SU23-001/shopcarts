@@ -19,6 +19,7 @@ import logging
 from abc import abstractmethod
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 
 logger = logging.getLogger("flask.app")
 
@@ -205,3 +206,12 @@ class Item(db.Model, ModelBase):
             raise DataValidationError(
                 f"Invalid {type(self).__name__}: failed to deserialize request body\nError message: {error}"
             ) from error
+        
+    @classmethod
+    def get_dp_id(cls, shopcart_id, item_id):
+        max_id = cls.query.with_entities(cls.id).filter(cls.shopcart_id == shopcart_id, cls.id == item_id).order_by(cls.id.desc()).limit(1).scalar()
+        return cls.query.filter(cls.id == max_id).update({"id": item_id})
+        # return cls.query.with_entities(cls.id).filter(cls.shopcart_id == shopcart_id, cls.id == id).order_by(cls.id.desc()).limit(1).scalar()
+        # query = cls.query(func.max(cls.id))
+        # dup_id = query.scalar()
+        # return dup_id

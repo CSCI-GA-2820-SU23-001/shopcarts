@@ -135,27 +135,7 @@ def update_shopcarts(shopcart_id):
         )
     
     shopcart.deserialize(request.get_json())
-    request_body = request.get_json()
-
-    for item_data in request_body['items']:
-
-        item = Item.get_by_id(item_data['id'])
-
-        if item:
-            if item.name != item_data.get('name') or item.quantity != item_data.get('quantity') or item.price != item_data.get('price'):
-                item.delete()
-                item = Item()
-                item.shopcart_id = shopcart_id
-                item.id = item_data.get('id', item.id)
-                item.name = item_data.get('name', item.name)
-                item.quantity = item_data.get('quantity', item.quantity)
-                item.price = item_data.get('price', item.price)
-                item.update()
-            else:
-                abort(
-                    status.HTTP_400_BAD_REQUEST, f"There is no need to contain the Item with id '{item.id}' in the request body"
-                )
-
+    shopcart.id = shopcart_id
     shopcart.update()
 
     return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)

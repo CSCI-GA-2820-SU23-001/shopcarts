@@ -190,6 +190,46 @@ class TestShopcartsService(TestCase):
         resp = self.client.get(f"{BASE_URL}/0/items")
         self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    def test_list_shopcarts(self):
+        """It should return all shopcarts"""
+        self._create_an_empty_shopcart(5)
+        resp = self.client.get(f"{BASE_URL}")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 5)
+
+    def test_list_empty_shopcarts(self):
+        """It should not return any shopcart"""
+        resp = self.client.get(f"{BASE_URL}")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 0)
+
+    def test_list_shopcarts_with_items(self):
+        """It should return all shopcarts with corresponding items"""
+        shopcart_a = self._create_a_shopcart_with_items(1)
+        self._create_a_shopcart_with_items(2)
+        self._create_a_shopcart_with_items(3)
+        self._create_an_empty_shopcart(5)
+        resp = self.client.get(f"{BASE_URL}")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(type(shopcart_a), Shopcart)
+        data = resp.get_json()
+        self.assertEqual(len(data), Shopcart.find_id())
+
+    def test_list_shopcart_of_a_customer(self):
+        """It should return a shopcart within a specific customer"""
+        shopcart_a = self._create_a_shopcart_with_items(1)
+        shopcart_b = self._create_a_shopcart_with_items(2)
+        self.assertEqual(type(shopcart_a.name), str)
+        name = Shopcart.find_by_name(shopcart_a.name)
+        test_shopcart = name.scalar()
+        url = BASE_URL+"?name=" + shopcart_a.name
+        resp = self.client.get(f"{url}")
+        data = resp.get_json()
+        self.assertEqual(type(data[0]['name']), str)
+        self.assertEqual(data[0]['name'], test_shopcart.name)
+
     def test_add_items_to_shopcart(self):
         """ It should return a list of added items """
         shopcart = self._create_an_empty_shopcart(1)[0]
@@ -635,3 +675,67 @@ class TestShopcartsService(TestCase):
         """It Should Delete an non-existing shopcart"""
         res = self.client.delete(f"{BASE_URL}/{NONEXIST_SHOPCART_ID}")
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_unsupported_method_on_shopcart(self):
+        """It should return a 405 Method Not Supported response"""
+        self._create_an_empty_shopcart(5)
+        resp = self.client.put(f"{BASE_URL}")
+        self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_create_a_shopcart_with_invalid_format(self):
+        """It should return a 415 Unsupported media type"""
+        shopcart = ShopcartFactory()
+        resp = self.client.post(f"{BASE_URL}", 
+                                json=shopcart.serialize(),
+                                content_type="application/pdf")
+        self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+    def test_create_a_shopcart_with_bad_request(self):
+        """It should return a 400 Bad request response"""
+        shopcart = ShopcartFactory()
+        resp = self.client.post(f"{BASE_URL}", 
+                                json=shopcart.serialize()['name'],
+                                content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_a_nonexistent_shopcart(self):
+        """It should return a 404 Not found response"""
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        test_id = shopcart.id + 1
+        self.assertNotEqual(test_id, shopcart.id)
+        resp = self.client.put(f"{BASE_URL}/{test_id}",
+                               json=shopcart.serialize(),
+                               content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_a_shopcart_with_invalid_content_type(self):
+        """"""
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        self.assertNotEqual(shopcart.name, "DevOps")
+        shopcart.name = "DevOps"
+        self.assertEqual(shopcart.name, "DevOps")
+        resp = self.client.put(f"{BASE_URL}/{shopcart.id}",
+                               json=shopcart.serialize(),
+                               content_type="application/pdf")
+        self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+    def test_add_item_to_nonexistent_shopcart(self):
+        """It should return Shopcart with id='{shopcart_id}' was not found"""
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        test_id = shopcart.id+1
+        item = ItemFactory(shopcart_id = test_id)
+        self.assertNotEqual(test_id, shopcart.id)
+        resp = self.client.post(f"{BASE_URL}/{test_id}/items",
+                                json=item.serialize(),
+                                content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_list_items_of_nonexistent_shopcart(self):
+        """It should return a 404 Not found response"""
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        # item = ItemFactory(shopcart_id = shopcart.id)
+        test_id = shopcart.id+1
+        resp = self.client.get(f"{BASE_URL}/{test_id}/items",
+                               json=shopcart.serialize(),
+                               content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)

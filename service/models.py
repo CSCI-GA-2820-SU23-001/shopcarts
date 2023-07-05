@@ -157,7 +157,7 @@ class Shopcart(db.Model, ModelBase):
         for res in result:
             ids.append(res.id)
         return len(ids)
-    
+
 
 class Item(db.Model, ModelBase):
     """ The Item Table """

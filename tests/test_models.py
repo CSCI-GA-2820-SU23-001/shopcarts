@@ -71,7 +71,7 @@ class TestShopcart(unittest.TestCase):
         self.assertEqual(found_shopcart.id, shopcart.id)
         self.assertEqual(found_shopcart.name, shopcart.name)
         self.assertEqual(found_shopcart.items, [])
-    
+
     ######################################################################
     #  TEST DELETE SHOPCART
     ######################################################################
@@ -87,7 +87,8 @@ class TestShopcart(unittest.TestCase):
         shopcart = shopcarts[0]
         shopcart.delete()
         shopcarts = Shopcart.get_all()
-        self.assertEqual(len(shopcarts), 0) 
+        self.assertEqual(len(shopcarts), 0)
+
 
 ######################################################################
 #  I T E M   M O D E L   T E S T   C A S E S
@@ -179,7 +180,7 @@ class TestItem(unittest.TestCase):
         self.assertEqual(items[0]["price"], item.price)
         self.assertEqual(items[0]["quantity"], item.quantity)
         self.assertEqual(items[0]["name"], item.name)
-    
+
     def test_delete_shopcart_item(self):
         """It should Delete a shopcart item"""
         shopcarts = Shopcart.get_all()

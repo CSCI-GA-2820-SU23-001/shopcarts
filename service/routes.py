@@ -120,6 +120,25 @@ def get_shopcarts(shopcart_id):
     app.logger.info("Returning shopcart: %s", shopcart.id)
     return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
 
+@app.route("/shopcarts/<int:shopcart_id>", methods=['PUT'])
+def update_shopcarts(shopcart_id):
+    
+    if not is_expected_content_type(DEFAULT_CONTENT_TYPE):
+        return mediatype_not_supported(f"Content-Type must be {DEFAULT_CONTENT_TYPE}")
+        
+    app.logger.info("Request to update shopcart with id: %s", shopcart_id)
+    
+    shopcart = Shopcart.get_by_id(shopcart_id)
+    if not shopcart:
+        abort(
+            status.HTTP_404_NOT_FOUND, f"Shopcart with id '{shopcart_id}' was not found."
+        )
+    
+    shopcart.deserialize(request.get_json())
+    shopcart.id = shopcart_id
+    shopcart.update()
+
+    return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
 
 ######################################################################
 # DELETE A SHOPCART

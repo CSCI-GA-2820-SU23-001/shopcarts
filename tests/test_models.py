@@ -6,7 +6,7 @@ import logging
 import unittest
 
 from service import app
-from service.models import Shopcart, Item, db
+from service.models import Shopcart, Item, db, DataValidationError
 from tests.factories import ShopcartFactory, ItemFactory
 
 from . import DATABASE_URI
@@ -93,6 +93,66 @@ class TestShopcart(unittest.TestCase):
 
         shopcart = Shopcart.get_by_id(shopcart.id)
         self.assertEqual(shopcart.name, "Dev Ops")
+
+    ######################################################################
+    #  TEST LIST SHOPCART
+    ######################################################################
+    def test_list_all_shopcarts(self):
+        """It should List all Shopcarts in the database"""
+        shopcarts = Shopcart.get_all()
+        self.assertEqual(shopcarts, [])
+        for _ in range(5):
+            shopcart = ShopcartFactory()
+            shopcart.create()
+        shopcarts = Shopcart.get_all()
+        self.assertEqual(len(shopcarts), 5)
+
+    def test_serialize_a_shopcart(self):
+        """It should Serialize a shopcart"""
+        shopcart = ShopcartFactory()
+        item = ItemFactory(shopcart_id = shopcart.id)
+        shopcart.items.append(item)
+        serial_shopcart = shopcart.serialize()
+        self.assertEqual(serial_shopcart['id'], shopcart.id)
+        self.assertEqual(serial_shopcart['name'], shopcart.name)
+        self.assertEqual(len(serial_shopcart['items']), 1)
+        items = serial_shopcart['items']
+        self.assertEqual(items[0]['id'], item.id)
+        self.assertEqual(items[0]['shopcart_id'], item.shopcart_id)
+        self.assertEqual(items[0]['name'], item.name)
+        self.assertEqual(items[0]['price'], item.price)
+        self.assertEqual(items[0]['quantity'], item.quantity)
+
+    def test_deserialize_a_shopcart(self):
+        """It should deserialize a shopcart"""
+        shopcart = ShopcartFactory()
+        item = ItemFactory(shopcart_id = shopcart.id)
+        shopcart.items.append(item)
+        shopcart.create()
+        serial_shopcart = shopcart.serialize()
+        new_shopcart = Shopcart()
+        new_shopcart.deserialize(serial_shopcart)
+        self.assertEqual(new_shopcart.name, shopcart.name)
+
+    def test_deserialize_shopcart_with_key_error(self):
+        """It should not Deserialize a shopcart with a KeyError"""
+        shopcart = Shopcart()
+        self.assertRaises(DataValidationError, shopcart.deserialize, {})
+
+    def test_deserialize_shopcart_with_type_error(self):
+        """It should not Deserialize a shopcart with a TypeError"""
+        shopcart = Shopcart()
+        self.assertRaises(DataValidationError, shopcart.deserialize, [])
+
+    def test_deserialize_item_with_key_error(self):
+        """It should not Deserialize an item with a KeyError"""
+        item = Item()
+        self.assertRaises(DataValidationError, item.deserialize, {})
+
+    def test_deserialize_item_with_type_error(self):
+        """It should not Deserialize a shopcart with a TypeError"""
+        item = Item()
+        self.assertRaises(DataValidationError, item.deserialize, [])
 
     ######################################################################
     #  TEST DELETE SHOPCART

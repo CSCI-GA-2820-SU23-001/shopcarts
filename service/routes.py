@@ -68,8 +68,18 @@ def is_expected_content_type(expected_content_type):
 
 @app.route("/shopcarts", methods=["GET"])
 def list_shopcarts():
-    # TODO: implement list API logic
-    return make_response(jsonify([]), status.HTTP_200_OK)
+    app.logger.info("Request for shopcart list")
+    shopcarts = []
+
+    name = request.args.get("name")
+    if name:
+        shopcarts = Shopcart.find_by_name(name)
+    else:
+        shopcarts = Shopcart.get_all()
+    
+    results = [shopcart.serialize() for shopcart in shopcarts]
+    app.logger.info("Returning %d shopcarts", len(results))
+    return jsonify(results), status.HTTP_200_OK
 
 
 @app.route("/shopcarts", methods=["POST"])

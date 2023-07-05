@@ -279,19 +279,13 @@ DELETE /shopcarts/{shopcarts_id}
 | Content-Type | application/json |
 
 #### Response
-##### 200 OK
-```json
-TBA
-```
-
-##### 404 Not Found
+##### 204 No Content
 ```json
 {
-  "error": "Not Found",
-  "message": "Shopcart with id='0' was not found.",
-  "status": 404
+  "status": 204
 }
 ```
+
 
 ##### 500 Internal Server Error
 ```json

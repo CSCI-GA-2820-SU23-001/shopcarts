@@ -46,6 +46,10 @@ class TestShopcart(unittest.TestCase):
     #  T E S T   C A S E S
     ######################################################################
 
+    ######################################################################
+    #  TEST CREATE / ADD SHOPCART
+    ######################################################################
+
     def test_create_an_shopcart(self):
         """ It should Create an Shopcart and assert that it exists """
         fake_shopcart = ShopcartFactory()
@@ -67,6 +71,23 @@ class TestShopcart(unittest.TestCase):
         self.assertEqual(found_shopcart.id, shopcart.id)
         self.assertEqual(found_shopcart.name, shopcart.name)
         self.assertEqual(found_shopcart.items, [])
+
+    ######################################################################
+    #  TEST DELETE SHOPCART
+    ######################################################################
+    def test_delete_a_shopcart(self):
+        """It should Delete a shopcart"""
+        shopcarts = Shopcart.get_all()
+        self.assertEqual(shopcarts, [])
+        shopcart = ShopcartFactory()
+        shopcart.create()
+        self.assertIsNotNone(shopcart.id)
+        shopcarts = Shopcart.get_all()
+        self.assertEqual(len(shopcarts), 1)
+        shopcart = shopcarts[0]
+        shopcart.delete()
+        shopcarts = Shopcart.get_all()
+        self.assertEqual(len(shopcarts), 0)
 
 
 ######################################################################
@@ -159,7 +180,7 @@ class TestItem(unittest.TestCase):
         self.assertEqual(items[0]["price"], item.price)
         self.assertEqual(items[0]["quantity"], item.quantity)
         self.assertEqual(items[0]["name"], item.name)
-    
+
     def test_delete_shopcart_item(self):
         """It should Delete a shopcart item"""
         shopcarts = Shopcart.get_all()

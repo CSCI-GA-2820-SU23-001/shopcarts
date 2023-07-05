@@ -76,7 +76,7 @@ def list_shopcarts():
         shopcarts = Shopcart.find_by_name(name)
     else:
         shopcarts = Shopcart.get_all()
-    
+
     results = [shopcart.serialize() for shopcart in shopcarts]
     app.logger.info("Returning %d shopcarts", len(results))
     return jsonify(results), status.HTTP_200_OK
@@ -130,25 +130,26 @@ def get_shopcarts(shopcart_id):
     app.logger.info("Returning shopcart: %s", shopcart.id)
     return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
 
+
 @app.route("/shopcarts/<int:shopcart_id>", methods=['PUT'])
 def update_shopcarts(shopcart_id):
-    
     if not is_expected_content_type(DEFAULT_CONTENT_TYPE):
         return mediatype_not_supported(f"Content-Type must be {DEFAULT_CONTENT_TYPE}")
-        
+
     app.logger.info("Request to update shopcart with id: %s", shopcart_id)
-    
+
     shopcart = Shopcart.get_by_id(shopcart_id)
     if not shopcart:
         abort(
             status.HTTP_404_NOT_FOUND, f"Shopcart with id '{shopcart_id}' was not found."
         )
-    
+
     shopcart.deserialize(request.get_json())
     shopcart.id = shopcart_id
     shopcart.update()
 
     return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
+
 
 ######################################################################
 # DELETE A SHOPCART
@@ -325,7 +326,7 @@ def delete_items(shopcart_id, item_id):
     This endpoint will delete an item based the id specified in the path
     """
     app.logger.info(f"Request to delete item with id='{item_id}' in shopcart with id='{shopcart_id}'.")
-    
+
     item = Item.get_by_id(item_id)
     # See if the item exists and delete it if it does
     if item:

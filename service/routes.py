@@ -120,9 +120,6 @@ def get_shopcarts(shopcart_id):
     app.logger.info("Returning shopcart: %s", shopcart.id)
     return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
 
-
-<<<<<<< HEAD
-=======
 ######################################################################
 # DELETE A SHOPCART
 ######################################################################
@@ -142,7 +139,6 @@ def delete_shopcart(shopcart_id):
     return make_response("", status.HTTP_204_NO_CONTENT)
     
 
->>>>>>> 7afb3bd (delete shopcart)
 ######################################################################
 # I T E M   A P I S
 ######################################################################

@@ -46,12 +46,10 @@ class TestShopcart(unittest.TestCase):
     #  T E S T   C A S E S
     ######################################################################
 
-<<<<<<< HEAD
-=======
     ######################################################################
     #  TEST CREATE / ADD SHOPCART
     ######################################################################
->>>>>>> 7afb3bd (delete shopcart)
+
     def test_create_an_shopcart(self):
         """ It should Create an Shopcart and assert that it exists """
         fake_shopcart = ShopcartFactory()

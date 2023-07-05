@@ -558,6 +558,22 @@ class TestShopcartsService(TestCase):
     def test_delete_shopcart_item_with_none_shopcart(self):
         """ It should return a 404 Not Found response when shopcart is None """
         shopcart = self._create_an_empty_shopcart(1)[0]
+        item = ItemFactory()
+        res = self.client.post(
+            f"{BASE_URL}/{shopcart.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        data = res.get_json()
+        logging.debug(data)
+
+        with patch('service.models.Shopcart.get_by_id', return_value=None):
+            res = self.client.delete(
+                f"{BASE_URL}/{shopcart.id}/items/{item.id}",
+                json=item.serialize(),
+                content_type="application/json",
+            )
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_empty_shopcart(self):
         """It should Delete an empty shopcart"""

@@ -117,7 +117,7 @@ GET /shopcarts
                 "shopcart_id": 1
             }
         ],
-        "name": "Wanyu"
+        "name": "Wan-Yu"
 ]
 ```
 

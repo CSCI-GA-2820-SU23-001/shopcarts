@@ -296,27 +296,8 @@ def delete_items(shopcart_id, item_id):
     This endpoint will delete an item based the id specified in the path
     """
     app.logger.info(f"Request to delete item with id='{item_id}' in shopcart with id='{shopcart_id}'.")
-    # See if the shopcart exists and abort if it doesn't
-    shopcart = Shopcart.get_by_id(shopcart_id)
-    if not shopcart:
-        abort(
-            status.HTTP_404_NOT_FOUND,
-            f"Shopcart with id '{shopcart_id}' could not be found.",
-        )
-
-    # See if the item exists and abort if it doesn't
-    item = None
-    for item_ in shopcart.items:
-        if item_.id == item_id:
-            item = item_
-            break
-
-    if item is None:
-        abort(
-            status.HTTP_404_NOT_FOUND,
-            f"Item with id '{item_id}' could not be found.",
-        )
-
+    
+    item = Item.get_by_id(item_id)
     # See if the item exists and delete it if it does
     if item:
         item.delete()

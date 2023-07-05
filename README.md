@@ -552,25 +552,10 @@ DELETE /shopcarts/<shopcart_id>/items/{item_id}
 | Content-Type | application/json |
 
 #### Response
-##### 200 OK
-```json
-
-```
-
-##### 404 Not Found
+##### 204 No Content
 ```json
 {
-  "error": "Not Found",
-  "message": "404 Not Found: Shopcart with id '2' could not be found.",
-  "status": 404
-}
-```
-
-```json
-{
-  "error": "Not Found",
-  "message": "404 Not Found: Item with id '45' could not be found.",
-  "status": 404
+  "status": 204
 }
 ```
 

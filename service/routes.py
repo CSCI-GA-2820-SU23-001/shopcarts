@@ -25,8 +25,7 @@ DELETE /shopcarts/{shopcart_id}/items/{item_id} - Delete the item from the shopc
 from flask import jsonify, request, url_for, make_response, abort
 
 from service.common import status  # HTTP Status Codes
-from service.common.error_handlers import request_validation_error, bad_request, not_found, internal_server_error, \
-    mediatype_not_supported
+from service.common.error_handlers import request_validation_error, bad_request, not_found, mediatype_not_supported
 from service.models import Shopcart, Item, DataValidationError
 from . import app
 
@@ -68,9 +67,10 @@ def is_expected_content_type(expected_content_type):
 
 @app.route("/shopcarts", methods=["GET"])
 def list_shopcarts():
+    """ List shopcart items """
     app.logger.info("Request for shopcart list")
-    shopcarts = []
 
+    shopcarts = []
     name = request.args.get("name")
     if name:
         shopcarts = Shopcart.find_by_name(name)
@@ -93,18 +93,13 @@ def create_shopcart():
         shopcart = Shopcart()
         shopcart.deserialize(request.get_json())
         app.logger.info("Request body deserialized to shopcart")
-    except DataValidationError as e:
-        return request_validation_error(e)
-    except Exception as e:
-        return internal_server_error(e)
+    except DataValidationError as error:
+        return request_validation_error(error)
 
-    try:
-        shopcart.create()
-        app.logger.info(f"New shopcart created with id={shopcart.id}")
-        shopcart_js = shopcart.serialize()
-        return make_response(jsonify(shopcart_js), status.HTTP_201_CREATED)
-    except Exception as e:
-        return internal_server_error(e)
+    shopcart.create()
+    app.logger.info("New shopcart created with id=%s", shopcart.id)
+    shopcart_js = shopcart.serialize()
+    return make_response(jsonify(shopcart_js), status.HTTP_201_CREATED)
 
 
 @app.route("/shopcarts/<int:shopcart_id>", methods=["GET"])
@@ -115,13 +110,7 @@ def get_shopcarts(shopcart_id):
     """
     app.logger.info("Request for Shopcart with id: %s", shopcart_id)
 
-    # See if the shopcart exists and abort if it doesn't
-    # try:
-    #     shopcart = Shopcart.get_by_id(shopcart_id)
-    # except Exception as e:
-    #     return internal_server_error(e)
     shopcart = Shopcart.get_by_id(shopcart_id)
-
     if not shopcart:
         abort(
             status.HTTP_404_NOT_FOUND,
@@ -133,6 +122,7 @@ def get_shopcarts(shopcart_id):
 
 @app.route("/shopcarts/<int:shopcart_id>", methods=['PUT'])
 def update_shopcarts(shopcart_id):
+    """ Update shopcart content """
     if not is_expected_content_type(DEFAULT_CONTENT_TYPE):
         return mediatype_not_supported(f"Content-Type must be {DEFAULT_CONTENT_TYPE}")
 
@@ -177,41 +167,40 @@ def delete_shopcart(shopcart_id):
 @app.route("/shopcarts/<int:shopcart_id>/items", methods=["POST"])
 def add_shopcart_item(shopcart_id):
     """ Adds a new item to shopcart, and return the newly created item """
+
+    if not is_expected_content_type(DEFAULT_CONTENT_TYPE):
+        return mediatype_not_supported(f"Content-Type must be {DEFAULT_CONTENT_TYPE}")
+
+    shopcart = Shopcart.get_by_id(shopcart_id)
+
+    if not shopcart:
+        return not_found(f"Shopcart with id='{shopcart_id}' was not found.")
+    app.logger.info("Found shopcart with id=%s", shopcart.id)
+
+    app.logger.info("Start creating an item")
+    item = Item()
+    item.deserialize(request.get_json())  # validate request body schema
+    app.logger.info("Request body deserialized to item.")
+
+    # # item quantity should be greater than zero
+    # if item.quantity <= 0:
+    #     app.logger.error(f"Invalid item quantity assignment to {item.quantity}.")
+    #     return bad_request(f"Item quantity should be a positive number.")
+    if item.quantity != 1:
+        app.logger.error("Invalid item quantity assignment to %s.", item.quantity)
+        return bad_request("Quantity of a new item should always be one.")
+
     try:
-        if not is_expected_content_type(DEFAULT_CONTENT_TYPE):
-            return mediatype_not_supported(f"Content-Type must be {DEFAULT_CONTENT_TYPE}")
-
-        shopcart = Shopcart.get_by_id(shopcart_id)
-
-        if not shopcart:
-            return not_found(f"Shopcart with id='{shopcart_id}' was not found.")
-        app.logger.info(f"Found shopcart with id={shopcart.id}")
-
-        app.logger.info("Start creating an item")
-        item = Item()
-        item.deserialize(request.get_json())  # validate request body schema
-        app.logger.info("Request body deserialized to item.")
-
-        # # item quantity should be greater than zero
-        # if item.quantity <= 0:
-        #     app.logger.error(f"Invalid item quantity assignment to {item.quantity}.")
-        #     return bad_request(f"Item quantity should be a positive number.")
-        if item.quantity != 1:
-            app.logger.error(f"Invalid item quantity assignment to {item.quantity}.")
-            return bad_request("Quantity of a new item should always be one.")
-
         # item.create()
         # app.logger.info(f"New item with id={item.id} created.")
         shopcart.items.append(item)
         shopcart.update()
-        app.logger.info(f"New item with id={item.id} added to shopcart with id={shopcart.id}.")
+        app.logger.info("New item with id=%s added to shopcart with id=%s.", item.id, shopcart.id)
 
         item_js = item.serialize()
         return make_response(jsonify(item_js), status.HTTP_201_CREATED)
-    except DataValidationError as e:
-        return request_validation_error(e)
-    except Exception as e:
-        return internal_server_error(e)
+    except DataValidationError as error:
+        return request_validation_error(error)
 
 
 @app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["GET"])
@@ -247,72 +236,64 @@ def get_items(shopcart_id, item_id):
 @app.route("/shopcarts/<int:shopcart_id>/items", methods=["GET"])
 def list_shopcart_items(shopcart_id):
     """ Returns a list of items in the shopcart """
-    app.logger.info(f"Get items in the shopcart with id={shopcart_id}")
+    app.logger.info("Get items in the shopcart with id=%s", shopcart_id)
 
-    try:
-        shopcart = Shopcart.get_by_id(shopcart_id)
-    except Exception as e:
-        return internal_server_error(e)
-
+    shopcart = Shopcart.get_by_id(shopcart_id)
     if not shopcart:
         return not_found(f"Shopcart with id='{shopcart_id}' was not found.")
-    app.logger.info(f"Found shopcart with id={shopcart.id}")
+    app.logger.info("Found shopcart with id=%s", shopcart.id)
 
-    try:
-        items = [item.serialize() for item in shopcart.items]
-        return make_response(jsonify(items), status.HTTP_200_OK)
-    except Exception as e:
-        return internal_server_error(e)
+    items = [item.serialize() for item in shopcart.items]
+    return make_response(jsonify(items), status.HTTP_200_OK)
 
 
 @app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["PUT"])
 def update_shopcart_item(shopcart_id, item_id):
     """ Updates an existing item in shopcart, and return the updated item """
+
+    if not is_expected_content_type(DEFAULT_CONTENT_TYPE):
+        return mediatype_not_supported(f"Content-Type must be {DEFAULT_CONTENT_TYPE}")
+
+    req_body = request.get_json()
+    req_body["shopcart_id"] = shopcart_id
+    req_body["id"] = item_id
+    req_item = Item()
+    req_item.deserialize(req_body)  # validate request body schema
+    app.logger.info("Request body deserialized to item.")
+
+    if req_item.quantity < 1:
+        app.logger.error('Invalid item quantity %s.', req_item.quantity)
+        return bad_request("Item quantity should be at least one.")
+
+    shopcart = Shopcart.get_by_id(shopcart_id)
+
+    if not shopcart:
+        return not_found(f"Shopcart with id='{shopcart_id}' was not found.")
+    app.logger.info("Found shopcart with id=%s", shopcart_id)
+
+    # search for the corresponding item in shopcart
+    item = None
+    for item_ in shopcart.items:
+        if item_.id == item_id:
+            item = item_
+            break
+
+    if item is None:
+        return bad_request(f"Item with id='{item_id}' was not found in shopcart with id='{shopcart_id}'.")
+    app.logger.info("Found item with id='%s' in shopcart with id='%s'.", item_id, shopcart_id)
+
     try:
-        if not is_expected_content_type(DEFAULT_CONTENT_TYPE):
-            return mediatype_not_supported(f"Content-Type must be {DEFAULT_CONTENT_TYPE}")
-
-        req_body = request.get_json()
-        req_body["shopcart_id"] = shopcart_id
-        req_body["id"] = item_id
-        req_item = Item()
-        req_item.deserialize(req_body)  # validate request body schema
-        app.logger.info("Request body deserialized to item.")
-
-        if req_item.quantity < 1:
-            app.logger.error(f'Invalid item quantity {req_item.quantity}.')
-            return bad_request("Item quantity should be at least one.")
-
-        shopcart = Shopcart.get_by_id(shopcart_id)
-
-        if not shopcart:
-            return not_found(f"Shopcart with id='{shopcart_id}' was not found.")
-        app.logger.info(f"Found shopcart with id={shopcart_id}")
-
-        # search for the corresponding item in shopcart
-        item = None
-        for item_ in shopcart.items:
-            if item_.id == item_id:
-                item = item_
-                break
-
-        if item is None:
-            return bad_request(f"Item with id='{item_id}' was not found in shopcart with id='{shopcart_id}'.")
-        app.logger.info(f"Found item with id='{item_id}' in shopcart with id='{shopcart_id}'.")
-
-        app.logger.info(f"Start updating item with id='{item_id}' in shopcart with id='{shopcart_id}'.")
+        app.logger.info("Start updating item with id='%s' in shopcart with id='%s'.", item_id, shopcart_id)
         item.name = req_item.name
         item.quantity = req_item.quantity
         item.price = req_item.price
         item.update()
-        app.logger.info(f"Done updating item with id='{item_id}' in shopcart with id='{shopcart_id}'.")
+        app.logger.info("Done updating item with id='%s' in shopcart with id='%s'.", item_id, shopcart_id)
 
         item_js = item.serialize()
         return make_response(jsonify(item_js), status.HTTP_200_OK)
-    except DataValidationError as e:
-        return request_validation_error(e)
-    except Exception as e:
-        return internal_server_error(e)
+    except DataValidationError as error:
+        return request_validation_error(error)
 
 
 ######################################################################
@@ -325,7 +306,7 @@ def delete_items(shopcart_id, item_id):
 
     This endpoint will delete an item based the id specified in the path
     """
-    app.logger.info(f"Request to delete item with id='{item_id}' in shopcart with id='{shopcart_id}'.")
+    app.logger.info("Request to delete item with id='%s' in shopcart with id='%s'.", item_id, shopcart_id)
 
     item = Item.get_by_id(item_id)
     # See if the item exists and delete it if it does

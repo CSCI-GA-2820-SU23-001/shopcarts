@@ -7,7 +7,7 @@ Test cases can be run with the following:
 """
 import logging
 from unittest import TestCase
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock, patch
 
 from service import app
 from service.common import status  # HTTP Status Codes
@@ -19,6 +19,7 @@ from . import DATABASE_URI, BASE_URL
 NONEXIST_SHOPCART_ID = "0123"
 
 
+# pylint: disable=R0904
 class TestShopcartsService(TestCase):
     """ REST API Server Tests """
 
@@ -66,7 +67,7 @@ class TestShopcartsService(TestCase):
             new_shopcart = resp.get_json()
             shopcart.id = new_shopcart["id"]
             shopcart.name = new_shopcart["name"]
-            logging.info(f"{shopcart.__repr__} created for test")
+            logging.info("%s created for test", shopcart.__repr__)
             shopcarts.append(shopcart)
         return shopcarts
 
@@ -84,7 +85,7 @@ class TestShopcartsService(TestCase):
             )
             shopcart.items.append(item)
             item.shopcart_id = shopcart.id
-            logging.info(f"{item.__repr__} created for test")
+            logging.info("%s created for test", item.__repr__)
         return shopcart
 
     ######################################################################
@@ -174,19 +175,11 @@ class TestShopcartsService(TestCase):
         resp = self.client.get(f"{BASE_URL}/{shopcart_id}/items")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-    @patch.object(Shopcart, 'get_by_id', MagicMock(side_effect=Exception("DBAPIErr")))
     def test_list_shopcart_items_shopcart_get_by_id_error(self):
-        """ It should get internal server error if there's exception in Shopcart.get_by_id """
-        resp = self.client.get(f"{BASE_URL}/0/items")
-        self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    @patch('service.models.Shopcart.get_by_id')
-    def test_list_shopcart_items_none_items_error(self, mock_shopcart_get_by_id):
-        """ It should get internal server error if Shopcart.items is None """
-        mock_shopcart = Mock(items=None)
-        mock_shopcart_get_by_id.return_value = mock_shopcart
-        resp = self.client.get(f"{BASE_URL}/0/items")
-        self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        """ It should get internal server error if shopcart is none """
+        with patch('service.models.Shopcart.get_by_id', return_value=None):
+            resp = self.client.get(f"{BASE_URL}/0/items")
+            self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_list_shopcarts(self):
         """It should return all shopcarts"""
@@ -287,31 +280,6 @@ class TestShopcartsService(TestCase):
             content_type="application/json",
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-
-    @patch.object(Shopcart, 'get_by_id', MagicMock(side_effect=Exception("DBAPIErr")))
-    def test_add_shopcart_items_shopcart_by_id_error(self):
-        """ It should get internal server error when add items if there's exception in Shopcart.get_by_id """
-        shopcart = self._create_an_empty_shopcart(1)[0]
-        item = ItemFactory()
-        res = self.client.post(
-            f"{BASE_URL}/{shopcart.id}/items",
-            json=item.serialize(),
-            content_type="application/json",
-        )
-        self.assertEqual(res.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    @patch('service.models.Shopcart.get_by_id')
-    def test_add_shopcart_items_none_items_error(self, mock_shopcart_get_by_id):
-        """ It should get internal server error when add items if Shopcart.items is None """
-        mock_shopcart = Mock(items=None)
-        mock_shopcart_get_by_id.return_value = mock_shopcart
-        item = ItemFactory()
-        res = self.client.post(
-            f"{BASE_URL}/0/items",
-            json=item.serialize(),
-            content_type="application/json",
-        )
-        self.assertEqual(res.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @patch.object(Shopcart, 'update')
     def test_add_shopcart_items_data_validation_error(self, mock_shopcart_update):
@@ -557,7 +525,7 @@ class TestShopcartsService(TestCase):
         logging.debug(res.get_json())
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    @patch.object(Item, 'update', MagicMock(side_effect=Exception("DBAPIErr")))
+    @patch.object(Item, 'update', MagicMock(side_effect=DataValidationError))
     def test_update_shopcart_item_with_item_update_error(self):
         """ It should return a 500 Internal Server Error response if Item.update() errors """
         shopcart = self._create_an_empty_shopcart(1)[0]
@@ -579,7 +547,7 @@ class TestShopcartsService(TestCase):
             content_type="application/json",
         )
         logging.debug(res.get_json())
-        self.assertEqual(res.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_shopcart_item_with_none_shopcart(self):
         """ It should return a 404 Not Found response when shopcart is None """

@@ -23,10 +23,12 @@ from factory.fuzzy import FuzzyChoice
 from service.models import Shopcart, Item
 
 
+# pylint: disable=R0903
 class ShopcartFactory(factory.Factory):
     """Creates fake Shopcarts"""
 
     class Meta:
+        """ ShopcartFactory Meta """
         model = Shopcart
 
     id = factory.Sequence(lambda n: n)
@@ -42,10 +44,12 @@ class ShopcartFactory(factory.Factory):
             self.items = extracted
 
 
+# pylint: disable=R0903
 class ItemFactory(factory.Factory):
     """Creates fake Items"""
 
     class Meta:
+        """ ItemFactory Meta """
         model = Item
 
     id = factory.Sequence(lambda n: n)
@@ -53,4 +57,3 @@ class ItemFactory(factory.Factory):
     name = FuzzyChoice(choices=["Air Pods", "iPhone SE", "Macbook Air"])
     quantity = 1
     price = factory.Faker("pyfloat", positive=True)
-    # shopcart = factory.SubFactory(ShopcartFactory)

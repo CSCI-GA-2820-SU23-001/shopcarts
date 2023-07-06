@@ -41,7 +41,7 @@ class ModelBase:
     """ The shared base for models """
 
     def __init__(self):
-        self.id = None
+        self.id = None  # pylint: disable=C0103
 
     @abstractmethod
     def serialize(self) -> dict:
@@ -54,17 +54,17 @@ class ModelBase:
     @classmethod
     def init_db(cls, app):
         """ Initialize DB Table """
-        logger.info(f"Start initializing the {cls.__name__} Table")
+        logger.info("Start initializing the %s Table", cls.__name__)
         cls.app = app
         db.init_app(app)  # init the Flask app for SQLAlchemy
         app.app_context().push()
         db.create_all()  # create SQLAlchemy table
-        logger.info(f"Done initializing the {cls.__name__} Table")
+        logger.info("Done initializing the %s Table", cls.__name__)
 
     @classmethod
     def get_all(cls):
         """ Get all objects in DB table """
-        logger.info(f"Get all {cls.__name__}s")
+        logger.info("Get all %s", cls.__name__)
         return cls.query.all()
 
     def create(self):
@@ -86,10 +86,10 @@ class ModelBase:
         db.session.commit()
 
     @classmethod
-    def get_by_id(cls, id):
+    def get_by_id(cls, pk_id):
         """ Get shopcart by primary key: id """
-        logger.info(f"Get {cls.__name__} by id={id}")
-        return cls.query.get(id)
+        logger.info("Get %s by id=%d", cls.__name__, pk_id)
+        return cls.query.get(pk_id)
 
 
 class Shopcart(db.Model, ModelBase):
@@ -146,12 +146,12 @@ class Shopcart(db.Model, ModelBase):
         Args:
             name (string): the name of the Shopcarts you want to match
         """
-        logger.info(f"Get {cls.__name__} by name={name}")
+        logger.info("Get %s by name=%s", cls.__name__, name)
         return cls.query.filter(cls.name == name)
 
     @classmethod
     def find_id(cls):
-
+        """Find the length of existing shopcart records in database"""
         result = cls.query.with_entities(Shopcart.id).all()
         ids = []
         for res in result:

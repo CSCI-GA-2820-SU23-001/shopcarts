@@ -602,38 +602,18 @@ class TestShopcartsService(TestCase):
     def test_delete_empty_shopcart(self):
         """It should Delete an empty shopcart"""
         shopcart = self._create_an_empty_shopcart(1)[0]
-        item = ItemFactory()
-        res = self.client.post(
-            f"{BASE_URL}/{shopcart.id}/items",
-            json=item.serialize(),
-            content_type="application/json",
-        )
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        data = res.get_json()
-        logging.debug(data)
-        shopcart_id = data["id"]
-        res = self.client.delete(f"{BASE_URL}/{shopcart_id}")
+        res = self.client.delete(f"{BASE_URL}/{shopcart.id}")
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
-        res = self.client.get(f"{BASE_URL}/{shopcart_id}")
+        res = self.client.get(f"{BASE_URL}/{shopcart.id}")
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_nonempty_shopcart(self):
         """It should Delete a nonempty shopcart"""
         shopcart = self._create_a_shopcart_with_items(1)
-        item = ItemFactory()
-        res = self.client.post(
-            f"{BASE_URL}/{shopcart.id}/items",
-            json=item.serialize(),
-            content_type="application/json",
-        )
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        data = res.get_json()
-        logging.debug(data)
-        shopcart_id = data["id"]
-        res = self.client.delete(f"{BASE_URL}/{shopcart_id}")
+        res = self.client.delete(f"{BASE_URL}/{shopcart.id}")
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         # Make sure shopcart is deleted
-        res = self.client.get(f"{BASE_URL}/{shopcart_id}")
+        res = self.client.get(f"{BASE_URL}/{shopcart.id}")
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_invalid_shopcart(self):

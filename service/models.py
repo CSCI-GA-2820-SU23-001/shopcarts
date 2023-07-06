@@ -86,10 +86,10 @@ class ModelBase:
         db.session.commit()
 
     @classmethod
-    def get_by_id(cls, id):
+    def get_by_id(cls, pk_id):
         """ Get shopcart by primary key: id """
-        logger.info("Get %s by id=%d", cls.__name__, item_id)
-        return cls.query.get(id)
+        logger.info("Get %s by id=%d", cls.__name__, pk_id)
+        return cls.query.get(pk_id)
 
 
 class Shopcart(db.Model, ModelBase):
@@ -146,7 +146,7 @@ class Shopcart(db.Model, ModelBase):
         Args:
             name (string): the name of the Shopcarts you want to match
         """
-        logger.info(f"Get {cls.__name__} by name={name}")
+        logger.info("Get %s by name=%s", cls.__name__, name)
         return cls.query.filter(cls.name == name)
 
     @classmethod

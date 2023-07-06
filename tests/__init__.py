@@ -1,3 +1,7 @@
+"""
+Variables shared among tests
+"""
+
 import os
 
 DATABASE_URI = os.getenv(

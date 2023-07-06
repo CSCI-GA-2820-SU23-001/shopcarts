@@ -8,7 +8,6 @@ import unittest
 from service import app
 from service.models import Shopcart, Item, db, DataValidationError
 from tests.factories import ShopcartFactory, ItemFactory
-
 from . import DATABASE_URI
 
 
@@ -110,7 +109,7 @@ class TestShopcart(unittest.TestCase):
     def test_serialize_a_shopcart(self):
         """It should Serialize a shopcart"""
         shopcart = ShopcartFactory()
-        item = ItemFactory(shopcart_id = shopcart.id)
+        item = ItemFactory(shopcart_id=shopcart.id)
         shopcart.items.append(item)
         serial_shopcart = shopcart.serialize()
         self.assertEqual(serial_shopcart['id'], shopcart.id)
@@ -126,7 +125,7 @@ class TestShopcart(unittest.TestCase):
     def test_deserialize_a_shopcart(self):
         """It should deserialize a shopcart"""
         shopcart = ShopcartFactory()
-        item = ItemFactory(shopcart_id = shopcart.id)
+        item = ItemFactory(shopcart_id=shopcart.id)
         shopcart.items.append(item)
         shopcart.create()
         serial_shopcart = shopcart.serialize()

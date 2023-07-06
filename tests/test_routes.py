@@ -11,11 +11,10 @@ from unittest.mock import MagicMock, Mock, patch
 
 from service import app
 from service.common import status  # HTTP Status Codes
+from service.models import DataValidationError
 from service.models import db, init_db, Shopcart, Item
 from tests.factories import ShopcartFactory, ItemFactory
 from . import DATABASE_URI, BASE_URL
-
-from service.models import DataValidationError
 
 NONEXIST_SHOPCART_ID = "0123"
 
@@ -54,7 +53,7 @@ class TestShopcartsService(TestCase):
 
     def _create_an_empty_shopcart(self, shopcart_count):
         """ Factory method to create empty shopcarts """
-        shopcarts = list()
+        shopcarts = []
         for _ in range(shopcart_count):
             shopcart = ShopcartFactory()
             resp = self.client.post(
@@ -67,11 +66,10 @@ class TestShopcartsService(TestCase):
             new_shopcart = resp.get_json()
             shopcart.id = new_shopcart["id"]
             shopcart.name = new_shopcart["name"]
-            logging.info(f"{shopcart.__repr__()} created for test")
+            logging.info(f"{shopcart.__repr__} created for test")
             shopcarts.append(shopcart)
         return shopcarts
 
-    # TODO: add different types of item to shopcart
     def _create_a_shopcart_with_items(self, item_count):
         """ Factory method to create a shopcart with items """
         shopcart = self._create_an_empty_shopcart(1)[0]
@@ -86,7 +84,7 @@ class TestShopcartsService(TestCase):
             )
             shopcart.items.append(item)
             item.shopcart_id = shopcart.id
-            logging.info(f"{item.__repr__()} created for test")
+            logging.info(f"{item.__repr__} created for test")
         return shopcart
 
     ######################################################################
@@ -220,11 +218,10 @@ class TestShopcartsService(TestCase):
     def test_list_shopcart_of_a_customer(self):
         """It should return a shopcart within a specific customer"""
         shopcart_a = self._create_a_shopcart_with_items(1)
-        shopcart_b = self._create_a_shopcart_with_items(2)
         self.assertEqual(type(shopcart_a.name), str)
         name = Shopcart.find_by_name(shopcart_a.name)
         test_shopcart = name.scalar()
-        url = BASE_URL+"?name=" + shopcart_a.name
+        url = BASE_URL + "?name=" + shopcart_a.name
         resp = self.client.get(f"{url}")
         data = resp.get_json()
         self.assertEqual(type(data[0]['name']), str)
@@ -685,7 +682,7 @@ class TestShopcartsService(TestCase):
     def test_create_a_shopcart_with_invalid_format(self):
         """It should return a 415 Unsupported media type"""
         shopcart = ShopcartFactory()
-        resp = self.client.post(f"{BASE_URL}", 
+        resp = self.client.post(f"{BASE_URL}",
                                 json=shopcart.serialize(),
                                 content_type="application/pdf")
         self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
@@ -693,7 +690,7 @@ class TestShopcartsService(TestCase):
     def test_create_a_shopcart_with_bad_request(self):
         """It should return a 400 Bad request response"""
         shopcart = ShopcartFactory()
-        resp = self.client.post(f"{BASE_URL}", 
+        resp = self.client.post(f"{BASE_URL}",
                                 json=shopcart.serialize()['name'],
                                 content_type="application/json")
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
@@ -709,7 +706,7 @@ class TestShopcartsService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_a_shopcart_with_invalid_content_type(self):
-        """"""
+        """It should return a 415 Unsupported Media Type response when the given Content-Type is no application/json"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         self.assertNotEqual(shopcart.name, "DevOps")
         shopcart.name = "DevOps"
@@ -722,8 +719,8 @@ class TestShopcartsService(TestCase):
     def test_add_item_to_nonexistent_shopcart(self):
         """It should return Shopcart with id='{shopcart_id}' was not found"""
         shopcart = self._create_an_empty_shopcart(1)[0]
-        test_id = shopcart.id+1
-        item = ItemFactory(shopcart_id = test_id)
+        test_id = shopcart.id + 1
+        item = ItemFactory(shopcart_id=test_id)
         self.assertNotEqual(test_id, shopcart.id)
         resp = self.client.post(f"{BASE_URL}/{test_id}/items",
                                 json=item.serialize(),
@@ -734,7 +731,7 @@ class TestShopcartsService(TestCase):
         """It should return a 404 Not found response"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         # item = ItemFactory(shopcart_id = shopcart.id)
-        test_id = shopcart.id+1
+        test_id = shopcart.id + 1
         resp = self.client.get(f"{BASE_URL}/{test_id}/items",
                                json=shopcart.serialize(),
                                content_type="application/json")

@@ -67,7 +67,7 @@ class TestShopcartsService(TestCase):
             new_shopcart = resp.get_json()
             shopcart.id = new_shopcart["id"]
             shopcart.name = new_shopcart["name"]
-            logging.info("%s created for test", shopcart.__repr__)
+            logging.info("%s created for test", repr(shopcart))
             shopcarts.append(shopcart)
         return shopcarts
 
@@ -85,7 +85,7 @@ class TestShopcartsService(TestCase):
             )
             shopcart.items.append(item)
             item.shopcart_id = shopcart.id
-            logging.info("%s created for test", item.__repr__)
+            logging.info("%s created for test", repr(item))
         return shopcart
 
     ######################################################################

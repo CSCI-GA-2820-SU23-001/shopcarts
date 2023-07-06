@@ -220,7 +220,6 @@ PUT /shopcarts/{shopcarts_id}
 #### Request Body
 ```json
 {
-   "id": 34,
    "name": "Fitzwilliam Darcy"
 }
 ```

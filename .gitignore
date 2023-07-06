@@ -105,3 +105,6 @@ ENV/
 
 # Project Shopcarts
 .devcontainer/.env
+
+# PyCharm
+.idea

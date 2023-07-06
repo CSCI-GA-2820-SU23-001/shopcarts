@@ -94,42 +94,33 @@ GET /shopcarts
 ##### 200 OK
 ```json
 [
-    {
-        "id": 27,
-        "items": [],
-        "name": "Yuzhao"
-    },
-    {
-        "id": 1,
-        "items": [
-            {
-                "id": 2,
-                "name": "iPad",
-                "price": 500.0,
-                "quantity": 2
-                "shopcart_id": 1
-            },
-            {
-                "id": 5,
-                "name": "Switch",
-                "price": 399.0,
-                "quantity": 1
-                "shopcart_id": 1
-            }
-        ],
-        "name": "Wan-Yu"
+  {
+    "id": 27,
+    "items": [],
+    "name": "Yuzhao"
+  },
+  {
+    "id": 1,
+    "items": [
+      {
+        "id": 2,
+        "name": "iPad",
+        "price": 500.0,
+        "quantity": 2,
+        "shopcart_id": 1
+      },
+      {
+        "id": 5,
+        "name": "Switch",
+        "price": 399.0,
+        "quantity": 1,
+        "shopcart_id": 1
+      }
+    ],
+    "name": "Wan-Yu"
+  }
 ]
 ```
-
-##### 500 Internal Server Error
-```json
-{
-  "error": "Internal Server Error",
-  "message": "${error_message}",
-  "status": 500
-}
-```
-
 
 ### Create Shopcart
 Create a new shopcart.
@@ -177,16 +168,6 @@ POST /shopcarts
 }
 ```
 
-##### 500 Internal Server Error
-```json
-{
-  "error": "Internal Server Error",
-  "message": "${error_message}",
-  "status": 500
-}
-```
-
-
 ### Get Shopcart
 Get a shopcart by id.
 
@@ -225,16 +206,6 @@ GET /shopcarts/{shopcarts_id}
 }
 ```
 
-##### 500 Internal Server Error
-```json
-{
-  "error": "Internal Server Error",
-  "message": "${error_message}",
-  "status": 500
-}
-```
-
-
 ### Update Shopcart
 Update an existing shopcart.
 
@@ -249,7 +220,6 @@ PUT /shopcarts/{shopcarts_id}
 #### Request Body
 ```json
 {
-   "id": 34,
    "name": "Fitzwilliam Darcy"
 }
 ```
@@ -282,16 +252,6 @@ PUT /shopcarts/{shopcarts_id}
 }
 ```
 
-##### 500 Internal Server Error
-```json
-{
-  "error": "Internal Server Error",
-  "message": "${error_message}",
-  "status": 500
-}
-```
-
-
 ### Delete Shopcart
 Delete an existing shopcart.
 
@@ -306,21 +266,8 @@ DELETE /shopcarts/{shopcarts_id}
 #### Response
 ##### 204 No Content
 ```json
-{
-  "status": 204
-}
+
 ```
-
-
-##### 500 Internal Server Error
-```json
-{
-  "error": "Internal Server Error",
-  "message": "${error_message}",
-  "status": 500
-}
-```
-
 
 ### List Shopcart Items
 Get a list of items in the shopcart.
@@ -355,16 +302,6 @@ GET /shopcarts/{shopcart_id}/items
   "status": 404
 }
 ```
-
-##### 500 Internal Server Error
-```json
-{
-  "error": "Internal Server Error",
-  "message": "${error_message}",
-  "status": 500
-}
-```
-
 
 ### Create Shopcart Item
 Add a new item to shopcart.
@@ -426,16 +363,6 @@ POST /shopcarts/<shopcart_id>/items
 }
 ```
 
-##### 500 Internal Server Error
-```json
-{
-  "error": "Internal Server Error",
-  "message": "${error_message}",
-  "status": 500
-}
-```
-
-
 ### Get Shopcart Item
 Get the contents of a shopcart item.
 
@@ -475,16 +402,6 @@ GET /shopcarts/{shopcart_id}/items/{item_id}
   "status": 404
 }
 ```
-
-##### 500 Internal Server Error
-```json
-{
-  "error": "Internal Server Error",
-  "message": "${error_message}",
-  "status": 500
-}
-```
-
 
 ### Update Shopcart Item
 Update an existing item in shopcart.
@@ -555,16 +472,6 @@ PUT /shopcarts/<shopcart_id>/items/{item_id}
 }
 ```
 
-##### 500 Internal Server Error
-```json
-{
-  "error": "Internal Server Error",
-  "message": "${error_message}",
-  "status": 500
-}
-```
-
-
 ### Delete Shopcart Item
 Delete an existing item in shopcart.
 
@@ -579,20 +486,8 @@ DELETE /shopcarts/<shopcart_id>/items/{item_id}
 #### Response
 ##### 204 No Content
 ```json
-{
-  "status": 204
-}
-```
 
-##### 500 Internal Server Error
-```json
-{
-  "error": "Internal Server Error",
-  "message": "${error_message}",
-  "status": 500
-}
 ```
-
 
 ## Database Connection
 

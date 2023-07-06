@@ -94,30 +94,31 @@ GET /shopcarts
 ##### 200 OK
 ```json
 [
-    {
-        "id": 27,
-        "items": [],
-        "name": "Yuzhao"
-    },
-    {
-        "id": 1,
-        "items": [
-            {
-                "id": 2,
-                "name": "iPad",
-                "price": 500.0,
-                "quantity": 2
-                "shopcart_id": 1
-            },
-            {
-                "id": 5,
-                "name": "Switch",
-                "price": 399.0,
-                "quantity": 1
-                "shopcart_id": 1
-            }
-        ],
-        "name": "Wan-Yu"
+  {
+    "id": 27,
+    "items": [],
+    "name": "Yuzhao"
+  },
+  {
+    "id": 1,
+    "items": [
+      {
+        "id": 2,
+        "name": "iPad",
+        "price": 500.0,
+        "quantity": 2,
+        "shopcart_id": 1
+      },
+      {
+        "id": 5,
+        "name": "Switch",
+        "price": 399.0,
+        "quantity": 1,
+        "shopcart_id": 1
+      }
+    ],
+    "name": "Wan-Yu"
+  }
 ]
 ```
 
@@ -266,9 +267,7 @@ DELETE /shopcarts/{shopcarts_id}
 #### Response
 ##### 204 No Content
 ```json
-{
-  "status": 204
-}
+
 ```
 
 ### List Shopcart Items
@@ -488,9 +487,7 @@ DELETE /shopcarts/<shopcart_id>/items/{item_id}
 #### Response
 ##### 204 No Content
 ```json
-{
-  "status": 204
-}
+
 ```
 
 ## Database Connection

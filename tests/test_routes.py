@@ -549,6 +549,7 @@ class TestShopcartsService(TestCase):
         logging.debug(res.get_json())
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
+
     def test_update_shopcart_item_with_none_shopcart(self):
         """ It should return a 404 Not Found response when shopcart is None """
         shopcart = self._create_an_empty_shopcart(1)[0]
@@ -570,6 +571,62 @@ class TestShopcartsService(TestCase):
                 content_type="application/json",
             )
             self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+ 
+    def test_clear_empty_shopcart(self):
+        """ It should clear the items but not delete the shopcart """
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        res = self.client.put(
+            f'{BASE_URL}/{shopcart.id}/clear'
+            )
+        logging.debug(res)
+        self.assertEqual(res.status_code, status.HTTP_200_OK) #was the PUT rqst to clear successful
+        logging.debug(res.status_code)
+        res = self.client.get(f'{BASE_URL}/{shopcart.id}')
+        logging.debug(res.status_code)
+        self.assertEqual(res.status_code, status.HTTP_200_OK) # was the GET rqst successful
+        data = res.get_json()
+        logging.debug(data)
+        self.assertEqual(data['id'], shopcart.id) # is the id of the shopcart we got the same as the one we created
+        self.assertEqual(data['items'], []) # is the items list empty
+                        
+
+    def test_clear_shopcart_with_items(self):
+        """ It should clear the items but not delete the shopcart """
+        shopcart = self._create_a_shopcart_with_items(3)
+        res = self.client.get(
+            f'{BASE_URL}/{shopcart.id}'
+        )
+        data = res.get_json()
+        logging.debug(data)
+        print(data)  # should have 3 items
+        res = self.client.put(
+            f'{BASE_URL}/{shopcart.id}/clear'
+            )
+        logging.debug(res)
+        self.assertEqual(res.status_code, status.HTTP_200_OK) # was the PUT rqst to clear successful
+        logging.debug(res.status_code)
+        res = self.client.get(f'{BASE_URL}/{shopcart.id}')
+        logging.debug(res.status_code)
+        self.assertEqual(res.status_code, status.HTTP_200_OK) # was the GET rqst successful
+        data = res.get_json()
+        logging.debug(data)
+        print("after: ", data) # should be empty list
+        self.assertEqual(data['id'], shopcart.id) # is the id of the shopcart we got the same as the one we created
+        self.assertEqual(data['items'], []) # is the items list empty
+
+
+    def test_clear_shopcart_not_found(self):
+        """It should return a 404 not Found response for non-existent shopcart"""
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        test_id = shopcart.id + 1
+        #item = ItemFactory(shopcart_id=test_id)
+        self.assertNotEqual(test_id, shopcart.id) # check mock id is diff from created id
+        res = self.client.put(
+        f'{BASE_URL}/{test_id}/clear'
+        )
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
 
     def test_delete_item(self):
         """It should Delete an Item"""

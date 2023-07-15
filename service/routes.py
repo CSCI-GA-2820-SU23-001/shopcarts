@@ -96,7 +96,7 @@ def create_shopcart():
     except DataValidationError as error:
         return request_validation_error(error)
 
-    shopcart.create()
+    shopcart.create() # store in table
     app.logger.info("New shopcart created with id=%s", shopcart.id)
     shopcart_js = shopcart.serialize()
     return make_response(jsonify(shopcart_js), status.HTTP_201_CREATED)
@@ -141,6 +141,37 @@ def update_shopcarts(shopcart_id):
     return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
 
 
+
+######################################################################
+# CLEAR A SHOPCART
+######################################################################
+@app.route("/shopcarts/<int:shopcart_id>/clear", methods=["PUT"])
+def clear_shopcart(shopcart_id):
+    """Clear a shopcart
+        Args:
+            user_id (str): the user_id of the shopcart to delete
+    """
+    app.logger.info("Request for Shopcart with id: %s", shopcart_id)
+
+    shopcart = Shopcart.get_by_id(shopcart_id)
+    if not shopcart:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id '{shopcart_id}' could not be found.",
+        )
+    app.logger.info("Returning shopcart: %s", shopcart_id)
+    app.logger.info("Request to clear shopcart with id: %s", shopcart_id)
+    shopcart = Shopcart.get_by_id(shopcart_id)
+
+    for item in shopcart.items:
+        item.delete()
+        app.logger.info("Deleted item '%s' in shopcart with id='%s'.", item, shopcart_id)
+    shopcart.update()
+    return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
+
+
+
+
 ######################################################################
 # DELETE A SHOPCART
 ######################################################################
@@ -158,6 +189,7 @@ def delete_shopcart(shopcart_id):
         shopcart.delete()
         app.logger.info("Shopcart deleted with id= %s ", shopcart_id)
     return make_response("", status.HTTP_204_NO_CONTENT)
+
 
 
 ######################################################################

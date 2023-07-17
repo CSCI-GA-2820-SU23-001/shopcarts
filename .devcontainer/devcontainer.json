@@ -1,6 +1,6 @@
 // cSpell: disable
 {
-	"name": "NYU Project",
+	"name": "Shopcarts Service",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
 	"workspaceFolder": "/app",

@@ -1,5 +1,6 @@
 # These can be overidden with env vars.
-CLUSTER ?= nyu-devops
+CLUSTER ?= devops-shopcarts
+SPACE ?= dev
 
 .PHONY: help
 help: ## Display this help
@@ -54,7 +55,7 @@ cluster-rm: ## Remove a K3D Kubernetes cluster
 .PHONY: login
 login: ## Login to IBM Cloud using yur api key
 	$(info Logging into IBM Cloud cluster $(CLUSTER)...)
-	ibmcloud login -a cloud.ibm.com -g Default -r us-south --apikey @~/apikey.json
+	ibmcloud login -a cloud.ibm.com -g Default -r us-south --apikey @~/.ibm/apikey_shopcarts.json
 	ibmcloud cr login
 	ibmcloud ks cluster config --cluster $(CLUSTER)
 	ibmcloud ks workers --cluster $(CLUSTER)
@@ -65,3 +66,14 @@ depoy: ## Deploy the service on local Kubernetes
 	$(info Deploying service locally...)
 	kubectl apply -f deploy/
 
+.PHONY: create_cluster_namespace
+create_cluster_namespace: ## Create the namespace assigned to the SPACE env variable
+	$(info Creating the $(SPACE) cluster namespace...)
+	kubectl create namespace $(SPACE)
+	kubectl get secret all-icr-io -n default -o yaml | sed 's/default/$(SPACE)/g' | kubectl create -n $(SPACE) -f -
+	kubectl config set-context --current --namespace $(SPACE)
+
+.PHONY: set_cluster_namespace
+set_cluster_namespace: ## Set default namespace to the SPACE env var
+	$(info Setting default cluster namespace to $(SPACE)...)
+	kubectl config set-context --current --namespace $(SPACE)

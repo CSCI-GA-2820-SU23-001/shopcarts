@@ -580,7 +580,11 @@ class TestShopcartsService(TestCase):
             f'{BASE_URL}/{shopcart.id}/clear'
             )
         logging.debug(res)
+<<<<<<< HEAD
         self.assertEqual(res.status_code, status.HTTP_200_OK) #was the PUT rqst to clear successful
+=======
+        self.assertEqual(res.status_code, status.HTTP_200_OK) # was the PUT rqst to clear successful
+>>>>>>> 19717293c8270deac12d41f136345172e0c117c5
         logging.debug(res.status_code)
         res = self.client.get(f'{BASE_URL}/{shopcart.id}')
         logging.debug(res.status_code)
@@ -620,7 +624,11 @@ class TestShopcartsService(TestCase):
         """It should return a 404 not Found response for non-existent shopcart"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         test_id = shopcart.id + 1
+<<<<<<< HEAD
         #item = ItemFactory(shopcart_id=test_id)
+=======
+        item = ItemFactory(shopcart_id=test_id)
+>>>>>>> 19717293c8270deac12d41f136345172e0c117c5
         self.assertNotEqual(test_id, shopcart.id) # check mock id is diff from created id
         res = self.client.put(
         f'{BASE_URL}/{test_id}/clear'

@@ -279,12 +279,7 @@ def update_shopcart_item(shopcart_id, item_id):
     app.logger.info("Found shopcart with id=%s", shopcart_id)
 
     # search for the corresponding item in shopcart
-    item = None
-    for item_ in shopcart.items:
-        if item_.id == item_id:
-            item = item_
-            break
-
+    item = (list(filter(lambda it: it.id == item_id, shopcart.items)) or [None])[0]
     if item is None:
         abort(
             status.HTTP_404_NOT_FOUND,

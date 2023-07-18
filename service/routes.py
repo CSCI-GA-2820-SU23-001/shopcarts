@@ -24,7 +24,6 @@ DELETE /shopcarts/{shopcart_id}/items/{item_id} - Delete the item from the shopc
 from flask import jsonify, request, url_for, make_response, abort
 
 from service.common import status  # HTTP Status Codes
-from service.common.error_handlers import bad_request, not_found
 from service.models import Shopcart, Item
 from . import app
 
@@ -184,7 +183,10 @@ def add_shopcart_item(shopcart_id):
 
     shopcart = Shopcart.get_by_id(shopcart_id)
     if not shopcart:
-        return not_found(f"Shopcart with id='{shopcart_id}' was not found.")
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id='{shopcart_id}' was not found."
+        )
     app.logger.info("Found shopcart with id=%s", shopcart.id)
 
     app.logger.info("Start creating an item")
@@ -194,7 +196,10 @@ def add_shopcart_item(shopcart_id):
 
     if item.quantity != 1:
         app.logger.error("Invalid item quantity assignment to %s.", item.quantity)
-        return bad_request("Quantity of a new item should always be one.")
+        abort(
+            status.HTTP_400_BAD_REQUEST,
+            "Quantity of a new item should always be one."
+        )
 
     shopcart.items.append(item)
     shopcart.update()
@@ -239,7 +244,10 @@ def list_shopcart_items(shopcart_id):
 
     shopcart = Shopcart.get_by_id(shopcart_id)
     if not shopcart:
-        return not_found(f"Shopcart with id='{shopcart_id}' was not found.")
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id='{shopcart_id}' was not found."
+        )
     app.logger.info("Found shopcart with id=%s", shopcart.id)
 
     items = [item.serialize() for item in shopcart.items]
@@ -260,11 +268,17 @@ def update_shopcart_item(shopcart_id, item_id):
 
     if req_item.quantity < 1:
         app.logger.error('Invalid item quantity %s.', req_item.quantity)
-        return bad_request("Item quantity should be at least one.")
+        abort(
+            status.HTTP_400_BAD_REQUEST,
+            "Item quantity should be at least one."
+        )
 
     shopcart = Shopcart.get_by_id(shopcart_id)
     if not shopcart:
-        return not_found(f"Shopcart with id='{shopcart_id}' was not found.")
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id='{shopcart_id}' was not found."
+        )
     app.logger.info("Found shopcart with id=%s", shopcart_id)
 
     # search for the corresponding item in shopcart
@@ -275,7 +289,10 @@ def update_shopcart_item(shopcart_id, item_id):
             break
 
     if item is None:
-        return bad_request(f"Item with id='{item_id}' was not found in shopcart with id='{shopcart_id}'.")
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Item with id='{item_id}' was not found in shopcart with id='{shopcart_id}'."
+        )
     app.logger.info("Found item with id='%s' in shopcart with id='%s'.", item_id, shopcart_id)
 
     app.logger.info("Start updating item with id='%s' in shopcart with id='%s'.", item_id, shopcart_id)

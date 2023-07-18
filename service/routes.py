@@ -24,8 +24,8 @@ DELETE /shopcarts/{shopcart_id}/items/{item_id} - Delete the item from the shopc
 from flask import jsonify, request, url_for, make_response, abort
 
 from service.common import status  # HTTP Status Codes
-from service.common.error_handlers import request_validation_error, bad_request, not_found
-from service.models import Shopcart, Item, DataValidationError
+from service.common.error_handlers import bad_request, not_found
+from service.models import Shopcart, Item
 from . import app
 
 DEFAULT_CONTENT_TYPE = "application/json"
@@ -106,13 +106,10 @@ def create_shopcart():
     """ Creates a new shopcart """
     check_content_type(DEFAULT_CONTENT_TYPE)
 
-    try:
-        app.logger.info("Start creating a shopcart")
-        shopcart = Shopcart()
-        shopcart.deserialize(request.get_json())
-        app.logger.info("Request body deserialized to shopcart")
-    except DataValidationError as error:
-        return request_validation_error(error)
+    app.logger.info("Start creating a shopcart")
+    shopcart = Shopcart()
+    shopcart.deserialize(request.get_json())
+    app.logger.info("Request body deserialized to shopcart")
 
     shopcart.create()
     app.logger.info("New shopcart created with id=%s", shopcart.id)
@@ -199,17 +196,12 @@ def add_shopcart_item(shopcart_id):
         app.logger.error("Invalid item quantity assignment to %s.", item.quantity)
         return bad_request("Quantity of a new item should always be one.")
 
-    try:
-        # item.create()
-        # app.logger.info(f"New item with id={item.id} created.")
-        shopcart.items.append(item)
-        shopcart.update()
-        app.logger.info("New item with id=%s added to shopcart with id=%s.", item.id, shopcart.id)
+    shopcart.items.append(item)
+    shopcart.update()
+    app.logger.info("New item with id=%s added to shopcart with id=%s.", item.id, shopcart.id)
 
-        item_js = item.serialize()
-        return make_response(jsonify(item_js), status.HTTP_201_CREATED)
-    except DataValidationError as error:
-        return request_validation_error(error)
+    item_js = item.serialize()
+    return make_response(jsonify(item_js), status.HTTP_201_CREATED)
 
 
 @app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["GET"])
@@ -286,18 +278,15 @@ def update_shopcart_item(shopcart_id, item_id):
         return bad_request(f"Item with id='{item_id}' was not found in shopcart with id='{shopcart_id}'.")
     app.logger.info("Found item with id='%s' in shopcart with id='%s'.", item_id, shopcart_id)
 
-    try:
-        app.logger.info("Start updating item with id='%s' in shopcart with id='%s'.", item_id, shopcart_id)
-        item.name = req_item.name
-        item.quantity = req_item.quantity
-        item.price = req_item.price
-        item.update()
-        app.logger.info("Done updating item with id='%s' in shopcart with id='%s'.", item_id, shopcart_id)
+    app.logger.info("Start updating item with id='%s' in shopcart with id='%s'.", item_id, shopcart_id)
+    item.name = req_item.name
+    item.quantity = req_item.quantity
+    item.price = req_item.price
+    item.update()
+    app.logger.info("Done updating item with id='%s' in shopcart with id='%s'.", item_id, shopcart_id)
 
-        item_js = item.serialize()
-        return make_response(jsonify(item_js), status.HTTP_200_OK)
-    except DataValidationError as error:
-        return request_validation_error(error)
+    item_js = item.serialize()
+    return make_response(jsonify(item_js), status.HTTP_200_OK)
 
 
 ######################################################################

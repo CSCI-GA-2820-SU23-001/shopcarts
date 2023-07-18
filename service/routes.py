@@ -259,11 +259,8 @@ def update_shopcart_item(shopcart_id, item_id):
     """ Updates an existing item in shopcart, and return the updated item """
     check_content_type(DEFAULT_CONTENT_TYPE)
 
-    req_body = request.get_json()
-    req_body["shopcart_id"] = shopcart_id
-    req_body["id"] = item_id
     req_item = Item()
-    req_item.deserialize(req_body)  # validate request body schema
+    req_item.deserialize(request.get_json())  # validate request body schema
     app.logger.info("Request body deserialized to item.")
 
     if req_item.quantity < 1:

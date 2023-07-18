@@ -399,7 +399,8 @@ PUT /shopcarts/<shopcart_id>/items/{item_id}
 {
   "name": "iPhone SE",
   "price": 500.0,
-  "quantity": 2
+  "quantity": 2,
+  "shopcart_id": 1
 }
 ```
 

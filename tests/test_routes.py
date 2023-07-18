@@ -495,7 +495,7 @@ class TestShopcartsService(TestCase):
         # update name
         data["name"] = data["name"] + " II"
         res = self.client.put(
-            f'{BASE_URL}/{shopcart.id}/items/-1',
+            f'{BASE_URL}/{shopcart.id}/items/{item.id + 10000}',
             json=data,
             content_type="application/json",
         )

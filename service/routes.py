@@ -101,7 +101,7 @@ def list_shopcarts():
 
 
 @app.route("/shopcarts", methods=["POST"])
-def create_shopcart():
+def create_shopcarts():
     """ Creates a new shopcart """
     check_content_type(DEFAULT_CONTENT_TYPE)
 
@@ -157,7 +157,7 @@ def update_shopcarts(shopcart_id):
 # DELETE A SHOPCART
 ######################################################################
 @app.route("/shopcarts/<int:shopcart_id>", methods=["DELETE"])
-def delete_shopcart(shopcart_id):
+def delete_shopcarts(shopcart_id):
     """Deletes a shopcart
         Args:
             user_id (str): the user_id of the shopcart to delete
@@ -177,7 +177,7 @@ def delete_shopcart(shopcart_id):
 ######################################################################
 
 @app.route("/shopcarts/<int:shopcart_id>/items", methods=["POST"])
-def add_shopcart_item(shopcart_id):
+def create_items(shopcart_id):
     """ Adds a new item to shopcart, and return the newly created item """
     check_content_type(DEFAULT_CONTENT_TYPE)
 
@@ -238,7 +238,7 @@ def get_items(shopcart_id, item_id):
 
 
 @app.route("/shopcarts/<int:shopcart_id>/items", methods=["GET"])
-def list_shopcart_items(shopcart_id):
+def list_items(shopcart_id):
     """ Returns a list of items in the shopcart """
     app.logger.info("Get items in the shopcart with id=%s", shopcart_id)
 
@@ -255,7 +255,7 @@ def list_shopcart_items(shopcart_id):
 
 
 @app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["PUT"])
-def update_shopcart_item(shopcart_id, item_id):
+def update_items(shopcart_id, item_id):
     """ Updates an existing item in shopcart, and return the updated item """
     check_content_type(DEFAULT_CONTENT_TYPE)
 

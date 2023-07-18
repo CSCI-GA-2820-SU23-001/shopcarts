@@ -127,12 +127,11 @@ def get_shopcarts(shopcart_id):
     This endpoint will return an Shopcart based on its id
     """
     app.logger.info("Request for Shopcart with id: %s", shopcart_id)
-
     shopcart = Shopcart.get_by_id(shopcart_id)
     if not shopcart:
         abort(
             status.HTTP_404_NOT_FOUND,
-            f"Shopcart with id '{shopcart_id}' could not be found.",
+            f"Shopcart with id '{shopcart_id}' could not be found."
         )
     app.logger.info("Returning shopcart: %s", shopcart.id)
     return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
@@ -147,7 +146,8 @@ def update_shopcarts(shopcart_id):
     shopcart = Shopcart.get_by_id(shopcart_id)
     if not shopcart:
         abort(
-            status.HTTP_404_NOT_FOUND, f"Shopcart with id '{shopcart_id}' was not found."
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id '{shopcart_id}' was not found."
         )
 
     shopcart.deserialize(request.get_json())
@@ -195,10 +195,6 @@ def add_shopcart_item(shopcart_id):
     item.deserialize(request.get_json())  # validate request body schema
     app.logger.info("Request body deserialized to item.")
 
-    # # item quantity should be greater than zero
-    # if item.quantity <= 0:
-    #     app.logger.error(f"Invalid item quantity assignment to {item.quantity}.")
-    #     return bad_request(f"Item quantity should be a positive number.")
     if item.quantity != 1:
         app.logger.error("Invalid item quantity assignment to %s.", item.quantity)
         return bad_request("Quantity of a new item should always be one.")
@@ -223,15 +219,13 @@ def get_items(shopcart_id, item_id):
 
     This endpoint returns just a item
     """
-    app.logger.info(
-        "Request to retrieve Item %s for Shopcart id: %s", item_id, shopcart_id)
+    app.logger.info("Request to retrieve Item %s for Shopcart id: %s", item_id, shopcart_id)
 
     shopcart = Shopcart.get_by_id(shopcart_id)
-
     if not shopcart:
         abort(
             status.HTTP_404_NOT_FOUND,
-            f"Shopcart with id '{shopcart_id}' could not be found.",
+            f"Shopcart with id '{shopcart_id}' could not be found."
         )
 
     # See if the item exists and abort if it doesn't
@@ -239,7 +233,7 @@ def get_items(shopcart_id, item_id):
     if not item:
         abort(
             status.HTTP_404_NOT_FOUND,
-            f"Item with id '{item_id}' could not be found.",
+            f"Item with id '{item_id}' could not be found."
         )
 
     app.logger.info("Returning item: %s", item.id)
@@ -277,7 +271,6 @@ def update_shopcart_item(shopcart_id, item_id):
         return bad_request("Item quantity should be at least one.")
 
     shopcart = Shopcart.get_by_id(shopcart_id)
-
     if not shopcart:
         return not_found(f"Shopcart with id='{shopcart_id}' was not found.")
     app.logger.info("Found shopcart with id=%s", shopcart_id)

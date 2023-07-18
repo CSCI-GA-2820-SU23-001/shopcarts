@@ -41,6 +41,8 @@ Endpoint          Methods  Rule
 ----------------  -------  -----------------------------------------------------
 index             GET      /
 
+health            GET      /health
+
 list_shopcarts    GET      /shopcarts
 create_shopcarts  POST     /shopcarts
 get_shopcarts     GET      /shopcarts/<shopcart_id>
@@ -56,6 +58,25 @@ delete_items      DELETE   /shopcarts/<shopcart_id>/items/<item_id>
 
 The test cases can be run with `green`.
 
+
+### Health Check
+Get service health status.
+
+#### API Endpoint
+GET /health
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Response
+##### 200 OK
+```json
+{
+  "status": "OK"
+}
+```
 
 ### List Shopcarts
 List all shopcarts in the system.

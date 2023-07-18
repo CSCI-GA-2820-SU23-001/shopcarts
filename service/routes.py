@@ -21,15 +21,15 @@ GET  /shopcarts/{shopcart_id}/items/{item_id} - Returns the item in the shopcart
 PUT  /shopcarts/{shopcart_id}/items/{item_id} - Updates the item in the shopcart
 DELETE /shopcarts/{shopcart_id}/items/{item_id} - Delete the item from the shopcart
 """
-
 from flask import jsonify, request, url_for, make_response, abort
 
 from service.common import status  # HTTP Status Codes
-from service.common.error_handlers import request_validation_error, bad_request, not_found, mediatype_not_supported
+from service.common.error_handlers import request_validation_error, bad_request, not_found
 from service.models import Shopcart, Item, DataValidationError
 from . import app
 
 DEFAULT_CONTENT_TYPE = "application/json"
+
 
 ############################################################
 # Health Endpoint
@@ -62,13 +62,22 @@ def index():
 #  R E S T   A P I   E N D P O I N T S
 ######################################################################
 
-def is_expected_content_type(expected_content_type):
+def check_content_type(expected_content_type):
     """ Verify and abort if not expected content type """
     content_type = request.headers.get("Content-Type")
-    if not content_type or content_type != expected_content_type:
+    if not content_type:
+        app.logger.error("No Content-Type specified.")
+        abort(
+            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            f"Content-Type must be {expected_content_type}"
+        )
+
+    if content_type != expected_content_type:
         app.logger.error("Invalid Content-Type: %s", content_type)
-        return False
-    return True
+        abort(
+            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            f"Content-Type must be {expected_content_type}"
+        )
 
 
 ######################################################################
@@ -95,8 +104,7 @@ def list_shopcarts():
 @app.route("/shopcarts", methods=["POST"])
 def create_shopcart():
     """ Creates a new shopcart """
-    if not is_expected_content_type(DEFAULT_CONTENT_TYPE):
-        return mediatype_not_supported(f"Content-Type must be {DEFAULT_CONTENT_TYPE}")
+    check_content_type(DEFAULT_CONTENT_TYPE)
 
     try:
         app.logger.info("Start creating a shopcart")
@@ -133,11 +141,9 @@ def get_shopcarts(shopcart_id):
 @app.route("/shopcarts/<int:shopcart_id>", methods=['PUT'])
 def update_shopcarts(shopcart_id):
     """ Update shopcart content """
-    if not is_expected_content_type(DEFAULT_CONTENT_TYPE):
-        return mediatype_not_supported(f"Content-Type must be {DEFAULT_CONTENT_TYPE}")
+    check_content_type(DEFAULT_CONTENT_TYPE)
 
     app.logger.info("Request to update shopcart with id: %s", shopcart_id)
-
     shopcart = Shopcart.get_by_id(shopcart_id)
     if not shopcart:
         abort(
@@ -177,12 +183,9 @@ def delete_shopcart(shopcart_id):
 @app.route("/shopcarts/<int:shopcart_id>/items", methods=["POST"])
 def add_shopcart_item(shopcart_id):
     """ Adds a new item to shopcart, and return the newly created item """
-
-    if not is_expected_content_type(DEFAULT_CONTENT_TYPE):
-        return mediatype_not_supported(f"Content-Type must be {DEFAULT_CONTENT_TYPE}")
+    check_content_type(DEFAULT_CONTENT_TYPE)
 
     shopcart = Shopcart.get_by_id(shopcart_id)
-
     if not shopcart:
         return not_found(f"Shopcart with id='{shopcart_id}' was not found.")
     app.logger.info("Found shopcart with id=%s", shopcart.id)
@@ -260,9 +263,7 @@ def list_shopcart_items(shopcart_id):
 @app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["PUT"])
 def update_shopcart_item(shopcart_id, item_id):
     """ Updates an existing item in shopcart, and return the updated item """
-
-    if not is_expected_content_type(DEFAULT_CONTENT_TYPE):
-        return mediatype_not_supported(f"Content-Type must be {DEFAULT_CONTENT_TYPE}")
+    check_content_type(DEFAULT_CONTENT_TYPE)
 
     req_body = request.get_json()
     req_body["shopcart_id"] = shopcart_id

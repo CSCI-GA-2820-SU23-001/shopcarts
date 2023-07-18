@@ -265,14 +265,22 @@ class TestShopcartsService(TestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_add_items_with_invalid_data_type(self):
-        """ It should not be added with invalid data type """
+    def test_add_items_with_invalid_content_type(self):
+        """ It should not be added with invalid content type """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
+
         res = self.client.post(
             f"{BASE_URL}/{shopcart.id}/items",
             json=item.serialize(),
-            content_type="text/json",
+            content_type="",
+        )
+        self.assertEqual(res.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+        res = self.client.post(
+            f"{BASE_URL}/{shopcart.id}/items",
+            json=item.serialize(),
+            content_type="application/xml",
         )
         self.assertEqual(res.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
@@ -419,9 +427,15 @@ class TestShopcartsService(TestCase):
         res = self.client.put(
             f'{BASE_URL}/{shopcart.id}/items/{data["id"]}',
             json=data,
+            content_type="",
+        )
+        self.assertEqual(res.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+        res = self.client.put(
+            f'{BASE_URL}/{shopcart.id}/items/{data["id"]}',
+            json=data,
             content_type="application/xml",
         )
-        logging.debug(res.get_json())
         self.assertEqual(res.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     def test_update_shopcart_item_with_invalid_quantity(self):
@@ -634,12 +648,17 @@ class TestShopcartsService(TestCase):
         resp = self.client.put(f"{BASE_URL}")
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    def test_create_a_shopcart_with_invalid_format(self):
-        """It should return a 415 Unsupported media type"""
+    def test_create_a_shopcart_with_invalid_content_type(self):
+        """ It should return a 415 Unsupported media type """
         shopcart = ShopcartFactory()
         resp = self.client.post(f"{BASE_URL}",
                                 json=shopcart.serialize(),
-                                content_type="application/pdf")
+                                content_type="")
+        self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+        resp = self.client.post(f"{BASE_URL}",
+                                json=shopcart.serialize(),
+                                content_type="application/xml")
         self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     def test_create_a_shopcart_with_bad_request(self):
@@ -666,9 +685,15 @@ class TestShopcartsService(TestCase):
         self.assertNotEqual(shopcart.name, "DevOps")
         shopcart.name = "DevOps"
         self.assertEqual(shopcart.name, "DevOps")
+
         resp = self.client.put(f"{BASE_URL}/{shopcart.id}",
                                json=shopcart.serialize(),
-                               content_type="application/pdf")
+                               content_type="")
+        self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+        resp = self.client.put(f"{BASE_URL}/{shopcart.id}",
+                               json=shopcart.serialize(),
+                               content_type="application/xml")
         self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     def test_add_item_to_nonexistent_shopcart(self):

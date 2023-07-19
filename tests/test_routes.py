@@ -579,9 +579,7 @@ class TestShopcartsService(TestCase):
             )
         logging.debug(res)
         self.assertEqual(res.status_code, status.HTTP_200_OK)  # was the PUT rqst to clear successful
-        logging.debug(res.status_code)
         res = self.client.get(f'{BASE_URL}/{shopcart.id}')
-        logging.debug(res.status_code)
         self.assertEqual(res.status_code, status.HTTP_200_OK)  # was the GET rqst successful
         data = res.get_json()
         logging.debug(data)
@@ -602,9 +600,7 @@ class TestShopcartsService(TestCase):
         )
         logging.debug(res)
         self.assertEqual(res.status_code, status.HTTP_200_OK)  # was the PUT rqst to clear successful
-        logging.debug(res.status_code)
         res = self.client.get(f'{BASE_URL}/{shopcart.id}')
-        logging.debug(res.status_code)
         self.assertEqual(res.status_code, status.HTTP_200_OK)  # was the GET rqst successful
         data = res.get_json()
         logging.debug(data)

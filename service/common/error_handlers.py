@@ -71,21 +71,6 @@ def method_not_supported(error):
     )
 
 
-@app.errorhandler(status.HTTP_409_CONFLICT)
-def resource_conflict(error):
-    """Handles resource conflicts with HTTP_409_CONFLICT"""
-    message = str(error)
-    app.logger.warning(message)
-    return (
-        jsonify(
-            status=status.HTTP_409_CONFLICT,
-            error="Conflict",
-            message=message,
-        ),
-        status.HTTP_409_CONFLICT,
-    )
-
-
 @app.errorhandler(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 def mediatype_not_supported(error):
     """Handles unsupported media requests with 415_UNSUPPORTED_MEDIA_TYPE"""
@@ -98,19 +83,4 @@ def mediatype_not_supported(error):
             message=message,
         ),
         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-    )
-
-
-@app.errorhandler(status.HTTP_500_INTERNAL_SERVER_ERROR)
-def internal_server_error(error):
-    """Handles unexpected server error with 500_SERVER_ERROR"""
-    message = str(error)
-    app.logger.error(message)
-    return (
-        jsonify(
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            error="Internal Server Error",
-            message=message,
-        ),
-        status.HTTP_500_INTERNAL_SERVER_ERROR,
     )

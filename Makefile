@@ -2,6 +2,13 @@
 CLUSTER ?= devops-shopcarts
 SPACE ?= dev
 
+PLATFORM ?= "linux/amd64"
+IMAGE ?= $(REGISTRY)/$(NAMESPACE)/$(IMAGE_NAME):$(IMAGE_TAG)
+REGISTRY ?= us.icr.io
+NAMESPACE ?= devops-shopcarts
+IMAGE_NAME ?= shopcarts
+IMAGE_TAG ?= 1.0
+
 .PHONY: help
 help: ## Display this help
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-\\.]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
@@ -61,8 +68,14 @@ login: ## Login to IBM Cloud using yur api key
 	ibmcloud ks workers --cluster $(CLUSTER)
 	kubectl cluster-info
 
+.PHONY: push
+image-push: ## Push to a Docker image registry
+	$(info Logging into IBM Cloud cluster $(CLUSTER)...)
+	ibmcloud cr login
+	docker push $(IMAGE)
+
 .PHONY: deploy
-depoy: ## Deploy the service on local Kubernetes
+deploy: ## Deploy the service on local Kubernetes
 	$(info Deploying service locally...)
 	kubectl apply -f deploy/
 
@@ -77,3 +90,25 @@ create_cluster_namespace: ## Create the namespace assigned to the SPACE env vari
 set_cluster_namespace: ## Set default namespace to the SPACE env var
 	$(info Setting default cluster namespace to $(SPACE)...)
 	kubectl config set-context --current --namespace $(SPACE)
+
+############################################################
+# COMMANDS FOR BUILDING THE IMAGE
+############################################################
+
+.PHONY: init
+init: export DOCKER_BUILDKIT=1
+init:	## Creates the buildx instance
+	$(info Initializing Builder...)
+	docker buildx create --use --name=qemu
+	docker buildx inspect --bootstrap
+
+.PHONY: build
+build:	## Build all of the project Docker images
+	$(info Building $(IMAGE) for $(PLATFORM)...)
+	docker buildx build --file Dockerfile  --pull --platform=$(PLATFORM) --tag $(IMAGE) --load .
+
+.PHONY: remove
+remove:	## Stop and remove the buildx builder
+	$(info Stopping and removing the builder image...)
+	docker buildx stop
+	docker buildx rm

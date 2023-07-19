@@ -96,7 +96,7 @@ def create_shopcart():
     except DataValidationError as error:
         return request_validation_error(error)
 
-    shopcart.create() # store in table
+    shopcart.create()  # store in table
     app.logger.info("New shopcart created with id=%s", shopcart.id)
     shopcart_js = shopcart.serialize()
     return make_response(jsonify(shopcart_js), status.HTTP_201_CREATED)
@@ -141,7 +141,6 @@ def update_shopcarts(shopcart_id):
     return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
 
 
-
 ######################################################################
 # CLEAR A SHOPCART
 ######################################################################
@@ -170,8 +169,6 @@ def clear_shopcart(shopcart_id):
     return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
 
 
-
-
 ######################################################################
 # DELETE A SHOPCART
 ######################################################################
@@ -189,7 +186,6 @@ def delete_shopcart(shopcart_id):
         shopcart.delete()
         app.logger.info("Shopcart deleted with id= %s ", shopcart_id)
     return make_response("", status.HTTP_204_NO_CONTENT)
-
 
 
 ######################################################################

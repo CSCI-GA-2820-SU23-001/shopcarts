@@ -68,8 +68,14 @@ login: ## Login to IBM Cloud using yur api key
 	ibmcloud ks workers --cluster $(CLUSTER)
 	kubectl cluster-info
 
+.PHONY: push
+image-push: ## Push to a Docker image registry
+	$(info Logging into IBM Cloud cluster $(CLUSTER)...)
+	ibmcloud cr login
+	docker push $(IMAGE)
+
 .PHONY: deploy
-depoy: ## Deploy the service on local Kubernetes
+deploy: ## Deploy the service on local Kubernetes
 	$(info Deploying service locally...)
 	kubectl apply -f deploy/
 

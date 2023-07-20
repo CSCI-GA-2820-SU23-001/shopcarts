@@ -271,6 +271,36 @@ DELETE /shopcarts/{shopcarts_id}
 
 ```
 
+### Clear Shopcart
+Clear a shopcart by id.
+
+#### API Endpoint
+PUT /shopcarts/{shopcarts_id}/clear
+
+#### Request Headers
+| Header       | Value            |
+|--------------|------------------|
+| Content-Type | application/json |
+
+#### Response
+##### 200 OK
+```json
+{
+  "id": 47,
+  "items": [],
+  "name": "John"
+}
+```
+
+##### 404 Not Found
+```json
+{
+  "error": "Not Found",
+  "message": "404 Not Found: Shopcart with id '44' could not be found.",
+  "status": 404
+}
+```
+
 ### List Shopcart Items
 Get a list of items in the shopcart.
 

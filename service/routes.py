@@ -21,7 +21,7 @@ GET  /shopcarts/{shopcart_id}/items/{item_id} - Returns the item in the shopcart
 PUT  /shopcarts/{shopcart_id}/items/{item_id} - Updates the item in the shopcart
 DELETE /shopcarts/{shopcart_id}/items/{item_id} - Delete the item from the shopcart
 """
-from flask import jsonify, request, url_for, make_response, abort
+from flask import jsonify, request, make_response, abort
 
 from service.common import status  # HTTP Status Codes
 from service.models import Shopcart, Item
@@ -48,13 +48,7 @@ def health():
 @app.route("/")
 def index():
     """Root URL response"""
-    return (
-        jsonify(
-            name="Shopcarts REST API Service",
-            version="1.0",
-            paths=url_for("list_shopcarts", _external=True),
-        ),
-        status.HTTP_200_OK)
+    return app.send_static_file('index.html')
 
 
 ######################################################################

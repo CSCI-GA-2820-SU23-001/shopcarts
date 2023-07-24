@@ -56,7 +56,7 @@ spec:
   ports:
     - port: 5432
       targetPort: 5432
-      # nodePort: 31033
+      # nodePort: 31032
 
 ---
 # This secret can also be created from the command line using environment variables

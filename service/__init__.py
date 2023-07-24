@@ -5,13 +5,27 @@ This module creates and configures the Flask app and sets up the logging
 and SQL database
 """
 import sys
+
 from flask import Flask
+from flask_restx import Api
+
 from service import config
 from service.common import log_handlers
 
 # Create Flask application
 app = Flask(__name__)
 app.config.from_object(config)
+
+app.url_map.strict_slashes = False
+
+api = Api(app,
+          version=app.config["APP_VERSION"],
+          title="Shopcarts REST API Service",
+          description="This is the Shopcarts Service server.",
+          default="Shopcart",
+          default_label="Shopcarts Service operations",
+          doc=app.config["PREFIX_API_DOCS"],
+          prefix=app.config["PREFIX_API"])
 
 # Dependencies require we import the routes AFTER the Flask app is created
 # pylint: disable=wrong-import-position, wrong-import-order, cyclic-import

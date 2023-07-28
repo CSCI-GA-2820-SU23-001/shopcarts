@@ -104,6 +104,16 @@ class TestShopcartsService(TestCase):
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
+    def test_shopcartsapi(self):
+        """ It should call the shopcarts.html"""
+        resp = self.client.get("/shopcartsapi")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+    def test_itemsapi(self):
+        """ It should call the items.html"""
+        resp = self.client.get("/itemsapi")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
     def test_get_shopcart(self):
         """It should Read a single Shopcart"""
         # get the id of a shopcart

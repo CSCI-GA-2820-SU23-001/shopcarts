@@ -52,11 +52,13 @@ def index():
 
 @app.route('/shopcartsapi')
 def shopcartsapi():
+    """Shopcarts API URL"""
     return app.send_static_file('shopcarts.html')
 
 
 @app.route('/itemsapi')
 def itemsapi():
+    """Items API URL"""
     return app.send_static_file('items.html')
 
 

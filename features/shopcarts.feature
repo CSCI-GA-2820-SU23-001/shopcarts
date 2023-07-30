@@ -11,11 +11,14 @@ Background:
         | Wan-Yu     |
         | Yuzhao     |
         | Zihan      |
+        | Lily       |
 
     Given the following items
         | shopcart_name | name       | quantity  | price |
         | Wan-Yu        | Apple      | 1         | 1.99  |
         | Wan-Yu        | Mango      | 1         | 5.00  |
+        | Wan-Yu        | Orange     | 1         | 3.99  |
+        | Yuzhao        | Apple      | 1         | 1.99  |
 
 Scenario: The server is running
     When I visit the "home page"

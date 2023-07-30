@@ -62,7 +62,7 @@ def step_impl(context, message):
             message
         )
     )
-    assert(found)
+    assert (found)
 
 
 @then('I should see "{name}" in the results in "{page}" page')
@@ -77,7 +77,7 @@ def step_impl(context, name, page):
             name
         )
     )
-    assert(found)
+    assert (found)
 
 
 @then('I should not see "{name}" in the results in "{page}" page')
@@ -87,7 +87,7 @@ def step_impl(context, name, page):
     else:
         search_results = 'search_items_results'
     element = context.driver.find_element(By.ID, search_results)
-    assert(name not in element.text)
+    assert (name not in element.text)
 
 
 @when('I set the "{element_name}" to "{text_string}" in "{page}" page')
@@ -110,7 +110,7 @@ def step_impl(context, element_name, page):
         ID_PREFIX = ITEM_PREFIX
     element_id = ID_PREFIX + element_name.lower().replace(' ', '_')
     element = context.driver.find_element(By.ID, element_id)
-    assert(element.get_attribute('value') == u'')
+    assert (element.get_attribute('value') == u'')
 
 
 ##################################################################
@@ -157,7 +157,7 @@ def step_impl(context, text_string, element_name, page):
             text_string
         )
     )
-    assert(found)
+    assert (found)
 
 
 @when('I change "{element_name}" to "{text_string}" in "{page}" page')

@@ -50,6 +50,18 @@ def index():
     return app.send_static_file('index.html')
 
 
+@app.route('/shopcartsapi')
+def shopcartsapi():
+    """Shopcarts API URL"""
+    return app.send_static_file('shopcarts.html')
+
+
+@app.route('/itemsapi')
+def itemsapi():
+    """Items API URL"""
+    return app.send_static_file('items.html')
+
+
 ######################################################################
 #  U T I L I T Y  F U N C T I O N S
 ######################################################################

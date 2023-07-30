@@ -6,12 +6,16 @@ from selenium import webdriver
 
 WAIT_SECONDS = int(getenv('WAIT_SECONDS', '60'))
 BASE_URL = getenv('BASE_URL', 'http://localhost:8000')
+SHOPCART_URL = getenv('SHOPCART_URL', 'http://localhost:8000/shopcartsapi')
+ITEM_URL = getenv('ITEM_URL', 'http://localhost:8000/itemsapi')
 DRIVER = getenv('DRIVER', 'chrome').lower()
 
 
 def before_all(context):
     """ Executed once before all tests """
     context.base_url = BASE_URL
+    context.shopcart_url = SHOPCART_URL
+    context.item_url = ITEM_URL
     context.wait_seconds = WAIT_SECONDS
     # Select either Chrome or Firefox
     if 'firefox' in DRIVER:

@@ -143,6 +143,7 @@ def step_impl(context, element_name, page):
     element.clear()
     element.send_keys(context.clipboard)
 
+
 @when('I set the "{element_name}" within clipboard in "{page}" page')
 def step_impl(context, element_name, page):
     if page == "Shopcart":

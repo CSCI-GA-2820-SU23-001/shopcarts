@@ -46,9 +46,9 @@
 
           <div class="form-horizontal">
             <div class="form-group">
-              <label class="control-label col-sm-2" for="customer_name">Customer Name:</label>
+              <label class="control-label col-sm-2" for="shopcart_name">Shopcart Name:</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="customer_name" placeholder="Enter name for Customer">
+                <input type="text" class="form-control" id="shopcart_name" placeholder="Enter name for Customer">
               </div>
             </div>
 
@@ -59,20 +59,21 @@
                 <button type="submit" class="btn btn-primary" id="clear-shopcart-btn">Clear</button>
                 <button type="submit" class="btn btn-success" id="create-shopcart-btn">Create</button>
                 <button type="submit" class="btn btn-warning" id="update-shopcart-btn">Update</button>
+                <button type="submit" class="btn btn-primary" id="checkout-shopcart-btn">Checkout</button>
               </div>
             </div>
           </div>
         </div> <!-- end of well -->
 
         <!-- Search Results -->
-        <div class="table-responsive col-md-12" id="search_results">
+        <div class="table-responsive col-md-12" id="search_shopcarts_results">
           <table class="table table-striped">
             <thead>
               <tr>
                 <th class="col-md-1">ID</th>
-                <th class="col-md-4">Name</th>
+                <th class="col-md-3">Name</th>
                 <th class="col-md-1">Item_ID</th>
-                <th class="col-md-4">Item_Name</th>
+                <th class="col-md-3">Item_Name</th>
                 <th class="col-md-2">Quantity</th>
                 <th class="col-md-2">Price</th>
               </tr>

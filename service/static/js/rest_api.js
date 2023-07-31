@@ -265,12 +265,80 @@ $(function () {
 
     $("#clear-item-btn").click(function () {
         $("#item_id").val("");
-        $("#item_shopcart_id").val("");
+        // $("#item_shopcart_id").val("");
         $("#item_name").val("");
         $("#item_quantity").val("");
         $("#item_price").val("");
         $("#flash_message").empty();
         clear_form_shopcart()
+    });
+
+    // ****************************************
+    // Create an Item under a Shopcart
+    // ****************************************
+
+    $("#create-item-btn").click(function () {
+
+        let shopcart_id = $("#item_shopcart_id").val();
+        let name = $("#item_name").val();
+        // let quantity = $("#item_quantity").val();
+        let price = $("#item_price").val();
+
+        let data = {
+            "shopcart_id": shopcart_id,
+            "name": name,
+            "quantity": 1,
+            "price": price
+        };
+
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+            type: "POST",
+            url: `/shopcarts/${shopcart_id}/items`,
+            contentType: "application/json",
+            data: JSON.stringify(data)
+        });
+
+        ajax.done(function(res){
+            update_form_item(res)
+            flash_message("Create the Item successfully")
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
+    // ****************************************
+    // Retrieve an Item under a Shopcart
+    // ****************************************
+
+    $("#retrieve-item-btn").click(function () {
+
+        let shopcart_id = $("#item_shopcart_id").val();
+        let item_id = $("#item_id").val();
+
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+            type: "GET",
+            url: `/shopcarts/${shopcart_id}/items/${item_id}`,
+            contentType: "application/json",
+            data: ''
+        })
+
+        ajax.done(function(res){
+            update_form_item(res)
+            flash_message("Success")
+        });
+
+        ajax.fail(function(res){
+            clear_form_item()
+            flash_message(res.responseJSON.message)
+        });
+
     });
 
     $("#search-item-btn").click(function () {

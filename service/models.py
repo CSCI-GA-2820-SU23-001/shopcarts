@@ -203,7 +203,12 @@ class Item(db.Model, ModelBase):
         """
         try:
             self.shopcart_id = data["shopcart_id"]
-            self.name = data["name"]
+            self.name = data["name"].strip()
+            if len(self.name) == 0:
+                raise DataValidationError(
+                    f"Invalid {type(self).__name__}: name should contain at least one non-whitespace char"
+                )
+
             self.quantity = data["quantity"]
             self.price = data["price"]
         except KeyError as error:
@@ -213,4 +218,8 @@ class Item(db.Model, ModelBase):
         except TypeError as error:
             raise DataValidationError(
                 f"Invalid {type(self).__name__}: failed to deserialize request body\nError message: {error}"
+            ) from error
+        except AttributeError as error:
+            raise DataValidationError(
+                f"Invalid {type(self).__name__}: failed to deserialize name: '{self.name}'"
             ) from error

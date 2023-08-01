@@ -137,13 +137,13 @@ $(function () {
 
     });
 
-    $("#clear-shopcart-btn").click(function () {
+    $("#reset-shopcart-form-btn").click(function () {
         $("#shopcart_id").val("");
         $("#flash_message").empty();
         clear_form_shopcart()
     });
 
-    $("#checkout-shopcart-btn").click(function () {
+    $("#clear-shopcart-btn").click(function () {
 
         let name = $("#shopcart_name").val()
 
@@ -178,7 +178,7 @@ $(function () {
 
         ajax_list.done(function(res){
             clear_form_shopcart()
-            flash_message("Checkout all shopcarts!")
+            flash_message("Shopcart items cleared!")
         });
 
         ajax_list.fail(function(res){

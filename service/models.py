@@ -16,6 +16,7 @@ Designed to support queries of the following APIs:
 """
 
 import logging
+import math
 from abc import abstractmethod
 
 from flask_sqlalchemy import SQLAlchemy
@@ -209,8 +210,13 @@ class Item(db.Model, ModelBase):
                     f"Invalid {type(self).__name__}: name should contain at least one non-whitespace char"
                 )
 
-            self.quantity = data["quantity"]
-            self.price = data["price"]
+            self.quantity = int(data["quantity"])
+            if not math.isclose(self.quantity, data["quantity"]):
+                raise DataValidationError(
+                    f"Invalid {type(self).__name__}: quantity must be an integer"
+                )
+
+            self.price = float(data["price"])
         except KeyError as error:
             raise DataValidationError(
                 f"Invalid {type(self).__name__}: missing {error.args[0]}"
@@ -222,4 +228,8 @@ class Item(db.Model, ModelBase):
         except AttributeError as error:
             raise DataValidationError(
                 f"Invalid {type(self).__name__}: failed to deserialize name: '{self.name}'"
+            ) from error
+        except ValueError as error:
+            raise DataValidationError(
+                f"Invalid {type(self).__name__}: {error}"
             ) from error

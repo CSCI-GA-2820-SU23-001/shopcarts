@@ -35,12 +35,8 @@
           <div class="form-horizontal">
             <div class="form-group">
               <label class="control-label col-sm-2" for="item_id">Item ID:</label>
-              <div class="col-sm-6">
-                <input type="text" class="form-control" id="item_id" placeholder="Enter ID of Item">
-              </div>
-              <div class="col-sm-4">
-                <button type="submit" class="btn btn-primary" id="retrieve-item-btn">Retrieve</button>
-                <button type="submit" class="btn btn-danger" id="delete-item-btn">Delete</button>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="item_id" placeholder="Enter item id">
               </div>
             </div>
           </div>
@@ -48,9 +44,9 @@
           <div class="form-horizontal">
             <!-- Shopcart ID -->
             <div class="form-group">
-              <label class="control-label col-sm-2" for="ishopcart_id">Shopcart ID:</label>
-              <div class="col-sm-6">
-                <input type="text" class="form-control" id="ishopcart_id" placeholder="Enter Shopcart ID of Item">
+              <label class="control-label col-sm-2" for="ishopcart_id">Shopcart ID*:</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="ishopcart_id" placeholder="Enter shopcart id of the item (required)">
               </div>
             </div>
 
@@ -58,7 +54,7 @@
             <div class="form-group">
                 <label class="control-label col-sm-2" for="item_name">Item Name:</label>
                 <div class="col-sm-10">
-                  <input type="text" class="form-control" id="item_name" placeholder="Enter name for Item">
+                  <input type="text" class="form-control" id="item_name" placeholder="Enter name of the item">
                 </div>
             </div>
             
@@ -66,7 +62,7 @@
             <div class="form-group">
                 <label class="control-label col-sm-2" for="item_quantity">Item Quantity:</label>
                 <div class="col-sm-10">
-                  <input type="number" oninput="value=value.replace(/^(0+)|[^\d]+/g,'')" class="form-control" id="item_quantity" placeholder="Enter quantity of Item">
+                  <input type="number" oninput="value=value.replace(/^(0+)|[^\d]+/g,'')" class="form-control" id="item_quantity" placeholder="Enter quantity of the item">
                 </div>
             </div>
 
@@ -74,16 +70,18 @@
             <div class="form-group">
                 <label class="control-label col-sm-2" for="item_price">Item Price:</label>
                 <div class="col-sm-10">
-                  <input type="number" onblur="if (!/^\d+(\.\d+)?$/.test(this.value)){this.value='';}" step="0.01" class="form-control" id="item_price" placeholder="Enter price if Item">
+                  <input type="number" onblur="if (!/^\d+(\.\d+)?$/.test(this.value)){this.value='';}" step="0.01" class="form-control" id="item_price" placeholder="Enter unit price of the item">
                 </div>
             </div>
 
             <!-- SUBMIT BUTTONS -->
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                  <button type="submit" class="btn btn-primary" id="search-item-btn">Search</button>
+                  <button type="submit" class="btn btn-info" id="list-item-btn">List</button>
                   <button type="submit" class="btn btn-success" id="create-item-btn">Create</button>
+                  <button type="submit" class="btn btn-primary" id="retrieve-item-btn">Retrieve</button>
                   <button type="submit" class="btn btn-warning" id="update-item-btn">Update</button>
+                  <button type="submit" class="btn btn-danger" id="delete-item-btn">Delete</button>
                 </div>
             </div>
 

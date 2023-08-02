@@ -56,7 +56,6 @@ def step_impl(context, button, page):
 
 @when('I press the "Reset Form" button on "{page}" page')
 def step_impl(context, page):
-    # button_id = 'search-shopcart-btn'
     button_id = 'reset-' + page.lower() + '-form-btn'
     context.driver.find_element(By.ID, button_id).click()
 
@@ -147,6 +146,18 @@ def step_impl(context, element_name, page):
     element = WebDriverWait(context.driver, context.wait_seconds).until(
         expected_conditions.presence_of_element_located((By.ID, element_id))
     )
+    element.clear()
+    element.send_keys(context.clipboard)
+
+
+@when('I set the "{element_name}" within clipboard in "{page}" page')
+def step_impl(context, element_name, page):
+    if page == "Shopcart":
+        ID_PREFIX = SHOPCART_PREFIX
+    else:
+        ID_PREFIX = ITEM_PREFIX
+    element_id = ID_PREFIX + element_name.lower().replace(' ', '_')
+    element = context.driver.find_element(By.ID, element_id)
     element.clear()
     element.send_keys(context.clipboard)
 

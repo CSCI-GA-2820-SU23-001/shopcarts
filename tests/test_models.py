@@ -284,3 +284,4 @@ class TestItem(unittest.TestCase):
         # Fetch it back again
         shopcart = Shopcart.get_by_id(shopcart.id)
         self.assertEqual(len(shopcart.items), 0)
+        

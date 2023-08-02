@@ -54,7 +54,7 @@ $(function () {
 
         ajax.done(function(res){
             update_form_shopcart(res)
-            flash_message("Success")
+            flash_message("Shopcart created!")
         });
 
         ajax.fail(function(res){
@@ -87,7 +87,7 @@ $(function () {
 
         ajax.done(function(res){
             update_form_shopcart(res)
-            flash_message("Success")
+            flash_message("Shopcart updated!")
         });
 
         ajax.fail(function(res){
@@ -144,7 +144,7 @@ $(function () {
 
         ajax.done(function(res){
             clear_form_shopcart()
-            flash_message("Shopcart has been Deleted!")
+            flash_message("Shopcart deleted!")
         });
 
         ajax.fail(function(res){

@@ -348,31 +348,11 @@ $(function () {
         let quantity = $("#item_quantity").val();
         let price = $("#item_price").val();
 
-        let queryString = ""
-
-        if (name) {
-            queryString += 'name=' + name
-        }
-        if (quantity) {
-            if (queryString.length > 0) {
-                queryString += '&quantity=' + quantity
-            } else {
-                queryString += 'quantity=' + quantity
-            }
-        }
-        if (price) {
-            if (queryString.length > 0) {
-                queryString += '&price=' + name
-            } else {
-                queryString += 'price=' + name
-            }
-        }
-
         $("#flash_message").empty();
 
         let ajax = $.ajax({
             type: "GET",
-            url: `/shopcarts/${shopcart_id}/items?${queryString}`,
+            url: `/shopcarts/${shopcart_id}/items`,
             contentType: "application/json",
             data: ''
         })
@@ -410,4 +390,43 @@ $(function () {
         });
 
     });
+
+    // ****************************************
+    // Delete an Item under a Shopcart
+    // ****************************************
+    $("#delete-item-btn").click(function () {
+        let shopcart_id = $("#item_shopcart_id").val();
+        let item_id = $("#item_id").val();
+    
+        $("#flash_message").empty();
+    
+        let ajax = $.ajax({
+            type: "DELETE",
+            url: `/shopcarts/${shopcart_id}/items/${item_id}`,
+            contentType: "application/json",
+            data: '',
+        });
+    
+        ajax.done(function (res) {
+            // clear_form_item();
+            
+            $("#item_id").val("");
+            // $("#item_shopcart_id").val("");
+            $("#item_name").val("");
+            $("#item_quantity").val("");
+            $("#item_price").val("");
+            $("#flash_message").empty();
+            
+            
+            flash_message("Item deleted from shopcart!");
+        });
+    
+        ajax.fail(function (res) {
+            flash_message(res.responseJSON.message);
+        });
+    
+    });
+
+     
+
 })

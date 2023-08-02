@@ -137,48 +137,32 @@ $(function () {
 
     });
 
-    $("#clear-shopcart-btn").click(function () {
+    $("#reset-shopcart-form-btn").click(function () {
         $("#shopcart_id").val("");
         $("#flash_message").empty();
         clear_form_shopcart()
     });
 
-    $("#checkout-shopcart-btn").click(function () {
+    // ****************************************
+    // Clear a Shopcart
+    // ****************************************
 
-        let name = $("#shopcart_name").val()
+    $("#clear-shopcart-btn").click(function () {
+
+        let id = $("#shopcart_id").val();
 
         $("#flash_message").empty();
 
         let ajax_list = $.ajax({
-            type: "GET",
-            url: `/shopcarts`,
+            type: "PUT",
+            url: `/shopcarts/${id}/clear`,
             contentType: "application/json",
             data: ''
         })
 
         ajax_list.done(function(res){
-            for (let i=0; i < res.length; i++) {
-                let shopcart = res[i];
-                shopcart_id = shopcart.id;
-                items = shopcart['items'];
-                if (items.length != 0) {
-                    for (let j=0; j < items.length; j++) {
-                        item_id = shopcart.items[j].id;
-                        $.ajax({
-                            type: "DELETE",
-                            url: `/shopcarts/${shopcart_id}/items/${item_id}`,
-                            contentType: "application/json",
-                            data: '',
-                        })
-                    }
-                }
-
-            }
-        });
-
-        ajax_list.done(function(res){
             clear_form_shopcart()
-            flash_message("Checkout all shopcarts!")
+            flash_message("Shopcart items cleared!")
         });
 
         ajax_list.fail(function(res){

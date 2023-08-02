@@ -16,6 +16,7 @@ Designed to support queries of the following APIs:
 """
 
 import logging
+import math
 from abc import abstractmethod
 
 from flask_sqlalchemy import SQLAlchemy
@@ -124,7 +125,12 @@ class Shopcart(db.Model, ModelBase):
             data (dict): A dictionary containing the resource data
         """
         try:
-            self.name = data["name"]
+            self.name = data["name"].strip()
+            if len(self.name) == 0:
+                raise DataValidationError(
+                    f"Invalid {type(self).__name__}: name should contain at least one non-whitespace char"
+                )
+
             items_js = data.get("items", [])
             for item_js in items_js:
                 item = Item()
@@ -137,6 +143,10 @@ class Shopcart(db.Model, ModelBase):
         except TypeError as error:
             raise DataValidationError(
                 f"Invalid {type(self).__name__}: failed to deserialize request body\nError message: {error}"
+            ) from error
+        except AttributeError as error:
+            raise DataValidationError(
+                f"Invalid {type(self).__name__}: failed to deserialize name: '{self.name}'"
             ) from error
 
     @classmethod
@@ -194,9 +204,19 @@ class Item(db.Model, ModelBase):
         """
         try:
             self.shopcart_id = data["shopcart_id"]
-            self.name = data["name"]
-            self.quantity = data["quantity"]
-            self.price = data["price"]
+            self.name = data["name"].strip()
+            if len(self.name) == 0:
+                raise DataValidationError(
+                    f"Invalid {type(self).__name__}: name should contain at least one non-whitespace char"
+                )
+
+            self.quantity = int(data["quantity"])
+            if not math.isclose(self.quantity, data["quantity"]):
+                raise DataValidationError(
+                    f"Invalid {type(self).__name__}: quantity must be an integer"
+                )
+
+            self.price = float(data["price"])
         except KeyError as error:
             raise DataValidationError(
                 f"Invalid {type(self).__name__}: missing {error.args[0]}"
@@ -204,4 +224,12 @@ class Item(db.Model, ModelBase):
         except TypeError as error:
             raise DataValidationError(
                 f"Invalid {type(self).__name__}: failed to deserialize request body\nError message: {error}"
+            ) from error
+        except AttributeError as error:
+            raise DataValidationError(
+                f"Invalid {type(self).__name__}: failed to deserialize name: '{self.name}'"
+            ) from error
+        except ValueError as error:
+            raise DataValidationError(
+                f"Invalid {type(self).__name__}: {error}"
             ) from error

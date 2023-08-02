@@ -143,38 +143,22 @@ $(function () {
         clear_form_shopcart()
     });
 
+    // ****************************************
+    // Clear a Shopcart
+    // ****************************************
+
     $("#clear-shopcart-btn").click(function () {
 
-        let name = $("#shopcart_name").val()
+        let id = $("#shopcart_id").val();
 
         $("#flash_message").empty();
 
         let ajax_list = $.ajax({
-            type: "GET",
-            url: `/shopcarts`,
+            type: "PUT",
+            url: `/shopcarts/${id}/clear`,
             contentType: "application/json",
             data: ''
         })
-
-        ajax_list.done(function(res){
-            for (let i=0; i < res.length; i++) {
-                let shopcart = res[i];
-                shopcart_id = shopcart.id;
-                items = shopcart['items'];
-                if (items.length != 0) {
-                    for (let j=0; j < items.length; j++) {
-                        item_id = shopcart.items[j].id;
-                        $.ajax({
-                            type: "DELETE",
-                            url: `/shopcarts/${shopcart_id}/items/${item_id}`,
-                            contentType: "application/json",
-                            data: '',
-                        })
-                    }
-                }
-
-            }
-        });
 
         ajax_list.done(function(res){
             clear_form_shopcart()

@@ -7,7 +7,7 @@ IMAGE ?= $(REGISTRY)/$(NAMESPACE)/$(IMAGE_NAME):$(IMAGE_TAG)
 REGISTRY ?= us.icr.io
 NAMESPACE ?= devops-shopcarts
 IMAGE_NAME ?= shopcarts
-IMAGE_TAG ?= 1.0
+IMAGE_TAG ?= 1.1    # remember to change spec.template.spec.containers[0].image in deploy/deployment.yaml accordingly
 
 .PHONY: help
 help: ## Display this help

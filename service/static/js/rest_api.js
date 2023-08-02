@@ -408,13 +408,25 @@ $(function () {
         });
     
         ajax.done(function (res) {
-            clear_form_item();
+            // clear_form_item();
+            
+            $("#item_id").val("");
+            // $("#item_shopcart_id").val("");
+            $("#item_name").val("");
+            $("#item_quantity").val("");
+            $("#item_price").val("");
+            $("#flash_message").empty();
+            
+            
             flash_message("Item deleted from shopcart!");
         });
     
         ajax.fail(function (res) {
             flash_message(res.responseJSON.message);
         });
+    
     });
+
+     
 
 })

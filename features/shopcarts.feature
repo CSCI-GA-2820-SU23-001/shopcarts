@@ -216,6 +216,7 @@ Scenario: Delete a shopcart item
     And I paste the "Id" field in "Item" page
     And I press the "Delete" button in "Item" page
     Then I should see the message "Item deleted from shopcart!"
-    And I should not see "Apple" in the results in "Item" page
+    When I press the "List" button in "Item" page
+    Then I should not see "Apple" in the results in "Item" page
     And I should see "Mango" in the results in "Item" page
     And I should see "Orange" in the results in "Item" page 

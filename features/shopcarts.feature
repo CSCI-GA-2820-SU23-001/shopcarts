@@ -158,3 +158,27 @@ Scenario: List all items under a shopcart
     And I should see "Orange" in the results in "Item" page
     And I should not see "Peach" in the results in "Item" page
     And I should not see "100" in the results in "Item" page
+
+Scenario: Get a shopcart item
+    When I visit the "Shopcart" api page
+    And I set the "Name" to "Wan-Yu" in "Shopcart" page
+    And I press the "Search" button in "Shopcart" page
+    Then I should see the message "Success"
+    And I should see "Wan-Yu" in the results in "Shopcart" page
+    And I should see "Apple" in the results in "Shopcart" page
+    And I should see "Mango" in the results in "Shopcart" page
+    And I should see "Orange" in the results in "Shopcart" page
+    When I copy the "Id" field in "Shopcart" page
+    And I visit the "Item" api page
+    And I set the "Shopcart ID" within clipboard in "Item" page
+    When I press the "Search" button in "Item" page
+    Then I should see the message "Success"
+    And I should see "Apple" in the results in "Item" page
+    And I should see "Mango" in the results in "Item" page
+    And I should see "Orange" in the results in "Item" page
+    When I copy the "Id" field in "Item" page
+    And I press the "Clear" button in "Item" page
+    And I paste the "Id" field in "Item" page
+    And I press the "Retrieve" button in "Item" page
+    Then I should see the message "Success"
+    And I should see "Apple" in the results in "Item" page

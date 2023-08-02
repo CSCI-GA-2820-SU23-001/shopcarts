@@ -31,7 +31,7 @@ Scenario: Create a Shopcart
     And I press the "Create" button in "Shopcart" page
     Then I should see the message "Success"
     When I copy the "Id" field in "Shopcart" page
-    And I press the "Clear" button in "Shopcart" page
+    And I press the "Reset Form" button on "Shopcart" page
     Then the "Id" field should be empty in "Shopcart" page
     Then the "Name" field should be empty in "Shopcart" page
     When I paste the "Id" field in "Shopcart" page
@@ -60,12 +60,12 @@ Scenario: Update a Shopcart
     And I press the "Update" button in "Shopcart" page
     Then I should see the message "Success"
     When I copy the "Id" field in "Shopcart" page
-    And I press the "Clear" button in "Shopcart" page
+    And I press the "Reset Form" button on "Shopcart" page
     And I paste the "Id" field in "Shopcart" page
     And I press the "Retrieve" button in "Shopcart" page
     Then I should see the message "Success"
     And I should see "Erica" in the "Name" field in "Shopcart" page
-    When I press the "Clear" button in "Shopcart" page
+    When I press the "Reset Form" button on "Shopcart" page
     And I press the "Search" button in "Shopcart" page
     Then I should see the message "Success"
     And I should see "Erica" in the results in "Shopcart" page
@@ -78,7 +78,7 @@ Scenario: Delete a Shopcart
     Then I should see the message "Success"
     And I should see "Lily" in the results in "Shopcart" page
     When I copy the "Id" field in "Shopcart" page
-    And I press the "Clear" button in "Shopcart" page
+    And I press the "Reset Form" button on "Shopcart" page
     And I paste the "Id" field in "Shopcart" page
     When I press the "Delete" button in "Shopcart" page
     Then I should see the message "Shopcart has been Deleted!"
@@ -86,16 +86,22 @@ Scenario: Delete a Shopcart
     Then I should see the message "Success"
     And I should not see "Lily" in the results in "Shopcart" page
 
-Scenario: Checkout all shopcarts
+Scenario: Clear shopcart items
     When I visit the "Shopcart" api page
+    And I set the "Name" to "Wan-Yu" in "Shopcart" page
     And I press the "Search" button in "Shopcart" page
     Then I should see the message "Success"
     And I should see "Wan-Yu" in the results in "Shopcart" page
     And I should see "Apple" in the results in "Shopcart" page
     And I should see "Mango" in the results in "Shopcart" page
     And I should see "Orange" in the results in "Shopcart" page
+    When I copy the "Id" field in "Shopcart" page
+    And I press the "Reset Form" button on "Shopcart" page
+    And I paste the "Id" field in "Shopcart" page
     When I press the "Clear" button in "Shopcart" page
-    And I press the "Checkout" button in "Shopcart" page
+    Then I should see the message "Shopcart items cleared!"
+    When I paste the "Id" field in "Shopcart" page
+    And I set the "Name" to "Wan-Yu" in "Shopcart" page
     And I press the "Search" button in "Shopcart" page
     Then I should see "Wan-Yu" in the results in "Shopcart" page
     And I should not see "Apple" in the results in "Shopcart" page

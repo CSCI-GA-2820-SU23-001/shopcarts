@@ -415,7 +415,7 @@ $(function () {
     // Delete an Item under a Shopcart
     // ****************************************
     $("#delete-item-btn").click(function () {
-        let shopcart_id = $("#shopcart_id").val();
+        let shopcart_id = $("#item_shopcart_id").val();
         let item_id = $("#item_id").val();
     
         $("#flash_message").empty();

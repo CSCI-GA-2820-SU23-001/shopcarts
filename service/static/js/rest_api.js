@@ -316,7 +316,6 @@ $(function () {
     // ****************************************
 
     $("#retrieve-item-btn").click(function () {
-
         let shopcart_id = $("#item_shopcart_id").val();
         let item_id = $("#item_id").val();
 
@@ -330,7 +329,22 @@ $(function () {
         })
 
         ajax.done(function(res){
+            $("#search_items_results").empty();
+
+            let table = '<table class="table table-striped" cellpadding="10">'
+            table += '<thead><tr>'
+            table += '<th class="col-md-2">ID</th>'
+            table += '<th class="col-md-2">Shopcart_ID</th>'
+            table += '<th class="col-md-4">Name</th>'
+            table += '<th class="col-md-2">Quantity</th>'
+            table += '<th class="col-md-2">Price</th>'
+            table += '</tr></thead><tbody>'
+
+            table += `<tr id="row_0"><td>${res.id}</td><td>${res.shopcart_id}</td><td>${res.name}</td><td>${res.quantity}</td><td>${res.price}</td></tr>`;
+            table += '</tbody></table>';
+            $("#search_items_results").append(table);
             update_form_item(res)
+
             flash_message("Success")
         });
 

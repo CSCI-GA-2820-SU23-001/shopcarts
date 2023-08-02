@@ -31,7 +31,7 @@ Scenario: Create a Shopcart
     And I press the "Create" button in "Shopcart" page
     Then I should see the message "Success"
     When I copy the "Id" field in "Shopcart" page
-    And I press the "Clear" button in "Shopcart" page
+    And I press the "Reset Form" button on "Shopcart" page
     Then the "Id" field should be empty in "Shopcart" page
     Then the "Name" field should be empty in "Shopcart" page
     When I paste the "Id" field in "Shopcart" page
@@ -60,12 +60,12 @@ Scenario: Update a Shopcart
     And I press the "Update" button in "Shopcart" page
     Then I should see the message "Success"
     When I copy the "Id" field in "Shopcart" page
-    And I press the "Clear" button in "Shopcart" page
+    And I press the "Reset Form" button on "Shopcart" page
     And I paste the "Id" field in "Shopcart" page
     And I press the "Retrieve" button in "Shopcart" page
     Then I should see the message "Success"
     And I should see "Erica" in the "Name" field in "Shopcart" page
-    When I press the "Clear" button in "Shopcart" page
+    When I press the "Reset Form" button on "Shopcart" page
     And I press the "Search" button in "Shopcart" page
     Then I should see the message "Success"
     And I should see "Erica" in the results in "Shopcart" page
@@ -78,7 +78,7 @@ Scenario: Delete a Shopcart
     Then I should see the message "Success"
     And I should see "Lily" in the results in "Shopcart" page
     When I copy the "Id" field in "Shopcart" page
-    And I press the "Clear" button in "Shopcart" page
+    And I press the "Reset Form" button on "Shopcart" page
     And I paste the "Id" field in "Shopcart" page
     When I press the "Delete" button in "Shopcart" page
     Then I should see the message "Shopcart has been Deleted!"
@@ -86,16 +86,22 @@ Scenario: Delete a Shopcart
     Then I should see the message "Success"
     And I should not see "Lily" in the results in "Shopcart" page
 
-Scenario: Checkout all shopcarts
+Scenario: Clear shopcart items
     When I visit the "Shopcart" api page
+    And I set the "Name" to "Wan-Yu" in "Shopcart" page
     And I press the "Search" button in "Shopcart" page
     Then I should see the message "Success"
     And I should see "Wan-Yu" in the results in "Shopcart" page
     And I should see "Apple" in the results in "Shopcart" page
     And I should see "Mango" in the results in "Shopcart" page
     And I should see "Orange" in the results in "Shopcart" page
+    When I copy the "Id" field in "Shopcart" page
+    And I press the "Reset Form" button on "Shopcart" page
+    And I paste the "Id" field in "Shopcart" page
     When I press the "Clear" button in "Shopcart" page
-    And I press the "Checkout" button in "Shopcart" page
+    Then I should see the message "Shopcart items cleared!"
+    When I paste the "Id" field in "Shopcart" page
+    And I set the "Name" to "Wan-Yu" in "Shopcart" page
     And I press the "Search" button in "Shopcart" page
     Then I should see "Wan-Yu" in the results in "Shopcart" page
     And I should not see "Apple" in the results in "Shopcart" page
@@ -106,12 +112,16 @@ Scenario: List all shopcarts
     When I visit the "Shopcart" api page
     And I press the "Search" button in "Shopcart" page
     Then I should see the message "Success"
+    And I should see "Emily" in the results in "Shopcart" page
+    And I should see "Kangle" in the results in "Shopcart" page
+    And I should see "Wan-Yu" in the results in "Shopcart" page
+    And I should see "Apple" in the results in "Shopcart" page
+    And I should see "Mango" in the results in "Shopcart" page
+    And I should see "Orange" in the results in "Shopcart" page
     And I should see "Yuzhao" in the results in "Shopcart" page
     And I should see "Apple" in the results in "Shopcart" page
-    And I should see "1.99" in the results in "Shopcart" page
-    And I should not see "Lillisluo" in the results in "Shopcart" page
-    And I should not see "Pear" in the results in "Shopcart" page
-    And I should not see "199.99" in the results in "Shopcart" page
+    And I should see "Zihan" in the results in "Shopcart" page
+    And I should see "Lily" in the results in "Shopcart" page
 
 Scenario: Create an item under a shopcart
     When I visit the "Shopcart" api page
@@ -121,27 +131,27 @@ Scenario: Create an item under a shopcart
     When I copy the "Id" field in "Shopcart" page
     And I visit the "Item" api page
     And I set the "Shopcart ID" within clipboard in "Item" page
-    And I press the "Search" button in "Item" page
+    And I press the "List" button in "Item" page
     Then I should see the message "Success"
     And I should see "Apple" in the results in "Item" page
     And I should see "1.99" in the results in "Item" page
     And I should not see "Peach" in the results in "Item" page
     And I should not see "4.99" in the results in "Item" page
-    When I press the "Clear" button in "Item" page
+    When I press the "Reset Form" button on "Item" page
     And I set the "Name" to "Peach" in "Item" page
     And I set the "Quantity" to "1" in "Item" page
     And I set the "Price" to "4.99" in "Item" page
     And I press the "Create" button in "Item" page
-    Then I should see the message "Create the Item successfully"
-    When I press the "Clear" button in "Item" page
-    And I press the "Search" button in "Item" page
+    Then I should see the message "Shopcart item created!"
+    When I press the "Reset Form" button on "Item" page
+    And I press the "List" button in "Item" page
     Then I should see the message "Success"
     And I should see "Apple" in the results in "Item" page
     And I should see "1.99" in the results in "Item" page
     And I should see "Peach" in the results in "Item" page
     And I should see "4.99" in the results in "Item" page
 
-Scenario: List all items under a shopcart
+Scenario: List all items in a shopcart
     When I visit the "Shopcart" api page
     And I set the "Name" to "Wan-Yu" in "Shopcart" page
     And I press the "Search" button in "Shopcart" page
@@ -149,15 +159,16 @@ Scenario: List all items under a shopcart
     When I copy the "Id" field in "Shopcart" page
     And I visit the "Item" api page
     And I set the "Shopcart ID" within clipboard in "Item" page
-    And I press the "Search" button in "Item" page
+    And I press the "List" button in "Item" page
     Then I should see the message "Success"
     And I should see "Apple" in the results in "Item" page
     And I should see "1" in the results in "Item" page
     And I should see "1.99" in the results in "Item" page
     And I should see "Mango" in the results in "Item" page
+    And I should see "5" in the results in "Item" page
     And I should see "Orange" in the results in "Item" page
+    And I should see "3.99" in the results in "Item" page
     And I should not see "Peach" in the results in "Item" page
-    And I should not see "100" in the results in "Item" page
 
 Scenario: Get a shopcart item
     When I visit the "Shopcart" api page
@@ -171,13 +182,13 @@ Scenario: Get a shopcart item
     When I copy the "Id" field in "Shopcart" page
     And I visit the "Item" api page
     And I set the "Shopcart ID" within clipboard in "Item" page
-    When I press the "Search" button in "Item" page
+    When I press the "List" button in "Item" page
     Then I should see the message "Success"
     And I should see "Apple" in the results in "Item" page
     And I should see "Mango" in the results in "Item" page
     And I should see "Orange" in the results in "Item" page
     When I copy the "Id" field in "Item" page
-    And I press the "Clear" button in "Item" page
+    And I press the "Reset Form" button on "Item" page
     And I paste the "Id" field in "Item" page
     And I press the "Retrieve" button in "Item" page
     Then I should see the message "Success"

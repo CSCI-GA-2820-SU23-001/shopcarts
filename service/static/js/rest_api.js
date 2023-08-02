@@ -148,58 +148,43 @@ $(function () {
         });
 
         ajax.fail(function(res){
-            flash_message("Server error!")
+            flash_message(res.responseJSON.message)
         });
 
     });
 
-    $("#clear-shopcart-btn").click(function () {
+    $("#reset-shopcart-form-btn").click(function () {
         $("#shopcart_id").val("");
         $("#flash_message").empty();
         clear_form_shopcart()
     });
 
-    $("#checkout-shopcart-btn").click(function () {
+    // ****************************************
+    // Clear a Shopcart
+    // ****************************************
 
-        let name = $("#shopcart_name").val()
+    $("#clear-shopcart-btn").click(function () {
+
+        let id = $("#shopcart_id").val();
 
         $("#flash_message").empty();
 
         let ajax_list = $.ajax({
-            type: "GET",
-            url: `/shopcarts`,
+            type: "PUT",
+            url: `/shopcarts/${id}/clear`,
             contentType: "application/json",
             data: ''
         })
 
         ajax_list.done(function(res){
-            for (let i=0; i < res.length; i++) {
-                let shopcart = res[i];
-                shopcart_id = shopcart.id;
-                items = shopcart['items'];
-                if (items.length != 0) {
-                    for (let j=0; j < items.length; j++) {
-                        item_id = shopcart.items[j].id;
-                        $.ajax({
-                            type: "DELETE",
-                            url: `/shopcarts/${shopcart_id}/items/${item_id}`,
-                            contentType: "application/json",
-                            data: '',
-                        })
-                    }
-                }
-
-            }
-        });
-
-        ajax_list.done(function(res){
             clear_form_shopcart()
-            flash_message("Checkout all shopcarts!")
+            flash_message("Shopcart items cleared!")
         });
 
         ajax_list.fail(function(res){
             flash_message(res.responseJSON.message)
         });
+
     });
 
     $("#search-shopcart-btn").click(function () {
@@ -263,7 +248,7 @@ $(function () {
 
     });
 
-    $("#clear-item-btn").click(function () {
+    $("#reset-item-form-btn").click(function () {
         $("#item_id").val("");
         // $("#item_shopcart_id").val("");
         $("#item_name").val("");
@@ -302,7 +287,7 @@ $(function () {
 
         ajax.done(function(res){
             update_form_item(res)
-            flash_message("Create the Item successfully")
+            flash_message("Shopcart item created!")
         });
 
         ajax.fail(function(res){
@@ -316,6 +301,7 @@ $(function () {
     // ****************************************
 
     $("#retrieve-item-btn").click(function () {
+
         let shopcart_id = $("#item_shopcart_id").val();
         let item_id = $("#item_id").val();
 
@@ -355,7 +341,7 @@ $(function () {
 
     });
 
-    $("#search-item-btn").click(function () {
+    $("#list-item-btn").click(function () {
 
         let shopcart_id = $("#item_shopcart_id").val();
         let name = $("#item_name").val();

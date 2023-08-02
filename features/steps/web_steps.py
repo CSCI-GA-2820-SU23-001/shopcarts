@@ -54,6 +54,12 @@ def step_impl(context, button, page):
     context.driver.find_element(By.ID, button_id).click()
 
 
+@when('I press the "Reset Form" button on "{page}" page')
+def step_impl(context, page):
+    button_id = 'reset-' + page.lower() + '-form-btn'
+    context.driver.find_element(By.ID, button_id).click()
+
+
 @then('I should see the message "{message}"')
 def step_impl(context, message):
     found = WebDriverWait(context.driver, context.wait_seconds).until(

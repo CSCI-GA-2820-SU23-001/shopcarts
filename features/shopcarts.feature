@@ -103,7 +103,8 @@ Scenario: Clear shopcart items
     When I paste the "Id" field in "Shopcart" page
     And I set the "Name" to "Wan-Yu" in "Shopcart" page
     And I press the "Search" button in "Shopcart" page
-    Then I should see "Wan-Yu" in the results in "Shopcart" page
+    Then I should see the message "Success"
+    And I should see "Wan-Yu" in the results in "Shopcart" page
     And I should not see "Apple" in the results in "Shopcart" page
     And I should not see "Mango" in the results in "Shopcart" page
     And I should not see "Orange" in the results in "Shopcart" page
@@ -217,6 +218,7 @@ Scenario: Delete a shopcart item
     And I press the "Delete" button in "Item" page
     Then I should see the message "Item deleted from shopcart!"
     When I press the "List" button in "Item" page
-    Then I should not see "Apple" in the results in "Item" page
+    Then I should see the message "Success"
+    And I should not see "Apple" in the results in "Item" page
     And I should see "Mango" in the results in "Item" page
-    And I should see "Orange" in the results in "Item" page 
+    And I should see "Orange" in the results in "Item" page

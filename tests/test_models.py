@@ -27,9 +27,10 @@ class TestShopcart(unittest.TestCase):
         app.logger.setLevel(logging.CRITICAL)
         Shopcart.init_db(app)
 
-    # @classmethod
-    # def tearDownClass(cls):
-    #     """ This runs once after the entire test suite """
+    @classmethod
+    def tearDownClass(cls):
+        """ This runs once after the entire test suite """
+        db.session.close()
 
     def setUp(self):
         """ This runs before each test """
@@ -187,9 +188,10 @@ class TestItem(unittest.TestCase):
         app.logger.setLevel(logging.CRITICAL)
         Item.init_db(app)
 
-    # @classmethod
-    # def tearDownClass(cls):
-    #     """ This runs once after the entire test suite """
+    @classmethod
+    def tearDownClass(cls):
+        """ This runs once after the entire test suite """
+        db.session.close()
 
     def setUp(self):
         """ This runs before each test """

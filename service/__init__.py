@@ -7,7 +7,7 @@ and SQL database
 import sys
 
 from flask import Flask
-# from flask_restx import Api
+from flask_restx import Api
 
 from service import config
 from service.common import log_handlers
@@ -16,16 +16,32 @@ from service.common import log_handlers
 app = Flask(__name__)
 app.config.from_object(config)
 
-# app.url_map.strict_slashes = False
+app.url_map.strict_slashes = False
 
-# api = Api(app,
-#           version=app.config["APP_VERSION"],
-#           title="Shopcarts REST API Service",
-#           description="This is the Shopcarts Service server.",
-#           default="Shopcart",
-#           default_label="Shopcarts Service operations",
-#           doc=app.config["PREFIX_API_DOCS"],
-#           prefix=app.config["PREFIX_API"])
+# Document the type of authorization required
+authorizations = {
+    "apikey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Api-Key"
+    }
+}
+
+######################################################################
+# Configure Swagger before initializing it
+######################################################################
+api = Api(
+    app,
+    #version=app.config["APP_VERSION"],
+    version="1.0.0",
+    title="Shopcarts REST API Service",
+    description="This is the Shopcarts Service server.",
+    default="Shopcart",
+    default_label="Shopcarts Service operations",
+    #doc=app.config["PREFIX_API_DOCS"],
+    doc="/apidocs",
+    prefix="/api/shopcarts")
+    #prefix=app.config["PREFIX_API"])
 
 # Dependencies require we import the routes AFTER the Flask app is created
 # pylint: disable=wrong-import-position, wrong-import-order, cyclic-import

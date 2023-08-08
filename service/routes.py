@@ -21,10 +21,10 @@ GET  /shopcarts/{shopcart_id}/items/{item_id} - Returns the item in the shopcart
 PUT  /shopcarts/{shopcart_id}/items/{item_id} - Updates the item in the shopcart
 DELETE /shopcarts/{shopcart_id}/items/{item_id} - Delete the item from the shopcart
 """
-import secrets
-from functools import wraps
+# import secrets
+# from functools import wraps
 from flask import jsonify, request, make_response, abort
-from flask_restx import Resource, fields, reqparse, inputs
+from flask_restx import Resource, fields, reqparse  # , inputs
 
 
 from service.common import status  # HTTP Status Codes
@@ -32,7 +32,7 @@ from service.models import Shopcart, Item
 from . import app, api
 
 
-#DEFAULT_CONTENT_TYPE = "application/json"
+# DEFAULT_CONTENT_TYPE = "application/json"
 
 # ######################################################################
 # # Configure the Root route before OpenAPI
@@ -54,7 +54,7 @@ create_model = api.model(
     "Shopcart",
     {
         "name": fields.String(required=True, description="The name of the Shopcart"),
-        #"items": fields.List(item_model),
+        # "items": fields.List(item_model),
     },
 )
 
@@ -74,23 +74,20 @@ shopcart_args.add_argument(
     "name", type=str, location="args", required=False, help="List Shopcarts by name"
 )
 
-
-
-
-
 ############################################################
 # Health Endpoint
 ############################################################
+
 
 @app.route("/health")
 def health():
     """Health Status"""
     return {"status": 'OK'}, status.HTTP_200_OK
 
-
 ######################################################################
 # GET INDEX
 ######################################################################
+
 
 @app.route("/")
 def index():
@@ -134,9 +131,12 @@ def check_content_type(expected_content_type):
 ######################################################################
 #  PATH: /shopcarts/{id}
 ######################################################################
+
+
 @api.route("/shopcarts/<shopcart_id>")
 @api.param("shopcart_id", "The Shopcart identifier")
 class ShopcartResource(Resource):
+
     """
     ShopcartResource class
 
@@ -166,10 +166,10 @@ class ShopcartResource(Resource):
             )
         app.logger.info("Returning shopcart: %s", shopcart.id)
         return shopcart.serialize(), status.HTTP_200_OK
-    
     # ------------------------------------------------------------------
     # UPDATE AN EXISTING SHOPCART
     # ------------------------------------------------------------------
+
     @api.doc("update_shopcarts")
     @api.response(404, "Shopcart not found")
     @api.response(400, "The posted Shopcart data was not valid")
@@ -193,10 +193,10 @@ class ShopcartResource(Resource):
         shopcart.id = shopcart_id
         shopcart.update()
         return shopcart.serialize(), status.HTTP_200_OK
-    
     # ------------------------------------------------------------------
     # DELETE A SHOPCART
     # ------------------------------------------------------------------
+
     @api.doc("delete_shopcarts")
     @api.response(204, "Shopcart deleted")
     def delete(self, shopcart_id):
@@ -216,6 +216,8 @@ class ShopcartResource(Resource):
 ######################################################################
 #  PATH: /shopcarts
 ######################################################################
+
+
 @api.route("/shopcarts", strict_slashes=False)
 class ShopcartCollection(Resource):
     """Handles all interactions with collections of Shopcarts"""
@@ -223,6 +225,7 @@ class ShopcartCollection(Resource):
     # ------------------------------------------------------------------
     # LIST ALL SHOPCARTS
     # ------------------------------------------------------------------
+
     @api.doc("list_shopcarts")
     @api.expect(shopcart_args, validate=True)
     @api.marshal_list_with(shopcart_model)
@@ -261,18 +264,14 @@ class ShopcartCollection(Resource):
         app.logger.info("New shopcart created with id=%s", shopcart.id)
         location_url = api.url_for(ShopcartResource, shopcart_id=shopcart.id, _external=True)
         return shopcart.serialize(), status.HTTP_201_CREATED, {"Location": location_url}
-    
-
 
 # def create_shopcarts():
 #     """ Creates a new shopcart """
 #     #check_content_type(DEFAULT_CONTENT_TYPE)
-
 #     app.logger.info("Start creating a shopcart")
 #     shopcart = Shopcart()
 #     shopcart.deserialize(request.get_json())
 #     app.logger.info("Request body deserialized to shopcart")
-
 #     shopcart.create()  # store in table
 #     app.logger.info("New shopcart created with id=%s", shopcart.id)
 #     shopcart_js = shopcart.serialize()
@@ -381,7 +380,7 @@ class ShopcartCollection(Resource):
 @app.route("/shopcarts/<int:shopcart_id>/items", methods=["POST"])
 def create_items(shopcart_id):
     """ Adds a new item to shopcart, and return the newly created item """
-    #check_content_type(DEFAULT_CONTENT_TYPE)
+    # check_content_type(DEFAULT_CONTENT_TYPE)
 
     shopcart = Shopcart.get_by_id(shopcart_id)
     if not shopcart:
@@ -442,7 +441,7 @@ def get_items(shopcart_id, item_id):
 @app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["PUT"])
 def update_items(shopcart_id, item_id):
     """ Updates an existing item in shopcart, and return the updated item """
-    #check_content_type(DEFAULT_CONTENT_TYPE)
+    # check_content_type(DEFAULT_CONTENT_TYPE)
 
     req_item = Item()
     req_item.deserialize(request.get_json())  # validate request body schema

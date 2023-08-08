@@ -33,16 +33,15 @@ app.url_map.strict_slashes = False
 ######################################################################
 api = Api(
     app,
-    #version=app.config["APP_VERSION"],
+    # version=app.config["APP_VERSION"],
     version="1.0.0",
     title="Shopcarts REST API Service",
     description="This is the Shopcarts Service server.",
     default="Shopcart",
     default_label="Shopcarts Service operations",
-    #doc=app.config["PREFIX_API_DOCS"],
+    # doc=app.config["PREFIX_API_DOCS"],
     doc="/apidocs",
     prefix="/api/shopcarts")
-    #prefix=app.config["PREFIX_API"])
 
 # Dependencies require we import the routes AFTER the Flask app is created
 # pylint: disable=wrong-import-position, wrong-import-order, cyclic-import

@@ -22,7 +22,7 @@ PUT  /shopcarts/{shopcart_id}/items/{item_id} - Updates the item in the shopcart
 DELETE /shopcarts/{shopcart_id}/items/{item_id} - Delete the item from the shopcart
 """
 from flask import jsonify, request, make_response, abort
-from flask_restx import fields
+from flask_restx import Resource, fields
 
 from service.common import status  # HTTP Status Codes
 from service.models import Shopcart, Item
@@ -30,32 +30,28 @@ from . import app, api
 
 DEFAULT_CONTENT_TYPE = "application/json"
 
-item_model = api.model(
-    "ItemModel",
+create_model = api.model(
+    "Shopcart",
     {
-        "id": fields.String(
-            readOnly=True,
-            description="Item id"
-        ),
-        "shopcart_id": fields.String(
-            readOnly=True,
-            description="Shopcart id where the item belongs"
-        ),
-        "name": fields.String(
-            required=True,
-            description="Item name"
-        ),
-        "quantity": fields.Integer(
-            required=True,
-            description="Item quantity",
-        ),
-        "price": fields.Float(
-            required=True,
-            description="Item unit price"
-        )
+        "name": fields.String(required=True, description="The name of the Shopcart"),
     },
 )
 
+shopcart_model = api.inherit(
+    "ShopcartModel",
+    create_model,
+    {
+        "id": fields.Integer(
+            readOnly=True, description="The unique id assigned internally by service"
+        ),
+    },
+)
+
+# # query string arguments
+# shopcart_args = reqparse.RequestParser()
+# shopcart_args.add_argument(
+#     "name", type=str, location="args", required=False, help="List Shopcarts by name"
+# )
 
 ############################################################
 # Health Endpoint
@@ -110,6 +106,43 @@ def check_content_type(expected_content_type):
             f"Content-Type must be {expected_content_type}"
         )
 
+######################################################################
+#  PATH: /shopcarts/{id}
+######################################################################
+
+
+@api.route("/shopcarts/<shopcart_id>")
+@api.param("shopcart_id", "The Shopcart identifier")
+class ShopcartResource(Resource):
+
+    """
+    ShopcartResource class
+    Allows the manipulation of a single Shopcart
+    GET /shopcart{id} - Returns a Shopcart with the id
+    PUT /shopcart{id} - Update a Shopcart with the id
+    DELETE /shopcart{id} -  Deletes a Shopcart with the id
+    """
+
+    # ------------------------------------------------------------------
+    # RETRIEVE A SHOPCART
+    # ------------------------------------------------------------------
+    @api.doc("get_shopcarts")
+    @api.response(404, "Shopcart not found")
+    @api.marshal_with(shopcart_model)
+    def get(self, shopcart_id):
+        """
+        Retrieve a single Shopcart
+        This endpoint will return an Shopcart based on its id
+        """
+        app.logger.info("Request for Shopcart with id: %s", shopcart_id)
+        shopcart = Shopcart.get_by_id(shopcart_id)
+        if not shopcart:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Shopcart with id '{shopcart_id}' could not be found."
+            )
+        app.logger.info("Returning shopcart: %s", shopcart.id)
+        return shopcart.serialize(), status.HTTP_200_OK
 
 ######################################################################
 # S H O P C A R T   A P I S

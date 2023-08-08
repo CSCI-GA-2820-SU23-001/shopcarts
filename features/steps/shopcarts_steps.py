@@ -21,11 +21,11 @@ def step_impl(context):
     # List all shopcarts and delete them one by one
     rest_endpoint = f"{context.base_url}/api/shopcarts"
     resp = requests.get(rest_endpoint)
-    assert (resp.status_code == HTTP_200_OK)
+    assert resp.status_code == HTTP_200_OK
     for shopcart in resp.json():
         # logging.info(shopcart)
         resp = requests.delete(f"{rest_endpoint}/{shopcart['id']}")
-        assert (resp.status_code == HTTP_204_NO_CONTENT)
+        assert resp.status_code == HTTP_204_NO_CONTENT
 
     # load the database with new shopcarts
     for row in context.table:
@@ -34,7 +34,7 @@ def step_impl(context):
             "items": []
         }
         resp = requests.post(rest_endpoint, json=payload)
-        assert (resp.status_code == HTTP_201_CREATED)
+        assert resp.status_code == HTTP_201_CREATED
 
 
 @given("the following items")
@@ -42,7 +42,7 @@ def step_impl(context):
     rest_endpoint = f"{context.base_url}/shopcarts"
     for row in context.table:
         resp = requests.get(rest_endpoint + "?name=" + row["shopcart_name"])
-        assert (resp.status_code == HTTP_200_OK)
+        assert resp.status_code == HTTP_200_OK
         data = resp.json()
         # logging.info(data)
         shopcart_id = data[0]["id"]
@@ -54,4 +54,4 @@ def step_impl(context):
         }
         resp = requests.post(rest_endpoint + "/" + str(shopcart_id) + "/items", json=payload)
         # logging.info(resp.json())
-        assert (resp.status_code == HTTP_201_CREATED)
+        assert resp.status_code == HTTP_201_CREATED

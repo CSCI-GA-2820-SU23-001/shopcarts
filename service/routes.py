@@ -166,52 +166,6 @@ class ShopcartResource(Resource):
             )
         app.logger.info("Returning shopcart: %s", shopcart.id)
         return shopcart.serialize(), status.HTTP_200_OK
-    # ------------------------------------------------------------------
-    # UPDATE AN EXISTING SHOPCART
-    # ------------------------------------------------------------------
-
-    @api.doc("update_shopcarts")
-    @api.response(404, "Shopcart not found")
-    @api.response(400, "The posted Shopcart data was not valid")
-    @api.expect(shopcart_model)
-    @api.marshal_with(shopcart_model)
-    def put(self, shopcart_id):
-        """
-        Update a Shopcart
-
-        This endpoint will update a Shopcart based the body that is posted
-        """
-        app.logger.info("Request to update shopcart with id: %s", shopcart_id)
-        shopcart = Shopcart.get_by_id(shopcart_id)
-        if not shopcart:
-            abort(
-                status.HTTP_404_NOT_FOUND,
-                f"Shopcart with id '{shopcart_id}' was not found."
-            )
-        data = api.payload
-        shopcart.deserialize(data)
-        shopcart.id = shopcart_id
-        shopcart.update()
-        return shopcart.serialize(), status.HTTP_200_OK
-    # ------------------------------------------------------------------
-    # DELETE A SHOPCART
-    # ------------------------------------------------------------------
-
-    @api.doc("delete_shopcarts")
-    @api.response(204, "Shopcart deleted")
-    def delete(self, shopcart_id):
-        """
-        Delete a Shopcart
-
-        This endpoint will delete a Shopcart based the id specified in the path
-        """
-        app.logger.info("Start deleting shopcart %s...", shopcart_id)
-        shopcart = Shopcart.get_by_id(shopcart_id)
-        if shopcart:
-            shopcart.delete()
-            app.logger.info("Shopcart deleted with id= %s ", shopcart_id)
-
-        return "", status.HTTP_204_NO_CONTENT
 
 ######################################################################
 #  PATH: /shopcarts

@@ -8,6 +8,8 @@ flask-restx==1.1.0
 Flask-SQLAlchemy==3.0.2
 psycopg2==2.9.5
 python-dotenv==0.21.1
+retry2==0.9.5
+
 
 # Runtime tools
 gunicorn==20.1.0

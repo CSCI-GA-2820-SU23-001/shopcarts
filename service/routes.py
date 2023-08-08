@@ -31,6 +31,7 @@ from service.common import status  # HTTP Status Codes
 from service.models import Shopcart, Item
 from . import app, api
 
+
 #DEFAULT_CONTENT_TYPE = "application/json"
 
 # ######################################################################
@@ -42,10 +43,18 @@ from . import app, api
 #     return app.send_static_file("index.html")
 
 # Define the model so that the docs reflect what can be sent
+# item_model = api.model(
+#     "items",
+#     {
+#         "name": fields.String(required=True, description="The name of the Item"),
+#     },
+# )
+
 create_model = api.model(
     "Shopcart",
     {
         "name": fields.String(required=True, description="The name of the Shopcart"),
+        #"items": fields.List(item_model),
     },
 )
 
@@ -53,7 +62,7 @@ shopcart_model = api.inherit(
     "ShopcartModel",
     create_model,
     {
-        "id": fields.String(
+        "id": fields.Integer(
             readOnly=True, description="The unique id assigned internally by service"
         ),
     },
@@ -65,29 +74,8 @@ shopcart_args.add_argument(
     "name", type=str, location="args", required=False, help="List Shopcarts by name"
 )
 
-######################################################################
-# Authorization Decorator
-######################################################################
-def token_required(func):
-    """Decorator to require a token for this endpoint"""
 
-    @wraps(func)
-    def decorated(*args, **kwargs):
-        token = None
-        if "X-Api-Key" in request.headers:
-            token = request.headers["X-Api-Key"]
 
-        if app.config.get("API_KEY") and app.config["API_KEY"] == token:
-            return func(*args, **kwargs)
-
-    return decorated
-
-######################################################################
-# Function to generate a random API key (good for testing)
-######################################################################
-def generate_apikey():
-    """Helper function used when testing API keys"""
-    return secrets.token_hex(16)
 
 
 ############################################################
@@ -187,7 +175,6 @@ class ShopcartResource(Resource):
     @api.response(400, "The posted Shopcart data was not valid")
     @api.expect(shopcart_model)
     @api.marshal_with(shopcart_model)
-    @token_required
     def put(self, shopcart_id):
         """
         Update a Shopcart
@@ -212,7 +199,6 @@ class ShopcartResource(Resource):
     # ------------------------------------------------------------------
     @api.doc("delete_shopcarts")
     @api.response(204, "Shopcart deleted")
-    @token_required
     def delete(self, shopcart_id):
         """
         Delete a Shopcart
@@ -262,7 +248,6 @@ class ShopcartCollection(Resource):
     @api.response(400, "The posted data was not valid")
     @api.expect(create_model)
     @api.marshal_with(shopcart_model, code=201)
-    @token_required
     def post(self):
         """
         Creates a Shopcart

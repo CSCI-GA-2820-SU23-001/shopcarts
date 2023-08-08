@@ -22,7 +22,7 @@ PUT  /shopcarts/{shopcart_id}/items/{item_id} - Updates the item in the shopcart
 DELETE /shopcarts/{shopcart_id}/items/{item_id} - Delete the item from the shopcart
 """
 from flask import jsonify, request, make_response, abort
-from flask_restx import fields
+from flask_restx import Resource, fields
 
 from service.common import status  # HTTP Status Codes
 from service.models import Shopcart, Item
@@ -236,6 +236,18 @@ def list_shopcarts():
 ######################################################################
 # I T E M   A P I S
 ######################################################################
+
+@api.route("/shopcarts/<int:shopcart_id>/items", strict_slashes=False)
+@api.param("shopcart_id", "The Shopcart identifier")
+class ItemCollection(Resource):
+    """
+    ItemCollection Class
+
+    Allows interactions with collections of Items:
+    POST /shopcarts/<int:shopcart_id>/items - Add an Item to shopcart
+    GET /shopcarts/<int:shopcart_id>/items - Returns a list of items in shopcart
+    """
+
 
 @app.route("/shopcarts/<int:shopcart_id>/items", methods=["POST"])
 def create_items(shopcart_id):

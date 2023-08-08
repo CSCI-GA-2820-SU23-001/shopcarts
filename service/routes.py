@@ -22,12 +22,39 @@ PUT  /shopcarts/{shopcart_id}/items/{item_id} - Updates the item in the shopcart
 DELETE /shopcarts/{shopcart_id}/items/{item_id} - Delete the item from the shopcart
 """
 from flask import jsonify, request, make_response, abort
+from flask_restx import fields
 
 from service.common import status  # HTTP Status Codes
 from service.models import Shopcart, Item
-from . import app
+from . import app, api
 
 DEFAULT_CONTENT_TYPE = "application/json"
+
+item_model = api.model(
+    "ItemModel",
+    {
+        "id": fields.String(
+            readOnly=True,
+            description="Item id"
+        ),
+        "shopcart_id": fields.String(
+            readOnly=True,
+            description="Shopcart id where the item belongs"
+        ),
+        "name": fields.String(
+            required=True,
+            description="Item name"
+        ),
+        "quantity": fields.Integer(
+            required=True,
+            description="Item quantity",
+        ),
+        "price": fields.Float(
+            required=True,
+            description="Item unit price"
+        )
+    },
+)
 
 
 ############################################################

@@ -219,112 +219,112 @@ class ShopcartCollection(Resource):
         location_url = api.url_for(ShopcartResource, shopcart_id=shopcart.id, _external=True)
         return shopcart.serialize(), status.HTTP_201_CREATED, {"Location": location_url}
 
-# def create_shopcarts():
-#     """ Creates a new shopcart """
-#     #check_content_type(DEFAULT_CONTENT_TYPE)
-#     app.logger.info("Start creating a shopcart")
-#     shopcart = Shopcart()
-#     shopcart.deserialize(request.get_json())
-#     app.logger.info("Request body deserialized to shopcart")
-#     shopcart.create()  # store in table
-#     app.logger.info("New shopcart created with id=%s", shopcart.id)
-#     shopcart_js = shopcart.serialize()
-#     return make_response(jsonify(shopcart_js), status.HTTP_201_CREATED)
+def create_shopcarts():
+    """ Creates a new shopcart """
+    #check_content_type(DEFAULT_CONTENT_TYPE)
+    app.logger.info("Start creating a shopcart")
+    shopcart = Shopcart()
+    shopcart.deserialize(request.get_json())
+    app.logger.info("Request body deserialized to shopcart")
+    shopcart.create()  # store in table
+    app.logger.info("New shopcart created with id=%s", shopcart.id)
+    shopcart_js = shopcart.serialize()
+    return make_response(jsonify(shopcart_js), status.HTTP_201_CREATED)
 
 
-# @app.route("/shopcarts/<int:shopcart_id>", methods=["GET"])
-# def get_shopcarts(shopcart_id):
-#     """
-#     Retrieve a single Shopcart
-#     This endpoint will return an Shopcart based on its id
-#     """
-#     app.logger.info("Request for Shopcart with id: %s", shopcart_id)
-#     shopcart = Shopcart.get_by_id(shopcart_id)
-#     if not shopcart:
-#         abort(
-#             status.HTTP_404_NOT_FOUND,
-#             f"Shopcart with id '{shopcart_id}' could not be found."
-#         )
-#     app.logger.info("Returning shopcart: %s", shopcart.id)
-#     return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
+@app.route("/shopcarts/<int:shopcart_id>", methods=["GET"])
+def get_shopcarts(shopcart_id):
+    """
+    Retrieve a single Shopcart
+    This endpoint will return an Shopcart based on its id
+    """
+    app.logger.info("Request for Shopcart with id: %s", shopcart_id)
+    shopcart = Shopcart.get_by_id(shopcart_id)
+    if not shopcart:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id '{shopcart_id}' could not be found."
+        )
+    app.logger.info("Returning shopcart: %s", shopcart.id)
+    return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
 
 
-# @app.route("/shopcarts/<int:shopcart_id>", methods=['PUT'])
-# def update_shopcarts(shopcart_id):
-#     """ Update shopcart content """
-#     #check_content_type(DEFAULT_CONTENT_TYPE)
+@app.route("/shopcarts/<int:shopcart_id>", methods=['PUT'])
+def update_shopcarts(shopcart_id):
+    """ Update shopcart content """
+    #check_content_type(DEFAULT_CONTENT_TYPE)
 
-#     app.logger.info("Request to update shopcart with id: %s", shopcart_id)
-#     shopcart = Shopcart.get_by_id(shopcart_id)
-#     if not shopcart:
-#         abort(
-#             status.HTTP_404_NOT_FOUND,
-#             f"Shopcart with id '{shopcart_id}' was not found."
-#         )
+    app.logger.info("Request to update shopcart with id: %s", shopcart_id)
+    shopcart = Shopcart.get_by_id(shopcart_id)
+    if not shopcart:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id '{shopcart_id}' was not found."
+        )
 
-#     shopcart.deserialize(request.get_json())
-#     shopcart.id = shopcart_id
-#     shopcart.update()
+    shopcart.deserialize(request.get_json())
+    shopcart.id = shopcart_id
+    shopcart.update()
 
-#     return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
-
-
-# @app.route("/shopcarts/<int:shopcart_id>", methods=["DELETE"])
-# def delete_shopcarts(shopcart_id):
-#     """Deletes a shopcart
-#         Args:
-#             user_id (str): the user_id of the shopcart to delete
-#         Returns:
-#             str: always returns an empty string
-#     """
-#     app.logger.info("Start deleting shopcart %s...", shopcart_id)
-#     shopcart = Shopcart.get_by_id(shopcart_id)
-#     if shopcart:
-#         shopcart.delete()
-#         app.logger.info("Shopcart deleted with id= %s ", shopcart_id)
-#     return make_response("", status.HTTP_204_NO_CONTENT)
+    return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
 
 
-# @app.route("/shopcarts/<int:shopcart_id>/clear", methods=["PUT"])
-# def clear_shopcart(shopcart_id):
-#     """Clear a shopcart
-#         Args:
-#             user_id (str): the user_id of the shopcart to delete
-#     """
-#     app.logger.info("Request for Shopcart with id: %s", shopcart_id)
-
-#     shopcart = Shopcart.get_by_id(shopcart_id)
-#     if not shopcart:
-#         abort(
-#             status.HTTP_404_NOT_FOUND,
-#             f"Shopcart with id '{shopcart_id}' could not be found.",
-#         )
-#     app.logger.info("Returning shopcart: %s", shopcart_id)
-#     app.logger.info("Request to clear shopcart with id: %s", shopcart_id)
-#     shopcart = Shopcart.get_by_id(shopcart_id)
-
-#     for item in shopcart.items:
-#         item.delete()
-#         app.logger.info("Deleted item '%s' in shopcart with id='%s'.", item, shopcart_id)
-#     shopcart.update()
-#     return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
+@app.route("/shopcarts/<int:shopcart_id>", methods=["DELETE"])
+def delete_shopcarts(shopcart_id):
+    """Deletes a shopcart
+        Args:
+            user_id (str): the user_id of the shopcart to delete
+        Returns:
+            str: always returns an empty string
+    """
+    app.logger.info("Start deleting shopcart %s...", shopcart_id)
+    shopcart = Shopcart.get_by_id(shopcart_id)
+    if shopcart:
+        shopcart.delete()
+        app.logger.info("Shopcart deleted with id= %s ", shopcart_id)
+    return make_response("", status.HTTP_204_NO_CONTENT)
 
 
-# @app.route("/shopcarts", methods=["GET"])
-# def list_shopcarts():
-#     """ List shopcart items """
-#     app.logger.info("Request for shopcart list")
+@app.route("/shopcarts/<int:shopcart_id>/clear", methods=["PUT"])
+def clear_shopcart(shopcart_id):
+    """Clear a shopcart
+        Args:
+            user_id (str): the user_id of the shopcart to delete
+    """
+    app.logger.info("Request for Shopcart with id: %s", shopcart_id)
 
-#     shopcarts = []
-#     name = request.args.get("name")
-#     if name:
-#         shopcarts = Shopcart.find_by_name(name)
-#     else:
-#         shopcarts = Shopcart.get_all()
+    shopcart = Shopcart.get_by_id(shopcart_id)
+    if not shopcart:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id '{shopcart_id}' could not be found.",
+        )
+    app.logger.info("Returning shopcart: %s", shopcart_id)
+    app.logger.info("Request to clear shopcart with id: %s", shopcart_id)
+    shopcart = Shopcart.get_by_id(shopcart_id)
 
-#     results = [shopcart.serialize() for shopcart in shopcarts]
-#     app.logger.info("Returning %d shopcarts", len(results))
-#     return jsonify(results), status.HTTP_200_OK
+    for item in shopcart.items:
+        item.delete()
+        app.logger.info("Deleted item '%s' in shopcart with id='%s'.", item, shopcart_id)
+    shopcart.update()
+    return make_response(jsonify(shopcart.serialize()), status.HTTP_200_OK)
+
+
+@app.route("/shopcarts", methods=["GET"])
+def list_shopcarts():
+    """ List shopcart items """
+    app.logger.info("Request for shopcart list")
+
+    shopcarts = []
+    name = request.args.get("name")
+    if name:
+        shopcarts = Shopcart.find_by_name(name)
+    else:
+        shopcarts = Shopcart.get_all()
+
+    results = [shopcart.serialize() for shopcart in shopcarts]
+    app.logger.info("Returning %d shopcarts", len(results))
+    return jsonify(results), status.HTTP_200_OK
 
 
 ######################################################################

@@ -57,6 +57,7 @@ shopcart_model = api.inherit(
 # Health Endpoint
 ############################################################
 
+
 @app.route("/health")
 def health():
     """Health Status"""
@@ -147,6 +148,7 @@ class ShopcartResource(Resource):
 ######################################################################
 # S H O P C A R T   A P I S
 ######################################################################
+
 
 @app.route("/shopcarts", methods=["POST"])
 def create_shopcarts():

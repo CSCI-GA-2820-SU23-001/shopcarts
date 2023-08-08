@@ -3,7 +3,7 @@ Global Configuration for Application
 """
 import os
 
-APP_VERSION = "1.0.0"
+APP_VERSION = "2.0.0"
 PREFIX_API = "/api"
 PREFIX_API_DOCS = "/apidocs"
 

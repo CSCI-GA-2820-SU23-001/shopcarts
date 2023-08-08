@@ -3,9 +3,9 @@ Global Configuration for Application
 """
 import os
 
-# APP_VERSION = "1.0.0"
-# PREFIX_API = "/api"
-# PREFIX_API_DOCS = "/apidocs"
+APP_VERSION = "1.0.0"
+PREFIX_API = "/api"
+PREFIX_API_DOCS = "/apidocs"
 
 # Get configuration from environment
 DATABASE_URI = os.getenv(

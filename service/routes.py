@@ -152,6 +152,25 @@ class ShopcartCollection(Resource):
     POST /shopcarts - Create a shopcart
     """
 
+    @api.doc("create_shopcarts")
+    @api.response(400, "Invalid shopcart request body")
+    @api.response(415, "Invalid header content-type")
+    @api.expect(shopcart_base_model)
+    @api.marshal_with(shopcart_model, code=201)
+    def post(self):
+        """ Creates a new shopcart """
+        check_content_type(DEFAULT_CONTENT_TYPE)
+
+        app.logger.info("Start creating a shopcart")
+        shopcart = Shopcart()
+        shopcart.deserialize(api.payload)
+        app.logger.info("Request body deserialized to shopcart")
+
+        shopcart.create()  # store in table
+        app.logger.info("New shopcart created with id=%s", shopcart.id)
+        shopcart_js = shopcart.serialize()
+        return shopcart_js, status.HTTP_201_CREATED
+
 
 @app.route("/shopcarts", methods=["POST"])
 def create_shopcarts():

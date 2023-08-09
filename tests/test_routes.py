@@ -123,12 +123,16 @@ class TestShopcartsService(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
+        logging.debug("Response data = %s", data)
         self.assertEqual(data["id"], test_shopcart.id)
 
     def test_get_shopcart_not_found(self):
         """It should not Read a Shopcart that is not found"""
         response = self.client.get(f"{BASE_URL}/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = resp.get_json()
+        logging.debug("Response data = %s", data)
+        self.assertIn("was not found", data["message"])
 
     def test_get_item(self):
         """It should Read an item from a shopcart"""

@@ -239,7 +239,7 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(type(data[0]['name']), str)
         self.assertEqual(data[0]['name'], test_shopcart.name)
 
-    def test_add_items_to_shopcart(self):
+    def test_add_items(self):
         """ It should return a list of added items """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -258,10 +258,12 @@ class TestShopcartsService(BaseTestCase):
 
     def test_add_items_to_non_existent_shopcart(self):
         """ It should not read a shopcart that is not found """
-        invalid_shopcart = -1
-        item = ItemFactory()
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        test_id = shopcart.id + 1
+        item = ItemFactory(shopcart_id=test_id)
+        self.assertNotEqual(test_id, shopcart.id)
         resp = self.client.post(
-            f"{self.base_url}/{invalid_shopcart}/items",
+            f"{self.base_url}/{test_id}/items",
             json=item.serialize(),
             content_type="application/json",
         )
@@ -296,20 +298,8 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
-    def test_add_items_with_invalid_quantity(self):
-        """ It should not be added with invalid quantity """
-        shopcart = self._create_an_empty_shopcart(1)[0]
-        item = ItemFactory()
-        item.quantity = 0
-        res = self.client.post(
-            f"{self.base_url}/{shopcart.id}/items",
-            json=item.serialize(),
-            content_type="application/json",
-        )
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-
     @patch.object(Shopcart, 'update')
-    def test_add_shopcart_items_data_validation_error(self, mock_shopcart_update):
+    def test_add_items_with_data_validation_error(self, mock_shopcart_update):
         """It should return a 400 Bad Request response for DataValidationError"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -324,6 +314,70 @@ class TestShopcartsService(BaseTestCase):
         )
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_add_items_with_empty_name(self):
+        """It should return Shopcart with id='{shopcart_id}' was not found"""
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        item = ItemFactory(shopcart_id=shopcart.id)
+        item.name = ""
+        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
+                                json=item.serialize(),
+                                content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+        item.name = "  "
+        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
+                                json=item.serialize(),
+                                content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_add_items_with_null_name(self):
+        """It should return Shopcart with id='{shopcart_id}' was not found"""
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        item = ItemFactory(shopcart_id=shopcart.id)
+        item.name = None
+        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
+                                json=item.serialize(),
+                                content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_add_items_with_invalid_quantity(self):
+        """It should return Shopcart with id='{shopcart_id}' was not found"""
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        item = ItemFactory(shopcart_id=shopcart.id)
+        item.quantity = "Z"
+        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
+                                json=item.serialize(),
+                                content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+        item.quantity = 1.2
+        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
+                                json=item.serialize(),
+                                content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+        item.quantity = 2
+        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
+                                json=item.serialize(),
+                                content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_add_items_with_invalid_price(self):
+        """It should return Shopcart with id='{shopcart_id}' was not found"""
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        item = ItemFactory(shopcart_id=shopcart.id)
+        item.price = "Z"
+        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
+                                json=item.serialize(),
+                                content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+        item.price = 100.0
+        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
+                                json=item.serialize(),
+                                content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
     def test_update_name_of_shopcart(self):
         """It should return the shopcart within updated name"""
@@ -778,75 +832,6 @@ class TestShopcartsService(BaseTestCase):
                                json=shopcart.serialize(),
                                content_type="application/xml")
         self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
-
-    def test_add_item_with_empty_name(self):
-        """It should return Shopcart with id='{shopcart_id}' was not found"""
-        shopcart = self._create_an_empty_shopcart(1)[0]
-        item = ItemFactory(shopcart_id=shopcart.id)
-        item.name = ""
-        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
-                                json=item.serialize(),
-                                content_type="application/json")
-        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
-
-        item.name = "  "
-        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
-                                json=item.serialize(),
-                                content_type="application/json")
-        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_add_item_with_null_name(self):
-        """It should return Shopcart with id='{shopcart_id}' was not found"""
-        shopcart = self._create_an_empty_shopcart(1)[0]
-        item = ItemFactory(shopcart_id=shopcart.id)
-        item.name = None
-        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
-                                json=item.serialize(),
-                                content_type="application/json")
-        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_add_item_with_invalid_quantity(self):
-        """It should return Shopcart with id='{shopcart_id}' was not found"""
-        shopcart = self._create_an_empty_shopcart(1)[0]
-        item = ItemFactory(shopcart_id=shopcart.id)
-        item.quantity = "Z"
-        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
-                                json=item.serialize(),
-                                content_type="application/json")
-        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
-
-        item.quantity = 1.2
-        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
-                                json=item.serialize(),
-                                content_type="application/json")
-        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_add_item_with_invalid_price(self):
-        """It should return Shopcart with id='{shopcart_id}' was not found"""
-        shopcart = self._create_an_empty_shopcart(1)[0]
-        item = ItemFactory(shopcart_id=shopcart.id)
-        item.price = "Z"
-        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
-                                json=item.serialize(),
-                                content_type="application/json")
-        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
-
-        item.price = 100.0
-        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
-                                json=item.serialize(),
-                                content_type="application/json")
-        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-
-    def test_add_item_to_nonexistent_shopcart(self):
-        """It should return Shopcart with id='{shopcart_id}' was not found"""
-        shopcart = self._create_an_empty_shopcart(1)[0]
-        test_id = shopcart.id + 1
-        item = ItemFactory(shopcart_id=test_id)
-        self.assertNotEqual(test_id, shopcart.id)
-        resp = self.client.post(f"{self.base_url}/{test_id}/items",
-                                json=item.serialize(),
-                                content_type="application/json")
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_list_items_of_nonexistent_shopcart(self):
         """It should return a 404 Not found response"""

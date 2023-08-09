@@ -761,7 +761,16 @@ class TestShopcartsService(BaseTestCase):
         resp = self.client.put(f"{self.base_url}")
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    def test_create_a_shopcart_with_invalid_content_type(self):
+    def test_create_shopcarts(self):
+        """ It should return a 415 Unsupported media type """
+        shopcart = ShopcartFactory()
+        resp = self.client.post(
+            self.base_url,
+            json=shopcart.serialize(),
+            content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+    def test_create_shopcarts_with_invalid_content_type(self):
         """ It should return a 415 Unsupported media type """
         shopcart = ShopcartFactory()
         resp = self.client.post(f"{self.base_url}",

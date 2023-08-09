@@ -63,6 +63,27 @@ item_model = api.inherit(
     },
 )
 
+shopcart_base_model = api.model(
+    "ShopcartBaseModel",
+    {
+        "name": fields.String(
+            required=True,
+            description="Customer name"
+        )
+    },
+)
+
+shopcart_model = api.inherit(
+    "ShopcartModel",
+    shopcart_base_model,
+    {
+        "id": fields.Integer(
+            readOnly=True, description="The unique id assigned internally by service"
+        ),
+        "items": fields.List(fields.Nested(item_model))
+    },
+)
+
 
 ############################################################
 # Health Endpoint

@@ -9,3 +9,4 @@ DATABASE_URI = os.getenv(
 )
 
 BASE_URL = "/shopcarts"
+BASE_URL_RESTX = "/api/shopcarts"

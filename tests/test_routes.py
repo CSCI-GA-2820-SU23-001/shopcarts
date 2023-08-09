@@ -763,7 +763,7 @@ class TestShopcartsService(BaseTestCase):
         """ It should return a 415 Unsupported media type """
         shopcart = ShopcartFactory()
         resp = self.client.post(
-            self.base_url,
+            self.base_url_restx,
             json=shopcart.serialize(),
             content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
@@ -771,44 +771,44 @@ class TestShopcartsService(BaseTestCase):
     def test_create_shopcarts_with_invalid_content_type(self):
         """ It should return a 415 Unsupported media type """
         shopcart = ShopcartFactory()
-        resp = self.client.post(f"{self.base_url}",
+        resp = self.client.post(f"{self.base_url_restx}",
                                 json=shopcart.serialize(),
                                 content_type="")
         self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
-        resp = self.client.post(f"{self.base_url}",
+        resp = self.client.post(f"{self.base_url_restx}",
                                 json=shopcart.serialize(),
                                 content_type="application/xml")
         self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
-    def test_create_a_shopcart_with_empty_name(self):
+    def test_create_shopcarts_with_empty_name(self):
         """ It should return a 400 Bad request response when shopcart name is empty """
         shopcart = ShopcartFactory()
         shopcart.name = ""
-        resp = self.client.post(f"{self.base_url}",
+        resp = self.client.post(f"{self.base_url_restx}",
                                 json=shopcart.serialize(),
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
         shopcart.name = "  "
-        resp = self.client.post(f"{self.base_url}",
+        resp = self.client.post(f"{self.base_url_restx}",
                                 json=shopcart.serialize(),
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_a_shopcart_with_null_name(self):
+    def test_create_shopcarts_with_null_name(self):
         """ It should return a 400 Bad request response when shopcart name is null """
         shopcart = ShopcartFactory()
         shopcart.name = None
-        resp = self.client.post(f"{self.base_url}",
+        resp = self.client.post(f"{self.base_url_restx}",
                                 json=shopcart.serialize(),
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_a_shopcart_with_bad_request(self):
+    def test_create_shopcarts_with_bad_request(self):
         """It should return a 400 Bad request response"""
         shopcart = ShopcartFactory()
-        resp = self.client.post(f"{self.base_url}",
+        resp = self.client.post(f"{self.base_url_restx}",
                                 json=shopcart.serialize()['name'],
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)

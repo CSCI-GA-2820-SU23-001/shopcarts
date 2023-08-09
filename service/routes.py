@@ -285,6 +285,24 @@ class ItemCollection(Resource):
         item_js = item.serialize()
         return item_js, status.HTTP_201_CREATED
 
+    @api.doc("list_items")
+    @api.response(404, 'Shopcart not found')
+    @api.marshal_list_with(item_model)
+    def get(self, shopcart_id):
+        """ Returns a list of items in the shopcart """
+        app.logger.info("Get items in the shopcart with id=%s", shopcart_id)
+
+        shopcart = Shopcart.get_by_id(shopcart_id)
+        if not shopcart:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Shopcart with id='{shopcart_id}' was not found."
+            )
+        app.logger.info("Found shopcart with id=%s", shopcart.id)
+
+        items = [item.serialize() for item in shopcart.items]
+        return items, status.HTTP_200_OK
+
 
 @app.route("/shopcarts/<int:shopcart_id>/items", methods=["POST"])
 def create_items(shopcart_id):

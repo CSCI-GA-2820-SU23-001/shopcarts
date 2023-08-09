@@ -16,8 +16,6 @@ from service.models import db, init_db, Shopcart, Item
 from tests.factories import ShopcartFactory, ItemFactory
 from . import DATABASE_URI, BASE_URL, BASE_URL_RESTX
 
-NONEXIST_SHOPCART_ID = "0123"
-
 
 class BaseTestCase(TestCase):
     """ Base setups and teardowns for tests """
@@ -752,7 +750,7 @@ class TestShopcartsService(BaseTestCase):
 
     def test_delete_invalid_shopcart(self):
         """It Should Delete an non-existing shopcart"""
-        res = self.client.delete(f"{self.base_url}/{NONEXIST_SHOPCART_ID}")
+        res = self.client.delete(f"{self.base_url}/0")
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_unsupported_method_on_shopcart(self):

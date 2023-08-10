@@ -209,7 +209,7 @@ class TestShopcartsService(BaseTestCase):
         data = resp.get_json()
         self.assertEqual(len(data), 5)
 
-    def test_list_empty_shopcarts(self):
+    def test_list_shopcarts_empty(self):
         """It should not return any shopcart"""
         resp = self.client.get(f"{self.base_url}")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -228,7 +228,7 @@ class TestShopcartsService(BaseTestCase):
         data = resp.get_json()
         self.assertEqual(len(data), Shopcart.find_id())
 
-    def test_list_shopcart_of_a_customer(self):
+    def test_list_shopcarts_search_by_name(self):
         """It should return a shopcart within a specific customer"""
         shopcart_a = self._create_a_shopcart_with_items(1)
         self.assertEqual(type(shopcart_a.name), str)
@@ -240,7 +240,7 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(type(data[0]['name']), str)
         self.assertEqual(data[0]['name'], test_shopcart.name)
 
-    def test_add_items(self):
+    def test_create_items(self):
         """ It should return a list of added items """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -257,7 +257,7 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(data["price"], item.price)
         self.assertEqual(data["shopcart_id"], shopcart.id)
 
-    def test_add_items_to_non_existent_shopcart(self):
+    def test_create_items_to_non_existent_shopcart(self):
         """ It should not read a shopcart that is not found """
         shopcart = self._create_an_empty_shopcart(1)[0]
         test_id = shopcart.id + 1
@@ -270,7 +270,7 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_add_items_with_invalid_request_body(self):
+    def test_create_items_with_invalid_request_body(self):
         """ It should not be added with invalid request body """
         shopcart = self._create_an_empty_shopcart(1)[0]
         res = self.client.post(
@@ -280,7 +280,7 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_add_items_with_invalid_content_type(self):
+    def test_create_items_with_invalid_content_type(self):
         """ It should not be added with invalid content type """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -300,7 +300,7 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(res.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     @patch.object(Shopcart, 'update')
-    def test_add_items_with_data_validation_error(self, mock_shopcart_update):
+    def test_create_items_with_data_validation_error(self, mock_shopcart_update):
         """It should return a 400 Bad Request response for DataValidationError"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -316,7 +316,7 @@ class TestShopcartsService(BaseTestCase):
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_add_items_with_empty_name(self):
+    def test_create_items_with_empty_name(self):
         """It should return Shopcart with id='{shopcart_id}' was not found"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory(shopcart_id=shopcart.id)
@@ -332,7 +332,7 @@ class TestShopcartsService(BaseTestCase):
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_add_items_with_null_name(self):
+    def test_create_items_with_null_name(self):
         """It should return Shopcart with id='{shopcart_id}' was not found"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory(shopcart_id=shopcart.id)
@@ -342,7 +342,7 @@ class TestShopcartsService(BaseTestCase):
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_add_items_with_invalid_quantity(self):
+    def test_create_items_with_invalid_quantity(self):
         """It should return Shopcart with id='{shopcart_id}' was not found"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory(shopcart_id=shopcart.id)
@@ -364,7 +364,7 @@ class TestShopcartsService(BaseTestCase):
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_add_items_with_invalid_price(self):
+    def test_create_items_with_invalid_price(self):
         """It should return Shopcart with id='{shopcart_id}' was not found"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory(shopcart_id=shopcart.id)
@@ -448,7 +448,7 @@ class TestShopcartsService(BaseTestCase):
         resp = self.client.put(f"{self.base_url_restx}")
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    def test_update_shopcart_item(self):
+    def test_update_items(self):
         """ It should return the updated item """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -500,7 +500,7 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(updated_data["quantity"], data["quantity"])
         self.assertEqual(updated_data["price"], data["price"])
 
-    def test_update_shopcart_item_with_invalid_content_type(self):
+    def test_update_items_with_invalid_content_type(self):
         """ It should return a 415 Unsupported Media Type response for Content-Type not equal to application/json """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -528,7 +528,7 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
-    def test_update_shopcart_item_with_invalid_quantity(self):
+    def test_update_items_with_invalid_quantity(self):
         """ It should return a 400 Bad Request response for quantity less than 1 """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -549,7 +549,7 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_update_shopcart_item_with_non_existent_shopcart(self):
+    def test_update_items_shopcart_not_found(self):
         """ It should return a 404 Not Found response for non-existent shopcart_id """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -570,7 +570,7 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_update_shopcart_item_with_non_existent_item(self):
+    def test_update_items_not_found(self):
         """ It should return a 404 Not Found response for non-existent item """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -582,7 +582,6 @@ class TestShopcartsService(BaseTestCase):
         data = res.get_json()
         logging.debug(data)
 
-        # update name
         data["name"] = data["name"] + " II"
         res = self.client.put(
             f'{self.base_url}/{shopcart.id}/items/{item.id + 10000}',
@@ -591,7 +590,15 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_update_shopcart_item_with_invalid_request_body(self):
+        with patch('service.models.Shopcart.get_by_id', return_value=None):
+            res = self.client.put(
+                f'{self.base_url}/{shopcart.id}/items/{data["id"]}',
+                json=data,
+                content_type=DEFAULT_CONTENT_TYPE,
+            )
+            self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_items_with_invalid_request_body(self):
         """ It should return a 404 Not Found response for invalid request body """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -637,7 +644,7 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     @patch.object(Item, 'update', MagicMock(side_effect=DataValidationError))
-    def test_update_shopcart_item_with_item_update_error(self):
+    def test_update_items_with_item_update_error(self):
         """ It should return a 500 Internal Server Error response if Item.update() errors """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -660,29 +667,7 @@ class TestShopcartsService(BaseTestCase):
         logging.debug(res.get_json())
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_update_shopcart_item_with_none_shopcart(self):
-        """ It should return a 404 Not Found response when shopcart is None """
-        shopcart = self._create_an_empty_shopcart(1)[0]
-        item = ItemFactory()
-        res = self.client.post(
-            f"{self.base_url}/{shopcart.id}/items",
-            json=item.serialize(),
-            content_type=DEFAULT_CONTENT_TYPE,
-        )
-        data = res.get_json()
-        logging.debug(data)
-
-        with patch('service.models.Shopcart.get_by_id', return_value=None):
-            # update name
-            data["name"] = data["name"] + " II"
-            res = self.client.put(
-                f'{self.base_url}/{shopcart.id}/items/{data["id"]}',
-                json=data,
-                content_type=DEFAULT_CONTENT_TYPE,
-            )
-            self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_clear_empty_shopcart(self):
+    def test_clear_shopcarts_empty(self):
         """ It should clear the items but not delete the shopcart """
         shopcart = self._create_an_empty_shopcart(1)[0]
         res = self.client.put(
@@ -697,7 +682,7 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(data['id'], shopcart.id)  # is the id of the shopcart we got the same as the one we created
         self.assertEqual(data['items'], [])  # is the items list empty
 
-    def test_clear_shopcart_with_items(self):
+    def test_clear_shopcarts_with_items(self):
         """ It should clear the items but not delete the shopcart """
         shopcart = self._create_a_shopcart_with_items(3)
         res = self.client.get(
@@ -719,7 +704,7 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(data['id'], shopcart.id)  # is the id of the shopcart we got the same as the one we created
         self.assertEqual(data['items'], [])  # is the items list empty
 
-    def test_clear_shopcart_not_found(self):
+    def test_clear_shopcarts_not_found(self):
         """It should return a 404 not Found response for non-existent shopcart"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         test_id = shopcart.id + 1
@@ -729,7 +714,7 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_delete_item(self):
+    def test_delete_items(self):
         """It should Delete an Item"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -757,7 +742,7 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_delete_empty_shopcart(self):
+    def test_delete_shopcarts_empty(self):
         """It should Delete an empty shopcart"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         res = self.client.delete(f"{self.base_url}/{shopcart.id}")
@@ -765,7 +750,7 @@ class TestShopcartsService(BaseTestCase):
         res = self.client.get(f"{self.base_url}/{shopcart.id}")
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_delete_nonempty_shopcart(self):
+    def test_delete_shopcarts_with_items(self):
         """It should Delete a nonempty shopcart"""
         shopcart = self._create_a_shopcart_with_items(1)
         res = self.client.delete(f"{self.base_url}/{shopcart.id}")
@@ -774,7 +759,7 @@ class TestShopcartsService(BaseTestCase):
         res = self.client.get(f"{self.base_url}/{shopcart.id}")
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_delete_invalid_shopcart(self):
+    def test_delete_shopcarts_not_found(self):
         """It Should Delete an non-existing shopcart"""
         res = self.client.delete(f"{self.base_url}/0")
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)

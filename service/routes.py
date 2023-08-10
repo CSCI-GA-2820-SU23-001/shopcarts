@@ -176,6 +176,7 @@ class ShopcartResource(Resource):
     @api.doc("update_shopcarts")
     @api.response(404, "Shopcart not found")
     @api.response(400, "The posted Shopcart data was not valid")
+    @api.response(415, "Invalid header content-type")
     @api.expect(shopcart_base_model)  # Updated the expect decorator
     @api.marshal_with(shopcart_model)
     def put(self, shopcart_id):
@@ -184,6 +185,7 @@ class ShopcartResource(Resource):
 
         This endpoint will update a Shopcart based on the body that is posted
         """
+        check_content_type(DEFAULT_CONTENT_TYPE)
         app.logger.info("Request to update shopcart with id: %s", shopcart_id)
         shopcart = Shopcart.get_by_id(shopcart_id)
         if not shopcart:

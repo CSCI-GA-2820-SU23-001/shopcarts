@@ -170,32 +170,35 @@ class TestShopcartsService(BaseTestCase):
         response = self.client.get(f"{self.base_url}/0/items/{item.id}")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_list_empty_shopcart_items(self):
-        """ It should get an empty list of items """
-        shopcart = self._create_an_empty_shopcart(1)[0]
-        resp = self.client.get(f"{self.base_url}/{shopcart.id}/items")
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        data = resp.get_json()
-        self.assertEqual(len(data), 0)
-
-    def test_list_shopcart_items(self):
+    def test_list_items(self):
         """ It should get a list of only one item """
         shopcart = self._create_a_shopcart_with_items(1)
-        resp = self.client.get(f"{self.base_url}/{shopcart.id}/items")
+        resp = self.client.get(f"{self.base_url_restx}/{shopcart.id}/items")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 1)
 
-    def test_list_items_in_non_existent_shopcart(self):
+    def test_list_items_given_empty_shopcart(self):
+        """ It should get an empty list of items """
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        resp = self.client.get(f"{self.base_url_restx}/{shopcart.id}/items")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 0)
+
+    def test_list_items_given_non_existent_shopcart(self):
         """ It should not read a shopcart that is not found """
-        shopcart_id = -1
-        resp = self.client.get(f"{self.base_url}/{shopcart_id}/items")
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        test_id = shopcart.id + 1
+        resp = self.client.get(f"{self.base_url_restx}/{test_id}/items",
+                               json=shopcart.serialize(),
+                               content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_list_shopcart_items_shopcart_get_by_id_error(self):
+    def test_list_items_with_shopcart_get_by_id_error(self):
         """ It should get internal server error if shopcart is none """
         with patch('service.models.Shopcart.get_by_id', return_value=None):
-            resp = self.client.get(f"{self.base_url}/0/items")
+            resp = self.client.get(f"{self.base_url_restx}/0/items")
             self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_list_shopcarts(self):
@@ -839,13 +842,3 @@ class TestShopcartsService(BaseTestCase):
                                json=shopcart.serialize(),
                                content_type="application/xml")
         self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
-
-    def test_list_items_of_nonexistent_shopcart(self):
-        """It should return a 404 Not found response"""
-        shopcart = self._create_an_empty_shopcart(1)[0]
-        # item = ItemFactory(shopcart_id = shopcart.id)
-        test_id = shopcart.id + 1
-        resp = self.client.get(f"{self.base_url}/{test_id}/items",
-                               json=shopcart.serialize(),
-                               content_type=DEFAULT_CONTENT_TYPE)
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)

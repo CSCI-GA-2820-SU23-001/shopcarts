@@ -63,21 +63,24 @@ item_model = api.inherit(
     },
 )
 
-create_model = api.model(
-    "Shopcart",
+shopcart_base_model = api.model(
+    "ShopcartBaseModel",
     {
-        "name": fields.String(required=True, description="The name of the Shopcart"),
-        "items": fields.List(fields.Nested(item_model)),
+        "name": fields.String(
+            required=True,
+            description="Shopcart name"
+        )
     },
 )
 
 shopcart_model = api.inherit(
     "ShopcartModel",
-    create_model,
+    shopcart_base_model,
     {
         "id": fields.Integer(
             readOnly=True, description="The unique id assigned internally by service"
         ),
+        "items": fields.List(fields.Nested(item_model))
     },
 )
 
@@ -85,7 +88,6 @@ shopcart_model = api.inherit(
 ############################################################
 # Health Endpoint
 ############################################################
-
 
 @app.route("/health")
 def health():
@@ -136,10 +138,10 @@ def check_content_type(expected_content_type):
             f"Content-Type must be {expected_content_type}"
         )
 
+
 ######################################################################
 #  PATH: /shopcarts/{id}
 ######################################################################
-
 
 @api.route("/shopcarts/<shopcart_id>")
 @api.param("shopcart_id", "The Shopcart identifier")
@@ -153,9 +155,6 @@ class ShopcartResource(Resource):
     DELETE /shopcart{id} -  Deletes a Shopcart with the id
     """
 
-    # ------------------------------------------------------------------
-    # RETRIEVE A SHOPCART
-    # ------------------------------------------------------------------
     @api.doc("get_shopcarts")
     @api.response(404, "Shopcart not found")
     @api.marshal_with(shopcart_model)
@@ -174,9 +173,38 @@ class ShopcartResource(Resource):
         app.logger.info("Returning shopcart: %s", shopcart.id)
         return shopcart.serialize(), status.HTTP_200_OK
 
+
 ######################################################################
 # S H O P C A R T   A P I S
 ######################################################################
+
+@api.route("/shopcarts", strict_slashes=False)
+class ShopcartCollection(Resource):
+    """
+    ShopcartCollection Class
+    Allows interactions with collections of Shopcarts:
+    GET /shopcarts - Returns a list of shopcarts
+    POST /shopcarts - Create a shopcart
+    """
+
+    @api.doc("create_shopcarts")
+    @api.response(400, "Invalid shopcart request body")
+    @api.response(415, "Invalid header content-type")
+    @api.expect(shopcart_base_model)
+    @api.marshal_with(shopcart_model, code=201)
+    def post(self):
+        """ Creates a new shopcart """
+        check_content_type(DEFAULT_CONTENT_TYPE)
+
+        app.logger.info("Start creating a shopcart")
+        shopcart = Shopcart()
+        shopcart.deserialize(api.payload)
+        app.logger.info("Request body deserialized to shopcart")
+
+        shopcart.create()  # store in table
+        app.logger.info("New shopcart created with id=%s", shopcart.id)
+        shopcart_js = shopcart.serialize()
+        return shopcart_js, status.HTTP_201_CREATED
 
 
 @app.route("/shopcarts", methods=["POST"])

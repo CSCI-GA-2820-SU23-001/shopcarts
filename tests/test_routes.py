@@ -714,7 +714,7 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_delete_item(self):
+    def test_delete_items(self):
         """It should Delete an Item"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()

@@ -380,7 +380,7 @@ class TestShopcartsService(BaseTestCase):
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
-    def test_update_name_of_shopcart(self):
+    def test_update_shopcarts(self):
         """It should return the shopcart within updated name"""
         test_shopcart = ShopcartFactory()
         resp = self.client.post(self.base_url_restx, json=test_shopcart.serialize())
@@ -394,7 +394,7 @@ class TestShopcartsService(BaseTestCase):
         updated_shopcart = resp.get_json()
         self.assertEqual(updated_shopcart["name"], "DevOps")
 
-    def test_update_non_existent_shopcart(self):
+    def test_update_shopcarts_not_found(self):
         """It should return a 404 not Found response for non-existent shopcart"""
         shopcart = ShopcartFactory()
         resp = self.client.post(self.base_url_restx, json=shopcart.serialize())
@@ -410,7 +410,7 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_update_shopcart_with_invalid_request_body(self):
+    def test_update_shopcarts_with_invalid_request_body(self):
         """It should return a 404 Not Found response for invalid request body"""
         shopcart = ShopcartFactory()
         resp = self.client.post(self.base_url_restx, json=shopcart.serialize())
@@ -425,7 +425,7 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_update_a_shopcart_with_invalid_content_type(self):
+    def test_update_shopcarts_with_invalid_content_type(self):
         """It should return a 415 Unsupported Media Type response when the given Content-Type is no application/json"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         self.assertNotEqual(shopcart.name, "DevOps")
@@ -442,7 +442,7 @@ class TestShopcartsService(BaseTestCase):
                                content_type="application/xml")
         self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
-    def test_unsupported_method_on_shopcart(self):
+    def test_unsupported_method(self):
         """It should return a 405 Method Not Supported response"""
         self._create_an_empty_shopcart(5)
         resp = self.client.put(f"{self.base_url_restx}")

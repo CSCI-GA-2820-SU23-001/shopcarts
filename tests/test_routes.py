@@ -242,7 +242,7 @@ class TestShopcartsService(BaseTestCase):
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
         res = self.client.post(
-            f"{self.base_url}/{shopcart.id}/items",
+            f"{self.base_url_restx}/{shopcart.id}/items",
             json=item.serialize(),
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -261,7 +261,7 @@ class TestShopcartsService(BaseTestCase):
         item = ItemFactory(shopcart_id=test_id)
         self.assertNotEqual(test_id, shopcart.id)
         resp = self.client.post(
-            f"{self.base_url}/{test_id}/items",
+            f"{self.base_url_restx}/{test_id}/items",
             json=item.serialize(),
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -271,7 +271,7 @@ class TestShopcartsService(BaseTestCase):
         """ It should not be added with invalid request body """
         shopcart = self._create_an_empty_shopcart(1)[0]
         res = self.client.post(
-            f"{self.base_url}/{shopcart.id}/items",
+            f"{self.base_url_restx}/{shopcart.id}/items",
             json={},  # Empty request body
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -283,14 +283,14 @@ class TestShopcartsService(BaseTestCase):
         item = ItemFactory()
 
         res = self.client.post(
-            f"{self.base_url}/{shopcart.id}/items",
+            f"{self.base_url_restx}/{shopcart.id}/items",
             json=item.serialize(),
             content_type="",
         )
         self.assertEqual(res.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
         res = self.client.post(
-            f"{self.base_url}/{shopcart.id}/items",
+            f"{self.base_url_restx}/{shopcart.id}/items",
             json=item.serialize(),
             content_type="application/xml",
         )
@@ -306,7 +306,7 @@ class TestShopcartsService(BaseTestCase):
         mock_shopcart_update.side_effect = DataValidationError("Invalid data")
 
         res = self.client.post(
-            f"{self.base_url}/{shopcart.id}/items",
+            f"{self.base_url_restx}/{shopcart.id}/items",
             json=item.serialize(),
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -318,13 +318,13 @@ class TestShopcartsService(BaseTestCase):
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory(shopcart_id=shopcart.id)
         item.name = ""
-        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
+        resp = self.client.post(f"{self.base_url_restx}/{shopcart.id}/items",
                                 json=item.serialize(),
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
         item.name = "  "
-        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
+        resp = self.client.post(f"{self.base_url_restx}/{shopcart.id}/items",
                                 json=item.serialize(),
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
@@ -334,7 +334,7 @@ class TestShopcartsService(BaseTestCase):
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory(shopcart_id=shopcart.id)
         item.name = None
-        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
+        resp = self.client.post(f"{self.base_url_restx}/{shopcart.id}/items",
                                 json=item.serialize(),
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
@@ -344,19 +344,19 @@ class TestShopcartsService(BaseTestCase):
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory(shopcart_id=shopcart.id)
         item.quantity = "Z"
-        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
+        resp = self.client.post(f"{self.base_url_restx}/{shopcart.id}/items",
                                 json=item.serialize(),
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
         item.quantity = 1.2
-        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
+        resp = self.client.post(f"{self.base_url_restx}/{shopcart.id}/items",
                                 json=item.serialize(),
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
         item.quantity = 2
-        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
+        resp = self.client.post(f"{self.base_url_restx}/{shopcart.id}/items",
                                 json=item.serialize(),
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
@@ -366,13 +366,13 @@ class TestShopcartsService(BaseTestCase):
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory(shopcart_id=shopcart.id)
         item.price = "Z"
-        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
+        resp = self.client.post(f"{self.base_url_restx}/{shopcart.id}/items",
                                 json=item.serialize(),
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
         item.price = 100.0
-        resp = self.client.post(f"{self.base_url}/{shopcart.id}/items",
+        resp = self.client.post(f"{self.base_url_restx}/{shopcart.id}/items",
                                 json=item.serialize(),
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)

@@ -322,6 +322,55 @@ def list_shopcarts():
 # I T E M   A P I S
 ######################################################################
 
+@api.route("/shopcarts/<int:shopcart_id>/items", strict_slashes=False)
+@api.param("shopcart_id", "The Shopcart identifier")
+class ItemCollection(Resource):
+    """
+    ItemCollection Class
+
+    Allows interactions with collections of Items:
+    POST /shopcarts/<int:shopcart_id>/items - Add an Item to shopcart
+    GET /shopcarts/<int:shopcart_id>/items - Returns a list of items in shopcart
+    """
+
+    @api.doc("create_items")
+    @api.response(400, "Invalid item request body")
+    @api.response(404, "Shopcart not found")
+    @api.response(415, "Invalid header content-type")
+    @api.expect(item_base_model)
+    @api.marshal_with(item_model, code=201)
+    def post(self, shopcart_id):
+        """ Adds a new item to shopcart, and return the newly created item """
+        check_content_type(DEFAULT_CONTENT_TYPE)
+
+        shopcart = Shopcart.get_by_id(shopcart_id)
+        if not shopcart:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Shopcart with id='{shopcart_id}' was not found."
+            )
+        app.logger.info("Found shopcart with id=%s", shopcart.id)
+
+        app.logger.info("Start creating an item")
+        item = Item()
+        item.deserialize(api.payload)  # validate request body schema
+        app.logger.info("Request body deserialized to item.")
+
+        if item.quantity != 1:
+            app.logger.error("Invalid item quantity assignment to %s.", item.quantity)
+            abort(
+                status.HTTP_400_BAD_REQUEST,
+                "Quantity of a new item should always be one."
+            )
+
+        shopcart.items.append(item)
+        shopcart.update()
+        app.logger.info("New item with id=%s added to shopcart with id=%s.", item.id, shopcart.id)
+
+        item_js = item.serialize()
+        return item_js, status.HTTP_201_CREATED
+
+
 @app.route("/shopcarts/<int:shopcart_id>/items", methods=["POST"])
 def create_items(shopcart_id):
     """ Adds a new item to shopcart, and return the newly created item """

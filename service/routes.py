@@ -30,10 +30,37 @@ from . import app, api
 
 DEFAULT_CONTENT_TYPE = "application/json"
 
+item_model = api.model(
+    "ItemModel",
+    {
+        "id": fields.String(
+            readOnly=True,
+            description="Item id"
+        ),
+        "shopcart_id": fields.String(
+            readOnly=True,
+            description="Shopcart id where the item belongs"
+        ),
+        "name": fields.String(
+            required=True,
+            description="Item name"
+        ),
+        "quantity": fields.Integer(
+            required=True,
+            description="Item quantity",
+        ),
+        "price": fields.Float(
+            required=True,
+            description="Item unit price"
+        )
+    },
+)
+
 create_model = api.model(
     "Shopcart",
     {
         "name": fields.String(required=True, description="The name of the Shopcart"),
+        "items": fields.List(fields.Nested(item_model)),
     },
 )
 

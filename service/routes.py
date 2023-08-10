@@ -30,14 +30,10 @@ from . import app, api
 
 DEFAULT_CONTENT_TYPE = "application/json"
 
-item_model = api.model(
-    "ItemModel",
+item_base_model = api.model(
+    "ItemBaseModel",
     {
-        "id": fields.String(
-            readOnly=True,
-            description="Item id"
-        ),
-        "shopcart_id": fields.String(
+        "shopcart_id": fields.Integer(
             readOnly=True,
             description="Shopcart id where the item belongs"
         ),
@@ -52,6 +48,17 @@ item_model = api.model(
         "price": fields.Float(
             required=True,
             description="Item unit price"
+        )
+    },
+)
+
+item_model = api.inherit(
+    "ItemModel",
+    item_base_model,
+    {
+        "id": fields.Integer(
+            readOnly=True,
+            description="Item id (an unique id assigned internally by service)"
         )
     },
 )
@@ -74,11 +81,6 @@ shopcart_model = api.inherit(
     },
 )
 
-# # query string arguments
-# shopcart_args = reqparse.RequestParser()
-# shopcart_args.add_argument(
-#     "name", type=str, location="args", required=False, help="List Shopcarts by name"
-# )
 
 ############################################################
 # Health Endpoint

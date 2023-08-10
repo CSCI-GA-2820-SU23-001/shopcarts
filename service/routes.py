@@ -173,6 +173,32 @@ class ShopcartResource(Resource):
         app.logger.info("Returning shopcart: %s", shopcart.id)
         return shopcart.serialize(), status.HTTP_200_OK
 
+    @api.doc("update_shopcarts")
+    @api.response(404, "Shopcart not found")
+    @api.response(400, "The posted Shopcart data was not valid")
+    @api.response(415, "Invalid header content-type")
+    @api.expect(shopcart_base_model)  # Updated the expect decorator
+    @api.marshal_with(shopcart_model)
+    def put(self, shopcart_id):
+        """
+        Update a Shopcart
+
+        This endpoint will update a Shopcart based on the body that is posted
+        """
+        check_content_type(DEFAULT_CONTENT_TYPE)
+        app.logger.info("Request to update shopcart with id: %s", shopcart_id)
+        shopcart = Shopcart.get_by_id(shopcart_id)
+        if not shopcart:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Shopcart with id '{shopcart_id}' was not found."
+            )
+        data = api.payload
+        shopcart.deserialize(data)
+        shopcart.id = shopcart_id
+        shopcart.update()
+        return shopcart.serialize(), status.HTTP_200_OK
+
 
 ######################################################################
 # S H O P C A R T   A P I S

@@ -114,7 +114,7 @@ class TestShopcartsService(BaseTestCase):
         resp = self.client.get("/itemsapi")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
-    def test_get_shopcart(self):
+    def test_get_shopcarts(self):
         """It should Read a single Shopcart"""
         # get the id of a shopcart
         test_shopcart = self._create_an_empty_shopcart(1)[0]
@@ -125,7 +125,7 @@ class TestShopcartsService(BaseTestCase):
         data = resp.get_json()
         self.assertEqual(data["id"], test_shopcart.id)
 
-    def test_get_shopcart_not_found(self):
+    def test_get_shopcarts_not_found(self):
         """It should not Read a Shopcart that is not found"""
         response = self.client.get(f"{self.base_url_restx}/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -380,50 +380,73 @@ class TestShopcartsService(BaseTestCase):
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
-    def test_update_name_of_shopcart(self):
+    def test_update_shopcarts(self):
         """It should return the shopcart within updated name"""
         test_shopcart = ShopcartFactory()
-        resp = self.client.post(self.base_url, json=test_shopcart.serialize())
+        resp = self.client.post(self.base_url_restx, json=test_shopcart.serialize())
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
         new_shopcart = resp.get_json()
         new_shopcart["name"] = "DevOps"
         new_shopcart_id = new_shopcart["id"]
-        resp = self.client.put(f"{self.base_url}/{new_shopcart_id}", json=new_shopcart)
+        resp = self.client.put(f"{self.base_url_restx}/{new_shopcart_id}", json=new_shopcart)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         updated_shopcart = resp.get_json()
         self.assertEqual(updated_shopcart["name"], "DevOps")
 
-    def test_update_non_existent_shopcart(self):
+    def test_update_shopcarts_not_found(self):
         """It should return a 404 not Found response for non-existent shopcart"""
         shopcart = ShopcartFactory()
-        resp = self.client.post(self.base_url, json=shopcart.serialize())
+        resp = self.client.post(self.base_url_restx, json=shopcart.serialize())
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
         new_shopcart = resp.get_json()
         new_shopcart["name"] = "DevOps"
 
         resp = self.client.put(
-            f"{self.base_url}/-1",
+            f"{self.base_url_restx}/-1",
             json=new_shopcart,
             content_type=DEFAULT_CONTENT_TYPE
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_update_shopcart_with_invalid_request_body(self):
+    def test_update_shopcarts_with_invalid_request_body(self):
         """It should return a 404 Not Found response for invalid request body"""
         shopcart = ShopcartFactory()
-        resp = self.client.post(self.base_url, json=shopcart.serialize())
+        resp = self.client.post(self.base_url_restx, json=shopcart.serialize())
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
         new_shopcart = resp.get_json()
         new_shopcart["name"] = "DevOps"
         resp = self.client.put(
-            f"{self.base_url}/{new_shopcart['id']}",
+            f"{self.base_url_restx}/{new_shopcart['id']}",
             json=new_shopcart['items'],
             content_type=DEFAULT_CONTENT_TYPE
         )
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_shopcarts_with_invalid_content_type(self):
+        """It should return a 415 Unsupported Media Type response when the given Content-Type is no application/json"""
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        self.assertNotEqual(shopcart.name, "DevOps")
+        shopcart.name = "DevOps"
+        self.assertEqual(shopcart.name, "DevOps")
+
+        resp = self.client.put(f"{self.base_url_restx}/{shopcart.id}",
+                               json=shopcart.serialize(),
+                               content_type="")
+        self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+        resp = self.client.put(f"{self.base_url_restx}/{shopcart.id}",
+                               json=shopcart.serialize(),
+                               content_type="application/xml")
+        self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+    def test_unsupported_method(self):
+        """It should return a 405 Method Not Supported response"""
+        self._create_an_empty_shopcart(5)
+        resp = self.client.put(f"{self.base_url_restx}")
+        self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_update_shopcart_item(self):
         """ It should return the updated item """
@@ -756,12 +779,6 @@ class TestShopcartsService(BaseTestCase):
         res = self.client.delete(f"{self.base_url}/0")
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
-    def test_unsupported_method_on_shopcart(self):
-        """It should return a 405 Method Not Supported response"""
-        self._create_an_empty_shopcart(5)
-        resp = self.client.put(f"{self.base_url}")
-        self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-
     def test_create_shopcarts(self):
         """ It should return a 415 Unsupported media type """
         shopcart = ShopcartFactory()
@@ -815,30 +832,3 @@ class TestShopcartsService(BaseTestCase):
                                 json=shopcart.serialize()['name'],
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_update_a_nonexistent_shopcart(self):
-        """It should return a 404 Not found response"""
-        shopcart = self._create_an_empty_shopcart(1)[0]
-        test_id = shopcart.id + 1
-        self.assertNotEqual(test_id, shopcart.id)
-        resp = self.client.put(f"{self.base_url}/{test_id}",
-                               json=shopcart.serialize(),
-                               content_type=DEFAULT_CONTENT_TYPE)
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_update_a_shopcart_with_invalid_content_type(self):
-        """It should return a 415 Unsupported Media Type response when the given Content-Type is no application/json"""
-        shopcart = self._create_an_empty_shopcart(1)[0]
-        self.assertNotEqual(shopcart.name, "DevOps")
-        shopcart.name = "DevOps"
-        self.assertEqual(shopcart.name, "DevOps")
-
-        resp = self.client.put(f"{self.base_url}/{shopcart.id}",
-                               json=shopcart.serialize(),
-                               content_type="")
-        self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
-
-        resp = self.client.put(f"{self.base_url}/{shopcart.id}",
-                               json=shopcart.serialize(),
-                               content_type="application/xml")
-        self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)

@@ -742,7 +742,7 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_delete_empty_shopcart(self):
+    def test_delete_shopcarts_empty(self):
         """It should Delete an empty shopcart"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         res = self.client.delete(f"{self.base_url}/{shopcart.id}")
@@ -750,7 +750,7 @@ class TestShopcartsService(BaseTestCase):
         res = self.client.get(f"{self.base_url}/{shopcart.id}")
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_delete_nonempty_shopcart(self):
+    def test_delete_shopcarts_with_items(self):
         """It should Delete a nonempty shopcart"""
         shopcart = self._create_a_shopcart_with_items(1)
         res = self.client.delete(f"{self.base_url}/{shopcart.id}")
@@ -759,7 +759,7 @@ class TestShopcartsService(BaseTestCase):
         res = self.client.get(f"{self.base_url}/{shopcart.id}")
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_delete_invalid_shopcart(self):
+    def test_delete_shopcarts_not_found(self):
         """It Should Delete an non-existing shopcart"""
         res = self.client.delete(f"{self.base_url}/0")
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)

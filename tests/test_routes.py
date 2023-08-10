@@ -383,13 +383,13 @@ class TestShopcartsService(BaseTestCase):
     def test_update_name_of_shopcart(self):
         """It should return the shopcart within updated name"""
         test_shopcart = ShopcartFactory()
-        resp = self.client.post(self.base_url, json=test_shopcart.serialize())
+        resp = self.client.post(self.base_url_restx, json=test_shopcart.serialize())
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
         new_shopcart = resp.get_json()
         new_shopcart["name"] = "DevOps"
         new_shopcart_id = new_shopcart["id"]
-        resp = self.client.put(f"{self.base_url}/{new_shopcart_id}", json=new_shopcart)
+        resp = self.client.put(f"{self.base_url_restx}/{new_shopcart_id}", json=new_shopcart)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         updated_shopcart = resp.get_json()
         self.assertEqual(updated_shopcart["name"], "DevOps")
@@ -397,14 +397,14 @@ class TestShopcartsService(BaseTestCase):
     def test_update_non_existent_shopcart(self):
         """It should return a 404 not Found response for non-existent shopcart"""
         shopcart = ShopcartFactory()
-        resp = self.client.post(self.base_url, json=shopcart.serialize())
+        resp = self.client.post(self.base_url_restx, json=shopcart.serialize())
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
         new_shopcart = resp.get_json()
         new_shopcart["name"] = "DevOps"
 
         resp = self.client.put(
-            f"{self.base_url}/-1",
+            f"{self.base_url_restx}/-1",
             json=new_shopcart,
             content_type=DEFAULT_CONTENT_TYPE
         )
@@ -413,13 +413,13 @@ class TestShopcartsService(BaseTestCase):
     def test_update_shopcart_with_invalid_request_body(self):
         """It should return a 404 Not Found response for invalid request body"""
         shopcart = ShopcartFactory()
-        resp = self.client.post(self.base_url, json=shopcart.serialize())
+        resp = self.client.post(self.base_url_restx, json=shopcart.serialize())
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
         new_shopcart = resp.get_json()
         new_shopcart["name"] = "DevOps"
         resp = self.client.put(
-            f"{self.base_url}/{new_shopcart['id']}",
+            f"{self.base_url_restx}/{new_shopcart['id']}",
             json=new_shopcart['items'],
             content_type=DEFAULT_CONTENT_TYPE
         )

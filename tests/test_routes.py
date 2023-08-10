@@ -240,7 +240,7 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(type(data[0]['name']), str)
         self.assertEqual(data[0]['name'], test_shopcart.name)
 
-    def test_add_items(self):
+    def test_create_items(self):
         """ It should return a list of added items """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -257,7 +257,7 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(data["price"], item.price)
         self.assertEqual(data["shopcart_id"], shopcart.id)
 
-    def test_add_items_to_non_existent_shopcart(self):
+    def test_create_items_to_non_existent_shopcart(self):
         """ It should not read a shopcart that is not found """
         shopcart = self._create_an_empty_shopcart(1)[0]
         test_id = shopcart.id + 1
@@ -270,7 +270,7 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_add_items_with_invalid_request_body(self):
+    def test_create_items_with_invalid_request_body(self):
         """ It should not be added with invalid request body """
         shopcart = self._create_an_empty_shopcart(1)[0]
         res = self.client.post(
@@ -280,7 +280,7 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_add_items_with_invalid_content_type(self):
+    def test_create_items_with_invalid_content_type(self):
         """ It should not be added with invalid content type """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -300,7 +300,7 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(res.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     @patch.object(Shopcart, 'update')
-    def test_add_items_with_data_validation_error(self, mock_shopcart_update):
+    def test_create_items_with_data_validation_error(self, mock_shopcart_update):
         """It should return a 400 Bad Request response for DataValidationError"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -316,7 +316,7 @@ class TestShopcartsService(BaseTestCase):
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_add_items_with_empty_name(self):
+    def test_create_items_with_empty_name(self):
         """It should return Shopcart with id='{shopcart_id}' was not found"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory(shopcart_id=shopcart.id)
@@ -332,7 +332,7 @@ class TestShopcartsService(BaseTestCase):
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_add_items_with_null_name(self):
+    def test_create_items_with_null_name(self):
         """It should return Shopcart with id='{shopcart_id}' was not found"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory(shopcart_id=shopcart.id)
@@ -342,7 +342,7 @@ class TestShopcartsService(BaseTestCase):
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_add_items_with_invalid_quantity(self):
+    def test_create_items_with_invalid_quantity(self):
         """It should return Shopcart with id='{shopcart_id}' was not found"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory(shopcart_id=shopcart.id)
@@ -364,7 +364,7 @@ class TestShopcartsService(BaseTestCase):
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_add_items_with_invalid_price(self):
+    def test_create_items_with_invalid_price(self):
         """It should return Shopcart with id='{shopcart_id}' was not found"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory(shopcart_id=shopcart.id)

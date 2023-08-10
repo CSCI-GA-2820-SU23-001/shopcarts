@@ -448,6 +448,54 @@ def create_items(shopcart_id):
     return make_response(jsonify(item_js), status.HTTP_201_CREATED)
 
 
+######################################################################
+#  PATH: /shopcarts/<shopcart_id>/items/<item_id>
+######################################################################
+
+@api.route("/shopcarts/<shopcart_id>/items/<item_id>")
+@api.param("shopcart_id", "The Shopcart identifier")
+@api.param("item_id", "The Item identifier")
+class ItemResource(Resource):
+
+    """
+    ItemResource class
+    Allows the manipulation of a single Shopcart
+    GET /shopcarts/{shopcart_id}/items/{item_id} - Returns an Item with the shopcart_id and item_id
+    PUT /shopcarts/{shopcart_id}/items/{item_id} - Update an Item with the shopcart_id and item_id
+    DELETE /shopcarts/{shopcart_id}/items/{item_id} -  Delete an Item with the shopcart_id and item_id
+    """
+
+    @api.doc("get_item")
+    @api.response(404, "Item not found")
+    # @api.marshal_with(item_model)
+    @api.marshal_with(item_model, code=201)
+    def get(self, shopcart_id, item_id):
+        """
+        Retrieve a single Item
+        This endpoint will return an Item based on its shopcart_id and item_id
+        """
+        app.logger.info("Request to retrieve Item %s for Shopcart id: %s", item_id, shopcart_id)
+
+        shopcart = Shopcart.get_by_id(shopcart_id)
+        if not shopcart:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Shopcart with id '{shopcart_id}' could not be found."
+            )
+
+        # See if the item exists and abort if it doesn't
+        item = Item.get_by_id(item_id)
+        if not item:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Item with id '{item_id}' could not be found."
+            )
+
+        app.logger.info("Returning item: %s", item.id)
+        item_js = item.serialize()
+        return item_js, status.HTTP_200_OK
+
+
 @app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["GET"])
 def get_items(shopcart_id, item_id):
     """

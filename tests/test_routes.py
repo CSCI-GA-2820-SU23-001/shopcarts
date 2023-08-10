@@ -114,7 +114,7 @@ class TestShopcartsService(BaseTestCase):
         resp = self.client.get("/itemsapi")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
-    def test_get_shopcart(self):
+    def test_get_shopcarts(self):
         """It should Read a single Shopcart"""
         # get the id of a shopcart
         test_shopcart = self._create_an_empty_shopcart(1)[0]
@@ -125,7 +125,7 @@ class TestShopcartsService(BaseTestCase):
         data = resp.get_json()
         self.assertEqual(data["id"], test_shopcart.id)
 
-    def test_get_shopcart_not_found(self):
+    def test_get_shopcarts_not_found(self):
         """It should not Read a Shopcart that is not found"""
         response = self.client.get(f"{self.base_url_restx}/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

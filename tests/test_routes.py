@@ -582,7 +582,6 @@ class TestShopcartsService(BaseTestCase):
         data = res.get_json()
         logging.debug(data)
 
-        # update name
         data["name"] = data["name"] + " II"
         res = self.client.put(
             f'{self.base_url}/{shopcart.id}/items/{item.id + 10000}',
@@ -590,6 +589,14 @@ class TestShopcartsService(BaseTestCase):
             content_type=DEFAULT_CONTENT_TYPE,
         )
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+        with patch('service.models.Shopcart.get_by_id', return_value=None):
+            res = self.client.put(
+                f'{self.base_url}/{shopcart.id}/items/{data["id"]}',
+                json=data,
+                content_type=DEFAULT_CONTENT_TYPE,
+            )
+            self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_items_with_invalid_request_body(self):
         """ It should return a 404 Not Found response for invalid request body """
@@ -659,28 +666,6 @@ class TestShopcartsService(BaseTestCase):
         )
         logging.debug(res.get_json())
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_update_items_in_an_empty_shopcart(self):
-        """ It should return a 404 Not Found response when shopcart is None """
-        shopcart = self._create_an_empty_shopcart(1)[0]
-        item = ItemFactory()
-        res = self.client.post(
-            f"{self.base_url}/{shopcart.id}/items",
-            json=item.serialize(),
-            content_type=DEFAULT_CONTENT_TYPE,
-        )
-        data = res.get_json()
-        logging.debug(data)
-
-        with patch('service.models.Shopcart.get_by_id', return_value=None):
-            # update name
-            data["name"] = data["name"] + " II"
-            res = self.client.put(
-                f'{self.base_url}/{shopcart.id}/items/{data["id"]}',
-                json=data,
-                content_type=DEFAULT_CONTENT_TYPE,
-            )
-            self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_clear_empty_shopcart(self):
         """ It should clear the items but not delete the shopcart """

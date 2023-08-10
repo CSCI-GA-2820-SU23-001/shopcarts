@@ -209,7 +209,7 @@ class TestShopcartsService(BaseTestCase):
         data = resp.get_json()
         self.assertEqual(len(data), 5)
 
-    def test_list_empty_shopcarts(self):
+    def test_list_shopcarts_empty(self):
         """It should not return any shopcart"""
         resp = self.client.get(f"{self.base_url}")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -228,7 +228,7 @@ class TestShopcartsService(BaseTestCase):
         data = resp.get_json()
         self.assertEqual(len(data), Shopcart.find_id())
 
-    def test_list_shopcart_of_a_customer(self):
+    def test_list_shopcarts_search_by_name(self):
         """It should return a shopcart within a specific customer"""
         shopcart_a = self._create_a_shopcart_with_items(1)
         self.assertEqual(type(shopcart_a.name), str)

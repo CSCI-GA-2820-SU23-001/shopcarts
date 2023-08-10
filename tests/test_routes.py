@@ -119,7 +119,7 @@ class TestShopcartsService(BaseTestCase):
         # get the id of a shopcart
         test_shopcart = self._create_an_empty_shopcart(1)[0]
         resp = self.client.get(
-            f"{self.base_url}/{test_shopcart.id}", content_type=DEFAULT_CONTENT_TYPE
+            f"{self.base_url_restx}/{test_shopcart.id}", content_type=DEFAULT_CONTENT_TYPE
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
@@ -127,7 +127,7 @@ class TestShopcartsService(BaseTestCase):
 
     def test_get_shopcart_not_found(self):
         """It should not Read a Shopcart that is not found"""
-        response = self.client.get(f"{self.base_url}/0")
+        response = self.client.get(f"{self.base_url_restx}/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_get_item(self):

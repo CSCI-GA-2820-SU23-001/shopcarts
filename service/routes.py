@@ -68,7 +68,7 @@ shopcart_base_model = api.model(
     {
         "name": fields.String(
             required=True,
-            description="Customer name"
+            description="Shopcart name"
         )
     },
 )
@@ -137,6 +137,41 @@ def check_content_type(expected_content_type):
             status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
             f"Content-Type must be {expected_content_type}"
         )
+
+
+######################################################################
+#  PATH: /shopcarts/{id}
+######################################################################
+
+@api.route("/shopcarts/<shopcart_id>")
+@api.param("shopcart_id", "The Shopcart identifier")
+class ShopcartResource(Resource):
+
+    """
+    ShopcartResource class
+    Allows the manipulation of a single Shopcart
+    GET /shopcart{id} - Returns a Shopcart with the id
+    PUT /shopcart{id} - Update a Shopcart with the id
+    DELETE /shopcart{id} -  Deletes a Shopcart with the id
+    """
+
+    @api.doc("get_shopcarts")
+    @api.response(404, "Shopcart not found")
+    @api.marshal_with(shopcart_model)
+    def get(self, shopcart_id):
+        """
+        Retrieve a single Shopcart
+        This endpoint will return an Shopcart based on its id
+        """
+        app.logger.info("Request for Shopcart with id: %s", shopcart_id)
+        shopcart = Shopcart.get_by_id(shopcart_id)
+        if not shopcart:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Shopcart with id '{shopcart_id}' could not be found."
+            )
+        app.logger.info("Returning shopcart: %s", shopcart.id)
+        return shopcart.serialize(), status.HTTP_200_OK
 
 
 ######################################################################

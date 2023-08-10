@@ -448,7 +448,7 @@ class TestShopcartsService(BaseTestCase):
         resp = self.client.put(f"{self.base_url_restx}")
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    def test_update_shopcart_item(self):
+    def test_update_items(self):
         """ It should return the updated item """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -500,7 +500,7 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(updated_data["quantity"], data["quantity"])
         self.assertEqual(updated_data["price"], data["price"])
 
-    def test_update_shopcart_item_with_invalid_content_type(self):
+    def test_update_items_with_invalid_content_type(self):
         """ It should return a 415 Unsupported Media Type response for Content-Type not equal to application/json """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -528,7 +528,7 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
-    def test_update_shopcart_item_with_invalid_quantity(self):
+    def test_update_items_with_invalid_quantity(self):
         """ It should return a 400 Bad Request response for quantity less than 1 """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -549,7 +549,7 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_update_shopcart_item_with_non_existent_shopcart(self):
+    def test_update_items_shopcart_not_found(self):
         """ It should return a 404 Not Found response for non-existent shopcart_id """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -570,7 +570,7 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_update_shopcart_item_with_non_existent_item(self):
+    def test_update_items_not_found(self):
         """ It should return a 404 Not Found response for non-existent item """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -591,7 +591,7 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_update_shopcart_item_with_invalid_request_body(self):
+    def test_update_items_with_invalid_request_body(self):
         """ It should return a 404 Not Found response for invalid request body """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -637,7 +637,7 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     @patch.object(Item, 'update', MagicMock(side_effect=DataValidationError))
-    def test_update_shopcart_item_with_item_update_error(self):
+    def test_update_items_with_item_update_error(self):
         """ It should return a 500 Internal Server Error response if Item.update() errors """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
@@ -660,7 +660,7 @@ class TestShopcartsService(BaseTestCase):
         logging.debug(res.get_json())
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_update_shopcart_item_with_none_shopcart(self):
+    def test_update_items_in_an_empty_shopcart(self):
         """ It should return a 404 Not Found response when shopcart is None """
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()

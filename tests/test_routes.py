@@ -667,7 +667,7 @@ class TestShopcartsService(BaseTestCase):
         logging.debug(res.get_json())
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_clear_empty_shopcart(self):
+    def test_clear_shopcarts_empty(self):
         """ It should clear the items but not delete the shopcart """
         shopcart = self._create_an_empty_shopcart(1)[0]
         res = self.client.put(
@@ -682,7 +682,7 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(data['id'], shopcart.id)  # is the id of the shopcart we got the same as the one we created
         self.assertEqual(data['items'], [])  # is the items list empty
 
-    def test_clear_shopcart_with_items(self):
+    def test_clear_shopcarts_with_items(self):
         """ It should clear the items but not delete the shopcart """
         shopcart = self._create_a_shopcart_with_items(3)
         res = self.client.get(
@@ -704,7 +704,7 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(data['id'], shopcart.id)  # is the id of the shopcart we got the same as the one we created
         self.assertEqual(data['items'], [])  # is the items list empty
 
-    def test_clear_shopcart_not_found(self):
+    def test_clear_shopcarts_not_found(self):
         """It should return a 404 not Found response for non-existent shopcart"""
         shopcart = self._create_an_empty_shopcart(1)[0]
         test_id = shopcart.id + 1

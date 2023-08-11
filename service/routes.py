@@ -22,7 +22,7 @@ PUT  /shopcarts/{shopcart_id}/items/{item_id} - Updates the item in the shopcart
 DELETE /shopcarts/{shopcart_id}/items/{item_id} - Delete the item from the shopcart
 """
 from flask import jsonify, request, make_response, abort
-from flask_restx import Resource, fields
+from flask_restx import Resource, fields, reqparse
 
 from service.common import status  # HTTP Status Codes
 from service.models import Shopcart, Item
@@ -84,6 +84,10 @@ shopcart_model = api.inherit(
     },
 )
 
+shopcart_args = reqparse.RequestParser()
+shopcart_args.add_argument(
+    "name", type=str, location="args", required=False, help="List Shopcarts by name"
+)
 
 ############################################################
 # Health Endpoint
@@ -247,7 +251,30 @@ class ShopcartCollection(Resource):
         app.logger.info("New shopcart created with id=%s", shopcart.id)
         shopcart_js = shopcart.serialize()
         return shopcart_js, status.HTTP_201_CREATED
+    
+    @api.doc("list_shopcarts")
+    @api.expect(shopcart_args, validate=True)
+    @api.marshal_with(shopcart_model)
+    def get(self):
+        """ List all shopcarts """
+        app.logger.info("Request to list all Shopcarts")
+        shopcarts = []
+        args = shopcart_args.parse_args()
+        if args["name"]:
+            app.logger.info("Filtering by name: %s", args["name"])
+            shopcarts = Shopcart.find_by_name(args["name"])
+        else:
+            app.logger.info("Returning unfiltered list")
+            shopcarts = Shopcart.get_all()
 
+        count = 0
+        for row in shopcarts:
+            count += 1
+            
+        app.logger.info("[%s] Shopcarts returned", count)
+        results = [shopcart.serialize() for shopcart in shopcarts]
+        return results, status.HTTP_200_OK
+        
 
 @app.route("/shopcarts", methods=["POST"])
 def create_shopcarts():

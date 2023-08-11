@@ -465,10 +465,9 @@ class ItemResource(Resource):
     DELETE /shopcarts/{shopcart_id}/items/{item_id} -  Delete an Item with the shopcart_id and item_id
     """
 
-    @api.doc("get_item")
+    @api.doc("get_items")
     @api.response(404, "Item not found")
-    # @api.marshal_with(item_model)
-    @api.marshal_with(item_model, code=201)
+    @api.marshal_with(item_model)
     def get(self, shopcart_id, item_id):
         """
         Retrieve a single Item

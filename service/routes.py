@@ -253,6 +253,7 @@ class ShopcartCollection(Resource):
         return shopcart_js, status.HTTP_201_CREATED
     
     @api.doc("list_shopcarts")
+    @api.response(404, "Shopcart not found")
     @api.expect(shopcart_args, validate=True)
     @api.marshal_with(shopcart_model)
     def get(self):
@@ -271,6 +272,11 @@ class ShopcartCollection(Resource):
         for row in shopcarts:
             count += 1
             
+        if count == 0:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Can not find any Shopcarts"
+            )
         app.logger.info("[%s] Shopcarts returned", count)
         results = [shopcart.serialize() for shopcart in shopcarts]
         return results, status.HTTP_200_OK

@@ -130,12 +130,12 @@ class TestShopcartsService(BaseTestCase):
         response = self.client.get(f"{self.base_url_restx}/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_get_item(self):
+    def test_get_items(self):
         """It should Read an item from a shopcart"""
         test_shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
         response = self.client.post(
-            f"{self.base_url}/{test_shopcart.id}/items",
+            f"{self.base_url_restx}/{test_shopcart.id}/items",
             json=item.serialize(),
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -146,7 +146,7 @@ class TestShopcartsService(BaseTestCase):
         item_id = data["id"]
 
         response = self.client.get(
-            f"{self.base_url}/{test_shopcart.id}/items/{item_id}",
+            f"{self.base_url_restx}/{test_shopcart.id}/items/{item_id}",
             content_type=DEFAULT_CONTENT_TYPE,
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -158,16 +158,16 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(data["price"], item.price)
         self.assertEqual(data["name"], item.name)
 
-    def test_get_item_not_found(self):
+    def test_get_items_not_found(self):
         """It should not Read an Item that is not found"""
         shopcart = self._create_an_empty_shopcart(1)[0]
-        response = self.client.get(f"{self.base_url}/{shopcart.id}/items/0")
+        response = self.client.get(f"{self.base_url_restx}/{shopcart.id}/items/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_get_item_shopcart_not_found(self):
+    def test_get_items_shopcart_not_found(self):
         """It should not Read an Item when the Shopcart is not found"""
         item = ItemFactory()
-        response = self.client.get(f"{self.base_url}/0/items/{item.id}")
+        response = self.client.get(f"{self.base_url_restx}/0/items/{item.id}")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_list_items(self):

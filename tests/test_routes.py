@@ -671,11 +671,11 @@ class TestShopcartsService(BaseTestCase):
         """ It should clear the items but not delete the shopcart """
         shopcart = self._create_an_empty_shopcart(1)[0]
         res = self.client.put(
-            f'{self.base_url}/{shopcart.id}/clear'
+            f'{self.base_url_restx}/{shopcart.id}/clear'
             )
         logging.debug(res)
         self.assertEqual(res.status_code, status.HTTP_200_OK)  # was the PUT rqst to clear successful
-        res = self.client.get(f'{self.base_url}/{shopcart.id}')
+        res = self.client.get(f'{self.base_url_restx}/{shopcart.id}')
         self.assertEqual(res.status_code, status.HTTP_200_OK)  # was the GET rqst successful
         data = res.get_json()
         logging.debug(data)
@@ -692,11 +692,11 @@ class TestShopcartsService(BaseTestCase):
         logging.debug(data)
         print(data)  # should have 3 items
         res = self.client.put(
-            f'{self.base_url}/{shopcart.id}/clear'
+            f'{self.base_url_restx}/{shopcart.id}/clear'
         )
         logging.debug(res)
         self.assertEqual(res.status_code, status.HTTP_200_OK)  # was the PUT rqst to clear successful
-        res = self.client.get(f'{self.base_url}/{shopcart.id}')
+        res = self.client.get(f'{self.base_url_restx}/{shopcart.id}')
         self.assertEqual(res.status_code, status.HTTP_200_OK)  # was the GET rqst successful
         data = res.get_json()
         logging.debug(data)
@@ -710,7 +710,7 @@ class TestShopcartsService(BaseTestCase):
         test_id = shopcart.id + 1
         self.assertNotEqual(test_id, shopcart.id)  # check mock id is diff from created id
         res = self.client.put(
-            f'{self.base_url}/{test_id}/clear'
+            f'{self.base_url_restx}/{test_id}/clear'
         )
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 

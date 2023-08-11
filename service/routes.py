@@ -264,21 +264,17 @@ class ShopcartCollection(Resource):
         args = shopcart_args.parse_args()
         if args["name"]:
             app.logger.info("Filtering by name: %s", args["name"])
-            shopcarts = Shopcart.find_by_name(args["name"])
+            shopcarts = list(Shopcart.find_by_name(args["name"]))
         else:
             app.logger.info("Returning unfiltered list")
             shopcarts = Shopcart.get_all()
 
-        if not shopcarts:
+        app.logger.info("[%s] Shopcarts returned", len(shopcarts))
+        if len(shopcarts) == 0:
             abort(
                 status.HTTP_404_NOT_FOUND,
                 "Can not find any Shopcarts"
             )
-        count = 0
-        for row in shopcarts:
-            count += 1
-
-        app.logger.info("[%s] Shopcarts returned", count)
         results = [shopcart.serialize() for shopcart in shopcarts]
         return results, status.HTTP_200_OK
 

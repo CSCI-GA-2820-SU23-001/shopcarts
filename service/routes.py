@@ -199,6 +199,22 @@ class ShopcartResource(Resource):
         shopcart.update()
         return shopcart.serialize(), status.HTTP_200_OK
 
+    @api.doc("delete_shopcarts")
+    @api.response(204, "Shopcart deleted")
+    def delete(self, shopcart_id):
+        """
+        Delete a Shopcart
+
+        This endpoint will delete a Shopcart based the id specified in the path
+        """
+        app.logger.info("Start deleting shopcart %s...", shopcart_id)
+        shopcart = Shopcart.get_by_id(shopcart_id)
+        if shopcart:
+            shopcart.delete()
+            app.logger.info("Shopcart deleted with id= %s ", shopcart_id)
+
+        return "", status.HTTP_204_NO_CONTENT
+
 
 ######################################################################
 # S H O P C A R T   A P I S

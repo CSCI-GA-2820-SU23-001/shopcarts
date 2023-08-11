@@ -89,6 +89,7 @@ shopcart_args.add_argument(
     "name", type=str, location="args", required=False, help="List Shopcarts by name"
 )
 
+
 ############################################################
 # Health Endpoint
 ############################################################
@@ -251,10 +252,10 @@ class ShopcartCollection(Resource):
         app.logger.info("New shopcart created with id=%s", shopcart.id)
         shopcart_js = shopcart.serialize()
         return shopcart_js, status.HTTP_201_CREATED
-    
+
     @api.doc("list_shopcarts")
-    @api.response(404, "Shopcart not found")
     @api.expect(shopcart_args, validate=True)
+    @api.response(404, "Shopcart not found")
     @api.marshal_with(shopcart_model)
     def get(self):
         """ List all shopcarts """
@@ -268,19 +269,19 @@ class ShopcartCollection(Resource):
             app.logger.info("Returning unfiltered list")
             shopcarts = Shopcart.get_all()
 
+        if not shopcarts:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                "Can not find any Shopcarts"
+            )
         count = 0
         for row in shopcarts:
             count += 1
-            
-        if count == 0:
-            abort(
-                status.HTTP_404_NOT_FOUND,
-                f"Can not find any Shopcarts"
-            )
+
         app.logger.info("[%s] Shopcarts returned", count)
         results = [shopcart.serialize() for shopcart in shopcarts]
         return results, status.HTTP_200_OK
-        
+
 
 @app.route("/shopcarts", methods=["POST"])
 def create_shopcarts():

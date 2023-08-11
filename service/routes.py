@@ -218,6 +218,8 @@ class ShopcartResource(Resource):
 ######################################################################
 #  PATH: /shopcarts/{id}/clear
 ######################################################################
+
+
 @api.route("/shopcarts/<shopcart_id>/clear")
 @api.param("shopcart_id”, “The Shopcart identifier")
 class ClearResource(Resource):
@@ -249,6 +251,7 @@ class ClearResource(Resource):
 ######################################################################
 # S H O P C A R T   A P I S
 ######################################################################
+
 
 @api.route("/shopcarts", strict_slashes=False)
 class ShopcartCollection(Resource):

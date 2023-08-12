@@ -719,7 +719,7 @@ class TestShopcartsService(BaseTestCase):
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
         resp = self.client.post(
-            f"{self.base_url}/{shopcart.id}/items",
+            f"{self.base_url_restx}/{shopcart.id}/items",
             json=item.serialize(),
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -730,14 +730,14 @@ class TestShopcartsService(BaseTestCase):
 
         # send delete request
         resp = self.client.delete(
-            f"{self.base_url}/{shopcart.id}/items/{item_id}",
+            f"{self.base_url_restx}/{shopcart.id}/items/{item_id}",
             content_type=DEFAULT_CONTENT_TYPE,
         )
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
         # retrieve it back and make sure item is not there
         resp = self.client.get(
-            f"{self.base_url}/{shopcart.id}/items/{item_id}",
+            f"{self.base_url_restx}/{shopcart.id}/items/{item_id}",
             content_type=DEFAULT_CONTENT_TYPE,
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)

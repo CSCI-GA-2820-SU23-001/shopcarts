@@ -542,7 +542,7 @@ class ItemResource(Resource):
         app.logger.info("Returning item: %s", item.id)
         item_js = item.serialize()
         return item_js, status.HTTP_200_OK
-    
+
     @api.doc("delete_items")
     @api.response(204, 'Item deleted')
     def delete(self, shopcart_id, item_id):
@@ -559,7 +559,6 @@ class ItemResource(Resource):
             item.delete()
 
         return "", status.HTTP_204_NO_CONTENT
-
 
 
 @app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["GET"])

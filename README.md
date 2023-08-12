@@ -48,6 +48,7 @@ create_shopcarts  POST     /shopcarts
 get_shopcarts     GET      /shopcarts/<shopcart_id>
 update_shopcarts  PUT      /shopcarts/<shopcart_id>
 delete_shopcarts  DELETE   /shopcarts/<shopcart_id>
+clear_shopcarts   PUT      /shopcarts/<shopcart_id>/clear
 
 list_items        GET      /shopcarts/<shopcart_id>/items
 create_items      POST     /shopcarts/<shopcart_id>/items

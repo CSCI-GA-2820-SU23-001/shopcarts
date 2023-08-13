@@ -204,14 +204,14 @@ class TestShopcartsService(BaseTestCase):
     def test_list_shopcarts(self):
         """It should return all shopcarts"""
         self._create_an_empty_shopcart(5)
-        resp = self.client.get(f"{self.base_url_restx}")
+        resp = self.client.get(f"{self.base_url}")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 5)
 
     def test_list_shopcarts_empty(self):
         """It should not return any shopcart"""
-        resp = self.client.get(f"{self.base_url_restx}")
+        resp = self.client.get(f"{self.base_url}")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 0)
@@ -222,7 +222,7 @@ class TestShopcartsService(BaseTestCase):
         self._create_a_shopcart_with_items(2)
         self._create_a_shopcart_with_items(3)
         self._create_an_empty_shopcart(5)
-        resp = self.client.get(f"{self.base_url_restx}")
+        resp = self.client.get(f"{self.base_url}")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(type(shopcart_a), Shopcart)
         data = resp.get_json()
@@ -234,7 +234,7 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(type(shopcart_a.name), str)
         name = Shopcart.find_by_name(shopcart_a.name)
         test_shopcart = name.scalar()
-        url = self.base_url_restx + "?name=" + shopcart_a.name
+        url = self.base_url + "?name=" + shopcart_a.name
         resp = self.client.get(f"{url}")
         data = resp.get_json()
         self.assertEqual(type(data[0]['name']), str)
@@ -453,7 +453,7 @@ class TestShopcartsService(BaseTestCase):
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
         res = self.client.post(
-            f"{self.base_url_restx}/{shopcart.id}/items",
+            f"{self.base_url}/{shopcart.id}/items",
             json=item.serialize(),
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -463,7 +463,7 @@ class TestShopcartsService(BaseTestCase):
         # update name
         data["name"] = data["name"] + " II"
         res = self.client.put(
-            f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
+            f'{self.base_url}/{shopcart.id}/items/{data["id"]}',
             json=data,
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -477,7 +477,7 @@ class TestShopcartsService(BaseTestCase):
         # update quantity
         data["quantity"] = data["quantity"] + 1
         res = self.client.put(
-            f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
+            f'{self.base_url}/{shopcart.id}/items/{data["id"]}',
             json=data,
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -490,7 +490,7 @@ class TestShopcartsService(BaseTestCase):
         # update price
         data["price"] = data["price"] * 2
         res = self.client.put(
-            f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
+            f'{self.base_url}/{shopcart.id}/items/{data["id"]}',
             json=data,
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -505,7 +505,7 @@ class TestShopcartsService(BaseTestCase):
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
         res = self.client.post(
-            f"{self.base_url_restx}/{shopcart.id}/items",
+            f"{self.base_url}/{shopcart.id}/items",
             json=item.serialize(),
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -515,14 +515,14 @@ class TestShopcartsService(BaseTestCase):
         # update name
         data["name"] = data["name"] + " II"
         res = self.client.put(
-            f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
+            f'{self.base_url}/{shopcart.id}/items/{data["id"]}',
             json=data,
             content_type="",
         )
         self.assertEqual(res.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
         res = self.client.put(
-            f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
+            f'{self.base_url}/{shopcart.id}/items/{data["id"]}',
             json=data,
             content_type="application/xml",
         )
@@ -533,7 +533,7 @@ class TestShopcartsService(BaseTestCase):
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
         res = self.client.post(
-            f"{self.base_url_restx}/{shopcart.id}/items",
+            f"{self.base_url}/{shopcart.id}/items",
             json=item.serialize(),
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -541,9 +541,9 @@ class TestShopcartsService(BaseTestCase):
         logging.debug(data)
 
         # update quantity
-        data["quantity"] = -1
+        data["quantity"] = 0
         res = self.client.put(
-            f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
+            f'{self.base_url}/{shopcart.id}/items/{data["id"]}',
             json=data,
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -554,7 +554,7 @@ class TestShopcartsService(BaseTestCase):
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
         res = self.client.post(
-            f"{self.base_url_restx}/{shopcart.id}/items",
+            f"{self.base_url}/{shopcart.id}/items",
             json=item.serialize(),
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -564,7 +564,7 @@ class TestShopcartsService(BaseTestCase):
         # update name
         data["name"] = data["name"] + " II"
         res = self.client.put(
-            f'{self.base_url_restx}/-1/items/{data["id"]}',
+            f'{self.base_url}/-1/items/{data["id"]}',
             json=data,
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -575,7 +575,7 @@ class TestShopcartsService(BaseTestCase):
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
         res = self.client.post(
-            f"{self.base_url_restx}/{shopcart.id}/items",
+            f"{self.base_url}/{shopcart.id}/items",
             json=item.serialize(),
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -584,7 +584,7 @@ class TestShopcartsService(BaseTestCase):
 
         data["name"] = data["name"] + " II"
         res = self.client.put(
-            f'{self.base_url_restx}/{shopcart.id}/items/{item.id + 10000}',
+            f'{self.base_url}/{shopcart.id}/items/{item.id + 10000}',
             json=data,
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -592,7 +592,7 @@ class TestShopcartsService(BaseTestCase):
 
         with patch('service.models.Shopcart.get_by_id', return_value=None):
             res = self.client.put(
-                f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
+                f'{self.base_url}/{shopcart.id}/items/{data["id"]}',
                 json=data,
                 content_type=DEFAULT_CONTENT_TYPE,
             )
@@ -603,7 +603,7 @@ class TestShopcartsService(BaseTestCase):
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
         res = self.client.post(
-            f"{self.base_url_restx}/{shopcart.id}/items",
+            f"{self.base_url}/{shopcart.id}/items",
             json=item.serialize(),
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -614,7 +614,7 @@ class TestShopcartsService(BaseTestCase):
         no_name_data = data.copy()
         no_name_data.pop("name")
         res = self.client.put(
-            f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
+            f'{self.base_url}/{shopcart.id}/items/{data["id"]}',
             json=no_name_data,
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -625,7 +625,7 @@ class TestShopcartsService(BaseTestCase):
         no_quantity_data = data.copy()
         no_quantity_data.pop("quantity")
         res = self.client.put(
-            f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
+            f'{self.base_url}/{shopcart.id}/items/{data["id"]}',
             json=no_quantity_data,
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -636,7 +636,7 @@ class TestShopcartsService(BaseTestCase):
         no_price_data = data.copy()
         no_price_data.pop("price")
         res = self.client.put(
-            f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
+            f'{self.base_url}/{shopcart.id}/items/{data["id"]}',
             json=no_price_data,
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -649,7 +649,7 @@ class TestShopcartsService(BaseTestCase):
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
         res = self.client.post(
-            f"{self.base_url_restx}/{shopcart.id}/items",
+            f"{self.base_url}/{shopcart.id}/items",
             json=item.serialize(),
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -660,7 +660,7 @@ class TestShopcartsService(BaseTestCase):
         # missing name
         data["name"] = data["name"] + " II"
         res = self.client.put(
-            f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
+            f'{self.base_url}/{shopcart.id}/items/{data["id"]}',
             json=data,
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -671,11 +671,11 @@ class TestShopcartsService(BaseTestCase):
         """ It should clear the items but not delete the shopcart """
         shopcart = self._create_an_empty_shopcart(1)[0]
         res = self.client.put(
-            f'{self.base_url}/{shopcart.id}/clear'
+            f'{self.base_url_restx}/{shopcart.id}/clear'
             )
         logging.debug(res)
         self.assertEqual(res.status_code, status.HTTP_200_OK)  # was the PUT rqst to clear successful
-        res = self.client.get(f'{self.base_url}/{shopcart.id}')
+        res = self.client.get(f'{self.base_url_restx}/{shopcart.id}')
         self.assertEqual(res.status_code, status.HTTP_200_OK)  # was the GET rqst successful
         data = res.get_json()
         logging.debug(data)
@@ -692,11 +692,11 @@ class TestShopcartsService(BaseTestCase):
         logging.debug(data)
         print(data)  # should have 3 items
         res = self.client.put(
-            f'{self.base_url}/{shopcart.id}/clear'
+            f'{self.base_url_restx}/{shopcart.id}/clear'
         )
         logging.debug(res)
         self.assertEqual(res.status_code, status.HTTP_200_OK)  # was the PUT rqst to clear successful
-        res = self.client.get(f'{self.base_url}/{shopcart.id}')
+        res = self.client.get(f'{self.base_url_restx}/{shopcart.id}')
         self.assertEqual(res.status_code, status.HTTP_200_OK)  # was the GET rqst successful
         data = res.get_json()
         logging.debug(data)
@@ -710,7 +710,7 @@ class TestShopcartsService(BaseTestCase):
         test_id = shopcart.id + 1
         self.assertNotEqual(test_id, shopcart.id)  # check mock id is diff from created id
         res = self.client.put(
-            f'{self.base_url}/{test_id}/clear'
+            f'{self.base_url_restx}/{test_id}/clear'
         )
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -719,7 +719,7 @@ class TestShopcartsService(BaseTestCase):
         shopcart = self._create_an_empty_shopcart(1)[0]
         item = ItemFactory()
         resp = self.client.post(
-            f"{self.base_url}/{shopcart.id}/items",
+            f"{self.base_url_restx}/{shopcart.id}/items",
             json=item.serialize(),
             content_type=DEFAULT_CONTENT_TYPE,
         )
@@ -730,14 +730,14 @@ class TestShopcartsService(BaseTestCase):
 
         # send delete request
         resp = self.client.delete(
-            f"{self.base_url}/{shopcart.id}/items/{item_id}",
+            f"{self.base_url_restx}/{shopcart.id}/items/{item_id}",
             content_type=DEFAULT_CONTENT_TYPE,
         )
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
         # retrieve it back and make sure item is not there
         resp = self.client.get(
-            f"{self.base_url}/{shopcart.id}/items/{item_id}",
+            f"{self.base_url_restx}/{shopcart.id}/items/{item_id}",
             content_type=DEFAULT_CONTENT_TYPE,
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)

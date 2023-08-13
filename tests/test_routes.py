@@ -204,14 +204,14 @@ class TestShopcartsService(BaseTestCase):
     def test_list_shopcarts(self):
         """It should return all shopcarts"""
         self._create_an_empty_shopcart(5)
-        resp = self.client.get(f"{self.base_url}")
+        resp = self.client.get(f"{self.base_url_restx}")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 5)
 
     def test_list_shopcarts_empty(self):
         """It should not return any shopcart"""
-        resp = self.client.get(f"{self.base_url}")
+        resp = self.client.get(f"{self.base_url_restx}")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 0)
@@ -222,7 +222,7 @@ class TestShopcartsService(BaseTestCase):
         self._create_a_shopcart_with_items(2)
         self._create_a_shopcart_with_items(3)
         self._create_an_empty_shopcart(5)
-        resp = self.client.get(f"{self.base_url}")
+        resp = self.client.get(f"{self.base_url_restx}")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(type(shopcart_a), Shopcart)
         data = resp.get_json()
@@ -234,7 +234,7 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(type(shopcart_a.name), str)
         name = Shopcart.find_by_name(shopcart_a.name)
         test_shopcart = name.scalar()
-        url = self.base_url + "?name=" + shopcart_a.name
+        url = self.base_url_restx + "?name=" + shopcart_a.name
         resp = self.client.get(f"{url}")
         data = resp.get_json()
         self.assertEqual(type(data[0]['name']), str)

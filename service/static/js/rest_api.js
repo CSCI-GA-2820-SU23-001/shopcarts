@@ -427,6 +427,39 @@ $(function () {
     
     });
 
-     
+    $("#update-item-btn").click(function () {
+
+        let item_id = $("#item_id").val();
+        let shopcart_id = $("#item_shopcart_id").val();
+        let name = $("#item_name").val();
+        let quantity = $("#item_quantity").val();
+        let price = $("#item_price").val();
+
+        let data = {
+            "shopcart_id": shopcart_id,
+            "name": name,
+            "quantity": parseInt(quantity),
+            "price": parseFloat(price)
+        };
+
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+            type: "PUT",
+            url: `/shopcarts/${shopcart_id}/items/${item_id}`,
+            contentType: "application/json",
+            data: JSON.stringify(data)
+        });
+
+        ajax.done(function(res){
+            update_form_item(res)
+            flash_message("Shopcart item updated!")
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+
+    });
 
 })

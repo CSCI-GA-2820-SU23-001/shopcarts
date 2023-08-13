@@ -543,6 +543,23 @@ class ItemResource(Resource):
         item_js = item.serialize()
         return item_js, status.HTTP_200_OK
 
+    @api.doc("delete_items")
+    @api.response(204, 'Item deleted')
+    def delete(self, shopcart_id, item_id):
+        """
+        Delete an item
+
+        This endpoint will delete an item based the id specified in the path
+        """
+        app.logger.info("Request to delete item with id='%s' in shopcart with id='%s'.", item_id, shopcart_id)
+
+        item = Item.get_by_id(item_id)
+        # See if the item exists and delete it if it does
+        if item:
+            item.delete()
+
+        return "", status.HTTP_204_NO_CONTENT
+
 
 @app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["GET"])
 def get_items(shopcart_id, item_id):

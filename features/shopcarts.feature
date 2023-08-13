@@ -216,7 +216,7 @@ Scenario: Delete a shopcart item
     And I press the "Reset Form" button on "Item" page
     And I paste the "Id" field in "Item" page
     And I press the "Delete" button in "Item" page
-    Then I should see the message "Item deleted from shopcart!"
+    Then I should see the message "Shopcart item deleted!"
     When I press the "List" button in "Item" page
     Then I should see the message "Success"
     And I should not see "Apple" in the results in "Item" page

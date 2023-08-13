@@ -418,7 +418,7 @@ $(function () {
             $("#flash_message").empty();
             
             
-            flash_message("Item deleted from shopcart!");
+            flash_message("Shopcart item deleted!");
         });
     
         ajax.fail(function (res) {

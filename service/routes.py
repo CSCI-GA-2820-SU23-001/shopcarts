@@ -534,6 +534,64 @@ class ItemResource(Resource):
         item_js = item.serialize()
         return item_js, status.HTTP_200_OK
 
+        @api.doc("put_items")
+    @api.response(404, "Shopcart or Item not found")
+    @api.response(204, "Item deleted")
+    @api.response(400, "The posted Item data was not valid")
+    @api.response(415, "Invalid header content-type")
+    @api.expect(item_model)
+    @api.marshal_with(item_model)
+    def put(self, shopcart_id, item_id):
+        """
+        Update a Item
+
+        This endpoint returns just a item
+        """
+        check_content_type(DEFAULT_CONTENT_TYPE)
+        app.logger.info("Request update item with shopcart_id: %s and item_id: %s", shopcart_id, item_id)
+        shopcart = Shopcart.get_by_id(shopcart_id)
+        if not shopcart:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Shopcart with id '{shopcart_id}' could not be found."
+            )
+        item = Item.get_by_id(item_id)
+        if not item:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Item with id '{item_id}' could not be found."
+            )
+        data = api.payload
+        if len(data) != 5:
+            app.logger.info("Must update the information about this item")
+            abort(
+                status.HTTP_400_BAD_REQUEST,
+                "Missing information."
+            )
+        if data["quantity"] < 0:
+            app.logger.info("Can not update item with negative quantity")
+            abort(
+                status.HTTP_400_BAD_REQUEST,
+                "Quantity of the item must be positive."
+            )
+        if data["price"] < 0:
+            app.logger.info("Can not update item with negative price")
+            abort(
+                status.HTTP_400_BAD_REQUEST,
+                "Price of the item must be positive."
+            )
+        if data["quantity"] == 0:
+            app.logger.info("Item with shopcart_id: %s and item_id: %s is deleted because the quantity is set to 0",
+                            shopcart_id, item_id)
+            item.delete()
+            return "", status.HTTP_204_NO_CONTENT
+        item.deserialize(data)
+        item.id = item_id
+        item.shopcart_id = shopcart_id
+        item.update()
+        app.logger.info("Item with shopcart_id: %s and item_id: %s is updated successfully", shopcart_id, item_id)
+        return item.serialize(), status.HTTP_200_OK
+
 
 @app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["GET"])
 def get_items(shopcart_id, item_id):

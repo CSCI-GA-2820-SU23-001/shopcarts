@@ -266,14 +266,14 @@ $(function () {
 
         let shopcart_id = $("#item_shopcart_id").val();
         let name = $("#item_name").val();
-        // let quantity = $("#item_quantity").val();
+        let quantity = $("#item_quantity").val();
         let price = $("#item_price").val();
 
         let data = {
             "shopcart_id": shopcart_id,
             "name": name,
-            "quantity": 1,
-            "price": price
+            "quantity": parseInt(quantity),
+            "price": parseFloat(price)
         };
 
         $("#flash_message").empty();
@@ -424,7 +424,7 @@ $(function () {
         ajax.fail(function (res) {
             flash_message(res.responseJSON.message);
         });
-    
+
     });
 
     $("#update-item-btn").click(function () {

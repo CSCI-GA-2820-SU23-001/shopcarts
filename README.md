@@ -6,36 +6,30 @@
 [![Python](https://img.shields.io/badge/Language-Python-blue.svg)](https://python.org/)
 
 ## Contents
+* [Sites](#sites)
+  * [Production](http://159.122.175.64:31002)
+    * [/shopcartsapi](http://159.122.175.64:31002/shopcartsapi)
+    * [/itemsapi](http://159.122.175.64:31002/itemsapi)
+  * [Development](http://159.122.175.64:31001)
+* [Documentation](#documentation)
+  * [List of RESTful Routes](#list-of-restful-routes)
+  * [Swagger Doc](http://159.122.175.64:31002/apidocs)
+* [CI/CD Workflow](#cicd-workflow)
 
-The project contains the following:
 
-```text
-.gitignore          - this will ignore vagrant and other metadata files
-.flaskenv           - Environment variables to configure Flask
-.gitattributes      - File to gix Windows CRLF issues
-.devcontainers/     - Folder with support for VSCode Remote Containers
-dot-env-example     - copy to .env to use environment variables
-requirements.txt    - list if Python libraries required by your code
-config.py           - configuration parameters
+## Sites
+* [Production](http://159.122.175.64:31002)
+* [Development](http://159.122.175.64:31001)
 
-service/                   - service python package
-├── __init__.py            - package initializer
-├── models.py              - module with business models
-├── routes.py              - module with service routes
-└── common                 - common code package
-    ├── error_handlers.py  - HTTP error handling code
-    ├── log_handlers.py    - logging setup code
-    └── status.py          - HTTP status constants
 
-tests/              - test cases package
-├── __init__.py     - package initializer
-├── test_models.py  - test suite for business models
-└── test_routes.py  - test suite for service routes
-```
+## Documentation
 
-## RESTful Routes
+This project leverages [Flask-RESTX](https://flask-restx.readthedocs.io/en/latest/) to generate [Swagger/OpenAPI](https://www.openapis.org/) documentation available at [/apidocs](http://159.122.175.64:31002/apidocs).
 
-These are the RESTful routes for `shopcarts` and `items`
+### List of RESTful Routes
+
+These are the RESTful routes for `shopcarts` and `items`:
+
 ```markdown
 Endpoint          Methods  Rule
 ----------------  -------  -----------------------------------------------------
@@ -60,24 +54,28 @@ delete_items      DELETE   /shopcarts/<shopcart_id>/items/<item_id>
 The test cases can be run with `green`.
 
 
-### Health Check
+#### Health Check
 Get service health status.
 
-#### API Endpoint
+##### API Endpoint
 GET /health
 
-#### Request Headers
+##### Request Headers
 | Header       | Value            |
 |--------------|------------------|
 | Content-Type | application/json |
 
-#### Response
-##### 200 OK
+##### Response
+###### 200 OK
 ```json
 {
   "status": "OK"
 }
 ```
+
+
+## CI/CD Workflow
+TBA
 
 
 ## Database Connection

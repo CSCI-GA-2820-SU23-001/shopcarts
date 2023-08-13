@@ -179,6 +179,7 @@ class ShopcartResource(Resource):
         return shopcart.serialize(), status.HTTP_200_OK
 
     @api.doc("update_shopcarts")
+    @api.response(404, "Shopcart not found")
     @api.response(400, "The posted Shopcart data was not valid")
     @api.response(415, "Invalid header content-type")
     @api.expect(shopcart_base_model)  # Updated the expect decorator
@@ -192,6 +193,11 @@ class ShopcartResource(Resource):
         check_content_type(DEFAULT_CONTENT_TYPE)
         app.logger.info("Request to update shopcart with id: %s", shopcart_id)
         shopcart = Shopcart.get_by_id(shopcart_id)
+        if not shopcart:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Shopcart with id '{shopcart_id}' was not found."
+            )
         data = api.payload
         shopcart.deserialize(data)
         shopcart.id = shopcart_id
@@ -249,7 +255,6 @@ class ShopcartCollection(Resource):
 
     @api.doc("list_shopcarts")
     @api.expect(shopcart_args, validate=True)
-    @api.response(404, "Shopcart not found")
     @api.marshal_with(shopcart_model)
     def get(self):
         """ List all shopcarts """
@@ -264,11 +269,6 @@ class ShopcartCollection(Resource):
             shopcarts = Shopcart.get_all()
 
         app.logger.info("[%s] Shopcarts returned", len(shopcarts))
-        if len(shopcarts) == 0:
-            abort(
-                status.HTTP_404_NOT_FOUND,
-                "Can not find any Shopcarts"
-            )
         results = [shopcart.serialize() for shopcart in shopcarts]
         return results, status.HTTP_200_OK
 

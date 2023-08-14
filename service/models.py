@@ -161,15 +161,6 @@ class Shopcart(db.Model, ModelBase):
         logger.info("Get %s by name=%s", cls.__name__, name)
         return cls.query.filter(cls.name == name)
 
-    @classmethod
-    def find_id(cls):
-        """Find the length of existing shopcart records in database"""
-        result = cls.query.with_entities(Shopcart.id).all()
-        ids = []
-        for res in result:
-            ids.append(res.id)
-        return len(ids)
-
 
 class Item(db.Model, ModelBase):
     """ The Item Table """

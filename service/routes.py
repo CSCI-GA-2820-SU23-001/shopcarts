@@ -473,6 +473,13 @@ class ItemCollection(Resource):
                 "Quantity of a new item should always be one."
             )
 
+        if item.price < 0:
+            app.logger.error("Invalid item price assignment to %s.", item.price)
+            abort(
+                status.HTTP_400_BAD_REQUEST,
+                "Price of a new item must be positive."
+            )
+
         shopcart.items.append(item)
         shopcart.update()
         app.logger.info("New item with id=%s added to shopcart with id=%s.", item.id, shopcart.id)
@@ -593,6 +600,7 @@ class ItemResource(Resource):
         in the path.
         """
         check_content_type(DEFAULT_CONTENT_TYPE)
+
         app.logger.info("Request update item with shopcart_id: %s and item_id: %s", shopcart_id, item_id)
         shopcart = Shopcart.get_by_id(shopcart_id)
         if not shopcart:
@@ -600,34 +608,29 @@ class ItemResource(Resource):
                 status.HTTP_404_NOT_FOUND,
                 f"Shopcart with id '{shopcart_id}' could not be found."
             )
+
         item = Item.get_by_id(item_id)
         if not item:
             abort(
                 status.HTTP_404_NOT_FOUND,
                 f"Item with id '{item_id}' could not be found."
             )
-        data = api.payload
-        if len(data) != 5:
-            app.logger.info("Must update the information about this item")
-            abort(
-                status.HTTP_400_BAD_REQUEST,
-                "Missing information."
-            )
-        if data["quantity"] <= 0:
-            app.logger.info("Can not update item with given quantity")
+        item.deserialize(api.payload)
+
+        if item.quantity <= 0:
+            app.logger.error("Invalid item quantity assignment to %s.", item.quantity)
             abort(
                 status.HTTP_400_BAD_REQUEST,
                 "Quantity of the item must be positive."
             )
-        if data["price"] < 0:
-            app.logger.info("Can not update item with negative price")
+
+        if item.price < 0:
+            app.logger.error("Invalid item price assignment to %s.", item.price)
             abort(
                 status.HTTP_400_BAD_REQUEST,
                 "Price of the item must be positive."
             )
-        item.deserialize(data)
-        item.id = item_id
-        item.shopcart_id = shopcart_id
+
         item.update()
         app.logger.info("Item with shopcart_id: %s and item_id: %s is updated successfully", shopcart_id, item_id)
         return item.serialize(), status.HTTP_200_OK

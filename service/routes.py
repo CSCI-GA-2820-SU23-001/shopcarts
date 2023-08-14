@@ -141,7 +141,7 @@ def check_content_type(expected_content_type):
 
 
 ######################################################################
-#  PATH: /shopcarts/{id}
+# S H O P C A R T   A P I S
 ######################################################################
 
 @api.route("/shopcarts/<shopcart_id>")
@@ -219,11 +219,6 @@ class ShopcartResource(Resource):
         return "", status.HTTP_204_NO_CONTENT
 
 
-######################################################################
-#  PATH: /shopcarts/{id}/clear
-######################################################################
-
-
 @api.route("/shopcarts/<shopcart_id>/clear")
 @api.param("shopcart_id”, “The Shopcart identifier")
 class ClearShopcartResource(Resource):
@@ -258,11 +253,6 @@ class ClearShopcartResource(Resource):
             app.logger.info("Deleted item '%s' in shopcart with id='%s'.", item, shopcart_id)
         shopcart.update()
         return shopcart.serialize(), status.HTTP_200_OK
-
-
-######################################################################
-# S H O P C A R T   A P I S
-######################################################################
 
 
 @api.route("/shopcarts", strict_slashes=False)
@@ -545,10 +535,6 @@ def create_items(shopcart_id):
     item_js = item.serialize()
     return make_response(jsonify(item_js), status.HTTP_201_CREATED)
 
-
-######################################################################
-#  PATH: /shopcarts/<shopcart_id>/items/<item_id>
-######################################################################
 
 @api.route("/shopcarts/<shopcart_id>/items/<item_id>")
 @api.param("shopcart_id", "The Shopcart identifier")

@@ -637,7 +637,6 @@ class ItemResource(Resource):
         return "", status.HTTP_204_NO_CONTENT
 
 
-
 @app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["GET"])
 def get_items(shopcart_id, item_id):
     """

@@ -23,7 +23,7 @@ api = Api(app,
           title="Shopcarts REST API Service",
           description="This is the Shopcarts Service server.",
           default="Shopcart",
-          default_label="Shopcarts Service operations",
+          default_label="Shopcarts Service Operations",
           doc=app.config["PREFIX_API_DOCS"],
           prefix=app.config["PREFIX_API"])
 

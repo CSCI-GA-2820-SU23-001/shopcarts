@@ -220,10 +220,43 @@ class ShopcartResource(Resource):
 
         return "", status.HTTP_204_NO_CONTENT
 
+######################################################################
+#  PATH: /shopcarts/{id}/clear
+######################################################################
+
+
+@api.route("/shopcarts/<shopcart_id>/clear")
+@api.param("shopcart_id”, “The Shopcart identifier")
+class ClearResource(Resource):
+    """Clear actions on a Shopcart"""
+    @api.doc("clear_shopcarts")
+    @api.response(404, "Shopcart not found")
+    @api.marshal_with(shopcart_model)
+    def put(self, shopcart_id):
+        """Clear a shopcart
+        Args:
+            user_id (str): the user_id of the shopcart to delete
+        """
+        app.logger.info("Request for Shopcart with id: %s", shopcart_id)
+        shopcart = Shopcart.get_by_id(shopcart_id)
+        if not shopcart:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Shopcart with id '{shopcart_id}' could not be found.",
+            )
+        app.logger.info("Returning shopcart: %s", shopcart_id)
+        app.logger.info("Request to clear shopcart with id: %s", shopcart_id)
+        shopcart = Shopcart.get_by_id(shopcart_id)
+        for item in shopcart.items:
+            item.delete()
+            app.logger.info("Deleted item '%s' in shopcart with id='%s'.", item, shopcart_id)
+        shopcart.update()
+        return shopcart.serialize(), status.HTTP_200_OK
 
 ######################################################################
 # S H O P C A R T   A P I S
 ######################################################################
+
 
 @api.route("/shopcarts", strict_slashes=False)
 class ShopcartCollection(Resource):
@@ -585,6 +618,24 @@ class ItemResource(Resource):
         item.update()
         app.logger.info("Item with shopcart_id: %s and item_id: %s is updated successfully", shopcart_id, item_id)
         return item.serialize(), status.HTTP_200_OK
+
+    @api.doc("delete_items")
+    @api.response(204, 'Item deleted')
+    def delete(self, shopcart_id, item_id):
+        """
+        Delete an item
+
+        This endpoint will delete an item based the id specified in the path
+        """
+        app.logger.info("Request to delete item with id='%s' in shopcart with id='%s'.", item_id, shopcart_id)
+
+        item = Item.get_by_id(item_id)
+        # See if the item exists and delete it if it does
+        if item:
+            item.delete()
+
+        return "", status.HTTP_204_NO_CONTENT
+
 
 
 @app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["GET"])

@@ -37,10 +37,9 @@ class BaseTestCase(TestCase):
 
     def setUp(self):
         """Runs before each test"""
+        self.client = app.test_client()
         db.session.query(Shopcart).delete()  # clean up the last tests
         db.session.commit()
-
-        self.client = app.test_client()
 
     def tearDown(self):
         """ This runs after each test """

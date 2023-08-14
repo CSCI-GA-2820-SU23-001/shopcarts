@@ -1,4 +1,7 @@
 # Shopcarts Service
+The shopcarts service allows customers to make a collection of products that they want to purchase. It contains a
+reference to a product and the quantity the customer wants to buy. It also contains the price of the product at the time
+they placed it in the cart. A customer will only have one shopcart.
 
 [![Build Status](https://github.com/CSCI-GA-2820-SU23-001/shopcarts/actions/workflows/ci.yml/badge.svg)](https://github.com/CSCI-GA-2820-SU23-001/shopcarts/actions)
 [![codecov](https://codecov.io/gh/CSCI-GA-2820-SU23-001/shopcarts/branch/master/graph/badge.svg?token=OUCWT94U59)](https://codecov.io/gh/CSCI-GA-2820-SU23-001/shopcarts)

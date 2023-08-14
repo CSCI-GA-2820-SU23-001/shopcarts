@@ -1,25 +1,21 @@
 """
-Shopcarts Service
+Shopcarts Service Routes
 
-The shopcarts service allows customers to make a collection of products that they want to purchase. It contains a
-reference to a product and the quantity the customer wants to buy. It also contains the price of the product at the time
-they placed it in the cart. A customer will only have one shopcart.
+GET  /
 
-Shopcart API Paths:
-----
-GET  /shopcarts - Returns a list of shopcarts in the system
-POST /shopcarts - Creates a new shopcart
-GET  /shopcarts/{shopcart_id} - Returns the shopcart
-PUT  /shopcarts/{shopcart_id} - Updates the shopcart
-DELETE /shopcarts/{shopcart_id} - Deletes the shopcart
+GET  /health
 
-Item API Paths:
-----
-GET  /shopcarts/{shopcart_id}/items - Returns a list of items in the shopcart
-POST /shopcarts{shopcart_id}/items - Creates a new item in the shopcart
-GET  /shopcarts/{shopcart_id}/items/{item_id} - Returns the item in the shopcart
-PUT  /shopcarts/{shopcart_id}/items/{item_id} - Updates the item in the shopcart
-DELETE /shopcarts/{shopcart_id}/items/{item_id} - Delete the item from the shopcart
+GET  /shopcarts
+POST /shopcarts
+GET  /shopcarts/{shopcart_id}
+PUT  /shopcarts/{shopcart_id}
+DELETE /shopcarts/{shopcart_id}
+
+GET  /shopcarts/{shopcart_id}/items
+POST /shopcarts{shopcart_id}/items
+GET  /shopcarts/{shopcart_id}/items/{item_id}
+PUT  /shopcarts/{shopcart_id}/items/{item_id}
+DELETE /shopcarts/{shopcart_id}/items/{item_id}
 """
 from flask import jsonify, request, make_response, abort
 from flask_restx import Resource, fields, reqparse

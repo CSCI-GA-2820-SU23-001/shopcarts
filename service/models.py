@@ -1,18 +1,18 @@
 """
 Shopcarts Service Models
 
-Designed to support queries of the following APIs:
-    GET  /shopcarts
-    POST /shopcarts
-    GET  /shopcarts/{shopcart_id}
-    PUT  /shopcarts/{shopcart_id}
-    DELETE /shopcarts/{shopcart_id}
+Designed to support queries from the following APIs:
+GET  /shopcarts
+POST /shopcarts
+GET  /shopcarts/{shopcart_id}
+PUT  /shopcarts/{shopcart_id}
+DELETE /shopcarts/{shopcart_id}
 
-    GET  /shopcarts/{shopcart_id}/items
-    POST /shopcarts{shopcart_id}/items
-    GET  /shopcarts/{shopcart_id}/items/{item_id}
-    PUT  /shopcarts/{shopcart_id}/items/{item_id}
-    DELETE /shopcarts/{shopcart_id}/items/{item_id}
+GET  /shopcarts/{shopcart_id}/items
+POST /shopcarts{shopcart_id}/items
+GET  /shopcarts/{shopcart_id}/items/{item_id}
+PUT  /shopcarts/{shopcart_id}/items/{item_id}
+DELETE /shopcarts/{shopcart_id}/items/{item_id}
 """
 
 import logging

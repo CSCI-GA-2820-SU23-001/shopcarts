@@ -22,7 +22,7 @@ PUT  /shopcarts/{shopcart_id}/items/{item_id} - Updates the item in the shopcart
 DELETE /shopcarts/{shopcart_id}/items/{item_id} - Delete the item from the shopcart
 """
 from flask import jsonify, request, make_response, abort
-from flask_restx import Resource, fields
+from flask_restx import Resource, fields, reqparse
 
 from service.common import status  # HTTP Status Codes
 from service.models import Shopcart, Item
@@ -82,6 +82,11 @@ shopcart_model = api.inherit(
         ),
         "items": fields.List(fields.Nested(item_model))
     },
+)
+
+shopcart_args = reqparse.RequestParser()
+shopcart_args.add_argument(
+    "name", type=str, location="args", required=False, help="List Shopcarts by name"
 )
 
 
@@ -280,6 +285,25 @@ class ShopcartCollection(Resource):
         app.logger.info("New shopcart created with id=%s", shopcart.id)
         shopcart_js = shopcart.serialize()
         return shopcart_js, status.HTTP_201_CREATED
+
+    @api.doc("list_shopcarts")
+    @api.expect(shopcart_args, validate=True)
+    @api.marshal_with(shopcart_model)
+    def get(self):
+        """ List all shopcarts """
+        app.logger.info("Request to list all Shopcarts")
+        shopcarts = []
+        args = shopcart_args.parse_args()
+        if args["name"]:
+            app.logger.info("Filtering by name: %s", args["name"])
+            shopcarts = list(Shopcart.find_by_name(args["name"]))
+        else:
+            app.logger.info("Returning unfiltered list")
+            shopcarts = Shopcart.get_all()
+
+        app.logger.info("[%s] Shopcarts returned", len(shopcarts))
+        results = [shopcart.serialize() for shopcart in shopcarts]
+        return results, status.HTTP_200_OK
 
 
 @app.route("/shopcarts", methods=["POST"])
@@ -542,6 +566,58 @@ class ItemResource(Resource):
         app.logger.info("Returning item: %s", item.id)
         item_js = item.serialize()
         return item_js, status.HTTP_200_OK
+
+    @api.doc("update_items")
+    @api.response(404, "Shopcart or Item not found")
+    @api.response(400, "The posted Item data was not valid")
+    @api.response(415, "Invalid header content-type")
+    @api.expect(item_base_model)
+    @api.marshal_with(item_model)
+    def put(self, shopcart_id, item_id):
+        """
+        Update a Item
+
+        This endpoint returns just a item
+        """
+        check_content_type(DEFAULT_CONTENT_TYPE)
+        app.logger.info("Request update item with shopcart_id: %s and item_id: %s", shopcart_id, item_id)
+        shopcart = Shopcart.get_by_id(shopcart_id)
+        if not shopcart:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Shopcart with id '{shopcart_id}' could not be found."
+            )
+        item = Item.get_by_id(item_id)
+        if not item:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Item with id '{item_id}' could not be found."
+            )
+        data = api.payload
+        if len(data) != 5:
+            app.logger.info("Must update the information about this item")
+            abort(
+                status.HTTP_400_BAD_REQUEST,
+                "Missing information."
+            )
+        if data["quantity"] <= 0:
+            app.logger.info("Can not update item with given quantity")
+            abort(
+                status.HTTP_400_BAD_REQUEST,
+                "Quantity of the item must be positive."
+            )
+        if data["price"] < 0:
+            app.logger.info("Can not update item with negative price")
+            abort(
+                status.HTTP_400_BAD_REQUEST,
+                "Price of the item must be positive."
+            )
+        item.deserialize(data)
+        item.id = item_id
+        item.shopcart_id = shopcart_id
+        item.update()
+        app.logger.info("Item with shopcart_id: %s and item_id: %s is updated successfully", shopcart_id, item_id)
+        return item.serialize(), status.HTTP_200_OK
 
     @api.doc("delete_items")
     @api.response(204, 'Item deleted')

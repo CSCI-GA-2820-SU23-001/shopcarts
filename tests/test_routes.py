@@ -549,6 +549,27 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_update_items_with_invalid_price(self):
+        """ It should return a 400 Bad Request response for price less than 0 """
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        item = ItemFactory()
+        res = self.client.post(
+            f"{self.base_url_restx}/{shopcart.id}/items",
+            json=item.serialize(),
+            content_type=DEFAULT_CONTENT_TYPE,
+        )
+        data = res.get_json()
+        logging.debug(data)
+
+        # update quantity
+        data["price"] = -1
+        res = self.client.put(
+            f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
+            json=data,
+            content_type=DEFAULT_CONTENT_TYPE,
+        )
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_update_items_shopcart_not_found(self):
         """ It should return a 404 Not Found response for non-existent shopcart_id """
         shopcart = self._create_an_empty_shopcart(1)[0]

@@ -534,12 +534,11 @@ class ItemResource(Resource):
         item_js = item.serialize()
         return item_js, status.HTTP_200_OK
 
-        @api.doc("put_items")
+    @api.doc("update_items")
     @api.response(404, "Shopcart or Item not found")
-    @api.response(204, "Item deleted")
     @api.response(400, "The posted Item data was not valid")
     @api.response(415, "Invalid header content-type")
-    @api.expect(item_model)
+    @api.expect(item_base_model)
     @api.marshal_with(item_model)
     def put(self, shopcart_id, item_id):
         """
@@ -568,8 +567,8 @@ class ItemResource(Resource):
                 status.HTTP_400_BAD_REQUEST,
                 "Missing information."
             )
-        if data["quantity"] < 0:
-            app.logger.info("Can not update item with negative quantity")
+        if data["quantity"] <= 0:
+            app.logger.info("Can not update item with given quantity")
             abort(
                 status.HTTP_400_BAD_REQUEST,
                 "Quantity of the item must be positive."
@@ -580,11 +579,6 @@ class ItemResource(Resource):
                 status.HTTP_400_BAD_REQUEST,
                 "Price of the item must be positive."
             )
-        if data["quantity"] == 0:
-            app.logger.info("Item with shopcart_id: %s and item_id: %s is deleted because the quantity is set to 0",
-                            shopcart_id, item_id)
-            item.delete()
-            return "", status.HTTP_204_NO_CONTENT
         item.deserialize(data)
         item.id = item_id
         item.shopcart_id = shopcart_id

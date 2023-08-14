@@ -14,12 +14,11 @@ from service.common import status  # HTTP Status Codes
 from service.models import DataValidationError
 from service.models import db, init_db, Shopcart, Item
 from tests.factories import ShopcartFactory, ItemFactory
-from . import DATABASE_URI, BASE_URL, BASE_URL_RESTX, DEFAULT_CONTENT_TYPE
+from . import DATABASE_URI, BASE_URL_RESTX, DEFAULT_CONTENT_TYPE
 
 
 class BaseTestCase(TestCase):
     """ Base setups and teardowns for tests """
-    base_url = BASE_URL
     base_url_restx = BASE_URL_RESTX
 
     @classmethod
@@ -57,7 +56,7 @@ class BaseTestCase(TestCase):
         for _ in range(shopcart_count):
             shopcart = ShopcartFactory()
             resp = self.client.post(
-                self.base_url, json=shopcart.serialize(), content_type=DEFAULT_CONTENT_TYPE)
+                self.base_url_restx, json=shopcart.serialize(), content_type=DEFAULT_CONTENT_TYPE)
             self.assertEqual(
                 resp.status_code,
                 status.HTTP_201_CREATED,
@@ -76,7 +75,7 @@ class BaseTestCase(TestCase):
         for _ in range(item_count):
             item = ItemFactory()
             resp = self.client.post(
-                f"{self.base_url}/{shopcart.id}/items", json=item.serialize(), content_type=DEFAULT_CONTENT_TYPE)
+                f"{self.base_url_restx}/{shopcart.id}/items", json=item.serialize(), content_type=DEFAULT_CONTENT_TYPE)
             self.assertEqual(
                 resp.status_code,
                 status.HTTP_201_CREATED,
@@ -707,7 +706,7 @@ class TestShopcartsService(BaseTestCase):
         """ It should clear the items but not delete the shopcart """
         shopcart = self._create_a_shopcart_with_items(3)
         res = self.client.get(
-            f'{self.base_url}/{shopcart.id}'
+            f'{self.base_url_restx}/{shopcart.id}'
         )
         data = res.get_json()
         logging.debug(data)

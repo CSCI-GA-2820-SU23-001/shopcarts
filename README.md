@@ -75,7 +75,7 @@ GET /health
 
 
 ## CI/CD Workflow
-TBA
+![CI/CD Workflow](.github/cicd-workflow.png)
 
 
 ## Database Connection

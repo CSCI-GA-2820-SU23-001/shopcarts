@@ -11,15 +11,19 @@
     * [/shopcartsapi](http://159.122.175.64:31002/shopcartsapi)
     * [/itemsapi](http://159.122.175.64:31002/itemsapi)
   * [Development](http://159.122.175.64:31001)
+* [CI/CD Workflow](#cicd-workflow)
 * [Documentation](#documentation)
   * [List of RESTful Routes](#list-of-restful-routes)
   * [Swagger Doc](http://159.122.175.64:31002/apidocs)
-* [CI/CD Workflow](#cicd-workflow)
 
 
 ## Sites
 * [Production](http://159.122.175.64:31002)
 * [Development](http://159.122.175.64:31001)
+
+
+## CI/CD Workflow
+![CI/CD Workflow](.github/cicd-workflow.png)
 
 
 ## Documentation
@@ -72,10 +76,6 @@ GET /health
   "status": "OK"
 }
 ```
-
-
-## CI/CD Workflow
-![CI/CD Workflow](.github/cicd-workflow.png)
 
 
 ## Database Connection

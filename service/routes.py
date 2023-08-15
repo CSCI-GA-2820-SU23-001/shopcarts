@@ -272,9 +272,11 @@ class ShopcartCollection(Resource):
     @api.expect(shopcart_base_model)
     @api.marshal_with(shopcart_model, code=201)
     def post(self):
-        """ Creates a new shopcart """
-        content_type = request.headers.get("Content-Type")
-        app.logger.info(content_type)
+        """
+        Create a Shopcart
+
+        This endpoint will create a Shopcart based on the posted body.
+        """
         check_content_type(DEFAULT_CONTENT_TYPE)
 
         app.logger.info("Start creating a shopcart")
@@ -449,11 +451,13 @@ class ItemResource(Resource):
     @api.marshal_with(item_model)
     def put(self, shopcart_id, item_id):
         """
-        Update a Item
+        Update an Item
 
-        This endpoint returns just a item
+        This endpoint will update the Item based on the posted body according to the shopcart_id and item_id specified
+        in the path.
         """
         check_content_type(DEFAULT_CONTENT_TYPE)
+
         app.logger.info("Request update item with shopcart_id: %s and item_id: %s", shopcart_id, item_id)
         shopcart = Shopcart.get_by_id(shopcart_id)
         if not shopcart:
@@ -461,47 +465,29 @@ class ItemResource(Resource):
                 status.HTTP_404_NOT_FOUND,
                 f"Shopcart with id '{shopcart_id}' could not be found."
             )
+
         item = Item.get_by_id(item_id)
         if not item:
             abort(
                 status.HTTP_404_NOT_FOUND,
                 f"Item with id '{item_id}' could not be found."
             )
-        data = api.payload
+        item.deserialize(api.payload)
 
-        if data["name"] is None:
-            app.logger.info("Missing information about item name")
-            abort(
-                status.HTTP_400_BAD_REQUEST,
-                "Must enter the name of item."
-            )
-        if data["quantity"] is None:
-            app.logger.info("Missing information about item quantity")
-            abort(
-                status.HTTP_400_BAD_REQUEST,
-                "Must enter the quantity of item."
-            )
-        if data["quantity"] <= 0:
-            app.logger.info("Can not update item with given quantity")
+        if item.quantity <= 0:
+            app.logger.error("Invalid item quantity assignment to %s.", item.quantity)
             abort(
                 status.HTTP_400_BAD_REQUEST,
                 "Quantity of the item must be positive."
             )
-        if data["price"] is None:
-            app.logger.info("Missing information about item price")
-            abort(
-                status.HTTP_400_BAD_REQUEST,
-                "Must enter the price of item."
-            )
-        if data["price"] <= 0:
-            app.logger.info("Can not update item with negative or zero price")
+
+        if item.price < 0:
+            app.logger.error("Invalid item price assignment to %s.", item.price)
             abort(
                 status.HTTP_400_BAD_REQUEST,
                 "Price of the item must be positive."
             )
-        item.deserialize(data)
-        item.id = item_id
-        item.shopcart_id = shopcart_id
+
         item.update()
         app.logger.info("Item with shopcart_id: %s and item_id: %s is updated successfully", shopcart_id, item_id)
         return item.serialize(), status.HTTP_200_OK

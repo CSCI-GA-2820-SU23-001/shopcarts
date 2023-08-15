@@ -64,7 +64,7 @@ $(function () {
     });
 
     // ****************************************
-    // Update a Pet
+    // Update a Shopcart
     // ****************************************
 
     $("#update-shopcart-btn").click(function() {
@@ -263,7 +263,7 @@ $(function () {
     });
 
     // ****************************************
-    // Create an Item under a Shopcart
+    // Create an Item
     // ****************************************
 
     $("#create-item-btn").click(function () {
@@ -301,7 +301,7 @@ $(function () {
     });
 
     // ****************************************
-    // Retrieve an Item under a Shopcart
+    // Retrieve an Item
     // ****************************************
 
     $("#retrieve-item-btn").click(function () {
@@ -344,6 +344,10 @@ $(function () {
         });
 
     });
+
+    // ****************************************
+    // List Items
+    // ****************************************
 
     $("#list-item-btn").click(function () {
 
@@ -396,8 +400,9 @@ $(function () {
     });
 
     // ****************************************
-    // Delete an Item under a Shopcart
+    // Delete an Item
     // ****************************************
+
     $("#delete-item-btn").click(function () {
         let shopcart_id = $("#item_shopcart_id").val();
         let item_id = $("#item_id").val();
@@ -430,6 +435,10 @@ $(function () {
         });
 
     });
+
+    // ****************************************
+    // Update an Item
+    // ****************************************
 
     $("#update-item-btn").click(function () {
 

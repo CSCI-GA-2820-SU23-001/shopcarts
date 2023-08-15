@@ -57,7 +57,7 @@ class BaseTestCase(TestCase):
         for _ in range(shopcart_count):
             shopcart = ShopcartFactory()
             resp = self.client.post(
-                self.base_url, json=shopcart.serialize(), content_type=DEFAULT_CONTENT_TYPE)
+                self.base_url_restx, json=shopcart.serialize(), content_type=DEFAULT_CONTENT_TYPE)
             self.assertEqual(
                 resp.status_code,
                 status.HTTP_201_CREATED,
@@ -76,7 +76,7 @@ class BaseTestCase(TestCase):
         for _ in range(item_count):
             item = ItemFactory()
             resp = self.client.post(
-                f"{self.base_url}/{shopcart.id}/items", json=item.serialize(), content_type=DEFAULT_CONTENT_TYPE)
+                f"{self.base_url_restx}/{shopcart.id}/items", json=item.serialize(), content_type=DEFAULT_CONTENT_TYPE)
             self.assertEqual(
                 resp.status_code,
                 status.HTTP_201_CREATED,
@@ -561,7 +561,7 @@ class TestShopcartsService(BaseTestCase):
         data = res.get_json()
         logging.debug(data)
 
-        # update quantity
+        # update price
         data["price"] = -1
         res = self.client.put(
             f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
@@ -633,7 +633,8 @@ class TestShopcartsService(BaseTestCase):
 
         # missing name
         no_name_data = data.copy()
-        no_name_data.pop("name")
+        # no_name_data.pop("name")
+        no_name_data["name"] = None
         res = self.client.put(
             f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
             json=no_name_data,
@@ -644,7 +645,9 @@ class TestShopcartsService(BaseTestCase):
 
         # missing quantity
         no_quantity_data = data.copy()
-        no_quantity_data.pop("quantity")
+        # no_quantity_data.pop("quantity")
+        no_quantity_data["quantity"] = None
+        self.assertEqual(no_quantity_data["quantity"], None)
         res = self.client.put(
             f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
             json=no_quantity_data,
@@ -655,7 +658,8 @@ class TestShopcartsService(BaseTestCase):
 
         # missing price
         no_price_data = data.copy()
-        no_price_data.pop("price")
+        # no_price_data.pop("price")
+        no_price_data["price"] = None
         res = self.client.put(
             f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
             json=no_price_data,

@@ -272,9 +272,11 @@ class ShopcartCollection(Resource):
     @api.expect(shopcart_base_model)
     @api.marshal_with(shopcart_model, code=201)
     def post(self):
-        """ Creates a new shopcart """
-        content_type = request.headers.get("Content-Type")
-        app.logger.info(content_type)
+        """
+        Create a Shopcart
+
+        This endpoint will create a Shopcart based on the posted body.
+        """
         check_content_type(DEFAULT_CONTENT_TYPE)
 
         app.logger.info("Start creating a shopcart")
@@ -449,9 +451,10 @@ class ItemResource(Resource):
     @api.marshal_with(item_model)
     def put(self, shopcart_id, item_id):
         """
-        Update a Item
+        Update an Item
 
-        This endpoint returns just a item
+        This endpoint will update the Item based on the posted body according to the shopcart_id and item_id specified
+        in the path.
         """
         check_content_type(DEFAULT_CONTENT_TYPE)
         app.logger.info("Request update item with shopcart_id: %s and item_id: %s", shopcart_id, item_id)

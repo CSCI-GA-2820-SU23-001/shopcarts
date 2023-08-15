@@ -47,7 +47,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "POST",
-            url: "/shopcarts",
+            url: "api/shopcarts",
             contentType: "application/json",
             data: JSON.stringify(data),
         });
@@ -64,7 +64,7 @@ $(function () {
     });
 
     // ****************************************
-    // Update a Pet
+    // Update a Shopcart
     // ****************************************
 
     $("#update-shopcart-btn").click(function() {
@@ -80,7 +80,7 @@ $(function () {
 
         let ajax = $.ajax({
                 type: "PUT",
-                url: `/shopcarts/${id}`,
+                url: `api/shopcarts/${id}`,
                 contentType: "application/json",
                 data: JSON.stringify(data)
             })
@@ -108,7 +108,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "GET",
-            url: `/shopcarts/${shopcart_id}`,
+            url: `api/shopcarts/${shopcart_id}`,
             contentType: "application/json",
             data: ''
         })
@@ -137,7 +137,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "DELETE",
-            url: `/shopcarts/${id}`,
+            url: `api/shopcarts/${id}`,
             contentType: "application/json",
             data: '',
         })
@@ -171,7 +171,7 @@ $(function () {
 
         let ajax_list = $.ajax({
             type: "PUT",
-            url: `/shopcarts/${id}/clear`,
+            url: `api/shopcarts/${id}/clear`,
             contentType: "application/json",
             data: ''
         })
@@ -187,6 +187,10 @@ $(function () {
 
     });
 
+    // ****************************************
+    // List Shopcarts
+    // ****************************************
+
     $("#search-shopcart-btn").click(function () {
 
         let name = $("#shopcart_name").val();
@@ -200,7 +204,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "GET",
-            url: `/shopcarts?${queryString}`,
+            url: `api/shopcarts?${queryString}`,
             contentType: "application/json",
             data: ''
         })
@@ -259,7 +263,7 @@ $(function () {
     });
 
     // ****************************************
-    // Create an Item under a Shopcart
+    // Create an Item
     // ****************************************
 
     $("#create-item-btn").click(function () {
@@ -280,7 +284,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "POST",
-            url: `/shopcarts/${shopcart_id}/items`,
+            url: `api/shopcarts/${shopcart_id}/items`,
             contentType: "application/json",
             data: JSON.stringify(data)
         });
@@ -297,7 +301,7 @@ $(function () {
     });
 
     // ****************************************
-    // Retrieve an Item under a Shopcart
+    // Retrieve an Item
     // ****************************************
 
     $("#retrieve-item-btn").click(function () {
@@ -309,7 +313,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "GET",
-            url: `/shopcarts/${shopcart_id}/items/${item_id}`,
+            url: `api/shopcarts/${shopcart_id}/items/${item_id}`,
             contentType: "application/json",
             data: ''
         })
@@ -341,6 +345,10 @@ $(function () {
 
     });
 
+    // ****************************************
+    // List Items
+    // ****************************************
+
     $("#list-item-btn").click(function () {
 
         let shopcart_id = $("#item_shopcart_id").val();
@@ -352,7 +360,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "GET",
-            url: `/shopcarts/${shopcart_id}/items`,
+            url: `api/shopcarts/${shopcart_id}/items`,
             contentType: "application/json",
             data: ''
         })
@@ -392,8 +400,9 @@ $(function () {
     });
 
     // ****************************************
-    // Delete an Item under a Shopcart
+    // Delete an Item
     // ****************************************
+
     $("#delete-item-btn").click(function () {
         let shopcart_id = $("#item_shopcart_id").val();
         let item_id = $("#item_id").val();
@@ -402,7 +411,7 @@ $(function () {
     
         let ajax = $.ajax({
             type: "DELETE",
-            url: `/shopcarts/${shopcart_id}/items/${item_id}`,
+            url: `api/shopcarts/${shopcart_id}/items/${item_id}`,
             contentType: "application/json",
             data: '',
         });
@@ -427,6 +436,10 @@ $(function () {
 
     });
 
+    // ****************************************
+    // Update an Item
+    // ****************************************
+
     $("#update-item-btn").click(function () {
 
         let item_id = $("#item_id").val();
@@ -446,7 +459,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "PUT",
-            url: `/shopcarts/${shopcart_id}/items/${item_id}`,
+            url: `api/shopcarts/${shopcart_id}/items/${item_id}`,
             contentType: "application/json",
             data: JSON.stringify(data)
         });

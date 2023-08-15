@@ -38,24 +38,27 @@ This project leverages [Flask-RESTX](https://flask-restx.readthedocs.io/en/lates
 These are the RESTful routes for `shopcarts` and `items`:
 
 ```markdown
-Endpoint          Methods  Rule
-----------------  -------  -----------------------------------------------------
-index             GET      /
+Endpoint            Methods  Rule
+------------------  -------  -----------------------------------------------------
+index_page          GET      /
+shopcartsapi_page   GET      /shopcartsapi
+itemsapi_page       GET      /itemsapi
 
-health            GET      /health
+health              GET      /health
 
-list_shopcarts    GET      /shopcarts
-create_shopcarts  POST     /shopcarts
-get_shopcarts     GET      /shopcarts/<shopcart_id>
-update_shopcarts  PUT      /shopcarts/<shopcart_id>
-delete_shopcarts  DELETE   /shopcarts/<shopcart_id>
-clear_shopcarts   PUT      /shopcarts/<shopcart_id>/clear
+apidocs             GET      /apidocs
+list_shopcarts      GET      /api/shopcarts
+create_shopcarts    POST     /api/shopcarts
+get_shopcarts       GET      /api/shopcarts/<shopcart_id>
+update_shopcarts    PUT      /api/shopcarts/<shopcart_id>
+delete_shopcarts    DELETE   /api/shopcarts/<shopcart_id>
+clear_shopcarts     PUT      /api/shopcarts/<shopcart_id>/clear
 
-list_items        GET      /shopcarts/<shopcart_id>/items
-create_items      POST     /shopcarts/<shopcart_id>/items
-get_items         GET      /shopcarts/<shopcart_id>/items/<item_id>
-update_items      PUT      /shopcarts/<shopcart_id>/items/<item_id>
-delete_items      DELETE   /shopcarts/<shopcart_id>/items/<item_id>
+list_items          GET      /api/shopcarts/<shopcart_id>/items
+create_items        POST     /api/shopcarts/<shopcart_id>/items
+get_items           GET      /api/shopcarts/<shopcart_id>/items/<item_id>
+update_items        PUT      /api/shopcarts/<shopcart_id>/items/<item_id>
+delete_items        DELETE   /api/shopcarts/<shopcart_id>/items/<item_id>
 ```
 
 The test cases can be run with `green`.

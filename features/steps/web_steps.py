@@ -22,7 +22,7 @@ ITEM_PREFIX = 'item_'
 @when('I visit the "home page"')
 def step_impl(context):  # pylint: disable=E223
     """ Make a call to the base URL """
-    context.driver.get(context.base_url)
+    context.driver.get("http://localhost:8000")
     # Uncomment next line to take a screenshot of the web page
     # context.driver.save_screenshot('home_page.png')
 

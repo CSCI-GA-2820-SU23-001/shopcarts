@@ -1,25 +1,21 @@
 """
-Shopcarts Service
+Shopcarts Service Routes
 
-The shopcarts service allows customers to make a collection of products that they want to purchase. It contains a
-reference to a product and the quantity the customer wants to buy. It also contains the price of the product at the time
-they placed it in the cart. A customer will only have one shopcart.
+GET  /
 
-Shopcart API Paths:
-----
-GET  /shopcarts - Returns a list of shopcarts in the system
-POST /shopcarts - Creates a new shopcart
-GET  /shopcarts/{shopcart_id} - Returns the shopcart
-PUT  /shopcarts/{shopcart_id} - Updates the shopcart
-DELETE /shopcarts/{shopcart_id} - Deletes the shopcart
+GET  /health
 
-Item API Paths:
-----
-GET  /shopcarts/{shopcart_id}/items - Returns a list of items in the shopcart
-POST /shopcarts{shopcart_id}/items - Creates a new item in the shopcart
-GET  /shopcarts/{shopcart_id}/items/{item_id} - Returns the item in the shopcart
-PUT  /shopcarts/{shopcart_id}/items/{item_id} - Updates the item in the shopcart
-DELETE /shopcarts/{shopcart_id}/items/{item_id} - Delete the item from the shopcart
+GET  /shopcarts
+POST /shopcarts
+GET  /shopcarts/{shopcart_id}
+PUT  /shopcarts/{shopcart_id}
+DELETE /shopcarts/{shopcart_id}
+
+GET  /shopcarts/{shopcart_id}/items
+POST /shopcarts{shopcart_id}/items
+GET  /shopcarts/{shopcart_id}/items/{item_id}
+PUT  /shopcarts/{shopcart_id}/items/{item_id}
+DELETE /shopcarts/{shopcart_id}/items/{item_id}
 """
 
 from flask import request, abort
@@ -146,19 +142,19 @@ def check_content_type(expected_content_type):
 
 
 ######################################################################
-#  PATH: /shopcarts/{id}
+# S H O P C A R T   A P I S
 ######################################################################
 
 @api.route("/shopcarts/<shopcart_id>")
 @api.param("shopcart_id", "The Shopcart identifier")
 class ShopcartResource(Resource):
-
     """
-    ShopcartResource class
-    Allows the manipulation of a single Shopcart
-    GET /shopcart{id} - Returns a Shopcart with the id
-    PUT /shopcart{id} - Update a Shopcart with the id
-    DELETE /shopcart{id} -  Deletes a Shopcart with the id
+    ShopcartResource Class
+
+    Allows the manipulation of a single Shopcart:
+    GET /shopcarts/<int:shopcart_id> - Get a Shopcart according to shopcart_id
+    PUT /shopcarts/<int:shopcart_id> - Update a Shopcart according to shopcart_id
+    DELETE /shopcarts/<int:shopcart_id> - Delete a Shopcart according to shopcart_id
     """
 
     @api.doc("get_shopcarts")
@@ -166,8 +162,9 @@ class ShopcartResource(Resource):
     @api.marshal_with(shopcart_model)
     def get(self, shopcart_id):
         """
-        Retrieve a single Shopcart
-        This endpoint will return an Shopcart based on its id
+        Get a Shopcart
+
+        This endpoint will return the Shopcart according to the shopcart_id specified in the path.
         """
         app.logger.info("Request for Shopcart with id: %s", shopcart_id)
         shopcart = Shopcart.get_by_id(shopcart_id)
@@ -183,13 +180,14 @@ class ShopcartResource(Resource):
     @api.response(404, "Shopcart not found")
     @api.response(400, "The posted Shopcart data was not valid")
     @api.response(415, "Invalid header content-type")
-    @api.expect(shopcart_base_model)  # Updated the expect decorator
+    @api.expect(shopcart_base_model)
     @api.marshal_with(shopcart_model)
     def put(self, shopcart_id):
         """
         Update a Shopcart
 
-        This endpoint will update a Shopcart based on the body that is posted
+        This endpoint will update the Shopcart based on the posted body according to the shopcart_id specified in the
+        path.
         """
         check_content_type(DEFAULT_CONTENT_TYPE)
         app.logger.info("Request to update shopcart with id: %s", shopcart_id)
@@ -211,7 +209,7 @@ class ShopcartResource(Resource):
         """
         Delete a Shopcart
 
-        This endpoint will delete a Shopcart based the id specified in the path
+        This endpoint will delete the Shopcart according to the shopcart_id specified in the path.
         """
         app.logger.info("Start deleting shopcart %s...", shopcart_id)
         shopcart = Shopcart.get_by_id(shopcart_id)
@@ -221,22 +219,25 @@ class ShopcartResource(Resource):
 
         return "", status.HTTP_204_NO_CONTENT
 
-######################################################################
-#  PATH: /shopcarts/{id}/clear
-######################################################################
-
 
 @api.route("/shopcarts/<shopcart_id>/clear")
 @api.param("shopcart_id”, “The Shopcart identifier")
-class ClearResource(Resource):
-    """Clear actions on a Shopcart"""
+class ClearShopcartResource(Resource):
+    """
+    ClearShopcartResource Class
+
+    Allows the manipulation of a single Shopcart:
+    PUT /shopcarts/<int:shopcart_id>/clear - Clear a Shopcart according to id
+    """
+
     @api.doc("clear_shopcarts")
     @api.response(404, "Shopcart not found")
     @api.marshal_with(shopcart_model)
     def put(self, shopcart_id):
-        """Clear a shopcart
-        Args:
-            user_id (str): the user_id of the shopcart to delete
+        """
+        Clear a Shopcart
+
+        This endpoint will clear all items in the Shopcart according to the shopcart_id specified in the path.
         """
         app.logger.info("Request for Shopcart with id: %s", shopcart_id)
         shopcart = Shopcart.get_by_id(shopcart_id)
@@ -254,18 +255,15 @@ class ClearResource(Resource):
         shopcart.update()
         return shopcart.serialize(), status.HTTP_200_OK
 
-######################################################################
-# S H O P C A R T   A P I S
-######################################################################
-
 
 @api.route("/shopcarts", strict_slashes=False)
 class ShopcartCollection(Resource):
     """
     ShopcartCollection Class
+
     Allows interactions with collections of Shopcarts:
-    GET /shopcarts - Returns a list of shopcarts
-    POST /shopcarts - Create a shopcart
+    POST /shopcarts - Create a Shopcart
+    GET /shopcarts - List all Shopcarts
     """
 
     @api.doc("create_shopcarts")
@@ -293,7 +291,11 @@ class ShopcartCollection(Resource):
     @api.expect(shopcart_args, validate=True)
     @api.marshal_with(shopcart_model)
     def get(self):
-        """ List all shopcarts """
+        """
+        List all Shopcarts
+
+        This endpoint will list all Shopcarts in the system.
+        """
         app.logger.info("Request to list all Shopcarts")
         shopcarts = []
         args = shopcart_args.parse_args()
@@ -320,8 +322,8 @@ class ItemCollection(Resource):
     ItemCollection Class
 
     Allows interactions with collections of Items:
-    POST /shopcarts/<int:shopcart_id>/items - Add an Item to shopcart
-    GET /shopcarts/<int:shopcart_id>/items - Returns a list of items in shopcart
+    POST /shopcarts/<int:shopcart_id>/items - Add an Item to the Shopcart according to shopcart_id
+    GET /shopcarts/<int:shopcart_id>/items - List all items in the Shopcart according to shopcart_id
     """
 
     @api.doc("create_items")
@@ -331,7 +333,12 @@ class ItemCollection(Resource):
     @api.expect(item_base_model)
     @api.marshal_with(item_model, code=201)
     def post(self, shopcart_id):
-        """ Adds a new item to shopcart, and return the newly created item """
+        """
+        Create an Item
+
+        This endpoint will add an Item to the Shopcart based on the posted body according to the shopcart_id specified
+        in the path.
+        """
         check_content_type(DEFAULT_CONTENT_TYPE)
 
         shopcart = Shopcart.get_by_id(shopcart_id)
@@ -354,6 +361,13 @@ class ItemCollection(Resource):
                 "Quantity of a new item should always be one."
             )
 
+        if item.price < 0:
+            app.logger.error("Invalid item price assignment to %s.", item.price)
+            abort(
+                status.HTTP_400_BAD_REQUEST,
+                "Price of a new item must be positive."
+            )
+
         shopcart.items.append(item)
         shopcart.update()
         app.logger.info("New item with id=%s added to shopcart with id=%s.", item.id, shopcart.id)
@@ -365,7 +379,11 @@ class ItemCollection(Resource):
     @api.response(404, 'Shopcart not found')
     @api.marshal_list_with(item_model)
     def get(self, shopcart_id):
-        """ Returns a list of items in the shopcart """
+        """
+        List Items in a Shopcart
+
+        This endpoint will list all Items in the Shopcart according to the shopcart_id specified in the path.
+        """
         app.logger.info("Get items in the shopcart with id=%s", shopcart_id)
 
         shopcart = Shopcart.get_by_id(shopcart_id)
@@ -380,21 +398,17 @@ class ItemCollection(Resource):
         return items, status.HTTP_200_OK
 
 
-######################################################################
-#  PATH: /shopcarts/<shopcart_id>/items/<item_id>
-######################################################################
-
 @api.route("/shopcarts/<shopcart_id>/items/<item_id>")
 @api.param("shopcart_id", "The Shopcart identifier")
 @api.param("item_id", "The Item identifier")
 class ItemResource(Resource):
-
     """
-    ItemResource class
-    Allows the manipulation of a single Shopcart
-    GET /shopcarts/{shopcart_id}/items/{item_id} - Returns an Item with the shopcart_id and item_id
-    PUT /shopcarts/{shopcart_id}/items/{item_id} - Update an Item with the shopcart_id and item_id
-    DELETE /shopcarts/{shopcart_id}/items/{item_id} -  Delete an Item with the shopcart_id and item_id
+    ItemResource Class
+
+    Allows the manipulation of a single Item:
+    GET /shopcarts/{shopcart_id}/items/{item_id} - Get an Item according to shopcart_id and item_id
+    PUT /shopcarts/{shopcart_id}/items/{item_id} - Update an Item according to shopcart_id and item_id
+    DELETE /shopcarts/{shopcart_id}/items/{item_id} - Delete an Item according to shopcart_id and item_id
     """
 
     @api.doc("get_items")
@@ -402,8 +416,9 @@ class ItemResource(Resource):
     @api.marshal_with(item_model)
     def get(self, shopcart_id, item_id):
         """
-        Retrieve a single Item
-        This endpoint will return an Item based on its shopcart_id and item_id
+        Get an Item
+
+        This endpoint will return the Item according to the shopcart_id and item_id specified in the path.
         """
         app.logger.info("Request to retrieve Item %s for Shopcart id: %s", item_id, shopcart_id)
 
@@ -497,7 +512,7 @@ class ItemResource(Resource):
         """
         Delete an item
 
-        This endpoint will delete an item based the id specified in the path
+        This endpoint will delete the Item according to the shopcart_id and item_id specified in the path.
         """
         app.logger.info("Request to delete item with id='%s' in shopcart with id='%s'.", item_id, shopcart_id)
 

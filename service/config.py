@@ -15,7 +15,6 @@ DATABASE_URI = os.getenv(
 # Configure SQLAlchemy
 SQLALCHEMY_DATABASE_URI = DATABASE_URI
 SQLALCHEMY_TRACK_MODIFICATIONS = False
-SQLALCHEMY_POOL_SIZE = 2
 
 # Secret for session management
 SECRET_KEY = os.getenv("SECRET_KEY", "s3cr3t-key-shhhh")

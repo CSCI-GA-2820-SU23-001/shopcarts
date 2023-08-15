@@ -619,68 +619,68 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_items_400(self):
-            """ [HTTP_400_BAD_REQUEST] PUT /shopcarts/{shopcart_id}/items/{item_id} """
-            shopcart = self._create_an_empty_shopcart(1)[0]
-            item = ItemFactory()
-            res = self.client.post(
-                f"{self.base_url_restx}/{shopcart.id}/items",
-                json=item.serialize(),
-                content_type=DEFAULT_CONTENT_TYPE,
-            )
-            data = res.get_json()
+        """ [HTTP_400_BAD_REQUEST] PUT /shopcarts/{shopcart_id}/items/{item_id} """
+        shopcart = self._create_an_empty_shopcart(1)[0]
+        item = ItemFactory()
+        res = self.client.post(
+            f"{self.base_url_restx}/{shopcart.id}/items",
+            json=item.serialize(),
+            content_type=DEFAULT_CONTENT_TYPE,
+        )
+        data = res.get_json()
   
-            # update item with invalid quantity
-            invalid_quantity_data = data.copy()
-            invalid_quantity_data["quantity"] = -1
-            res = self.client.put(
-                f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
-                json=invalid_quantity_data,
-                content_type=DEFAULT_CONTENT_TYPE,
-            )
-            self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        # update item with invalid quantity
+        invalid_quantity_data = data.copy()
+        invalid_quantity_data["quantity"] = -1
+        res = self.client.put(
+            f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
+            json=invalid_quantity_data,
+            content_type=DEFAULT_CONTENT_TYPE,
+        )
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
   
-            # update item with invalid price
-            invalid_price_data = data.copy()
-            invalid_price_data["price"] = -1
-            res = self.client.put(
-                f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
-                json=invalid_price_data,
-                content_type=DEFAULT_CONTENT_TYPE,
-            )
-            self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        # update item with invalid price
+        invalid_price_data = data.copy()
+        invalid_price_data["price"] = -1
+        res = self.client.put(
+            f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
+            json=invalid_price_data,
+            content_type=DEFAULT_CONTENT_TYPE,
+        )
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
   
-            # update item with missing name
-            no_name_data = data.copy()
-            no_name_data["name"] = None
-            res = self.client.put(
-                f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
-                json=no_name_data,
-                content_type=DEFAULT_CONTENT_TYPE,
-            )
-            logging.debug(res.get_json())
-            self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        # update item with missing name
+        no_name_data = data.copy()
+        no_name_data["name"] = None
+        res = self.client.put(
+            f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
+            json=no_name_data,
+            content_type=DEFAULT_CONTENT_TYPE,
+        )
+        logging.debug(res.get_json())
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
   
-            # update item with missing quantity
-            no_quantity_data = data.copy()
-            no_quantity_data["quantity"] = None
-            res = self.client.put(
-                f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
-                json=no_quantity_data,
-                content_type=DEFAULT_CONTENT_TYPE,
-            )
-            logging.debug(res.get_json())
-            self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        # update item with missing quantity
+        no_quantity_data = data.copy()
+        no_quantity_data["quantity"] = None
+        res = self.client.put(
+            f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
+            json=no_quantity_data,
+            content_type=DEFAULT_CONTENT_TYPE,
+        )
+        logging.debug(res.get_json())
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
   
-            # update item with missing price
-            no_price_data = data.copy()
-            no_price_data["price"] = None
-            res = self.client.put(
-                f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
-                json=no_price_data,
-                content_type=DEFAULT_CONTENT_TYPE,
-            )
-            logging.debug(res.get_json())
-            self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        # update item with missing price
+        no_price_data = data.copy()
+        no_price_data["price"] = None
+        res = self.client.put(
+            f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
+            json=no_price_data,
+            content_type=DEFAULT_CONTENT_TYPE,
+        )
+        logging.debug(res.get_json())
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_items_404(self):
         """ [HTTP_404_NOT_FOUND] PUT /shopcarts/{shopcart_id}/items/{item_id} """

@@ -617,7 +617,7 @@ class TestShopcartsService(BaseTestCase):
             content_type=DEFAULT_CONTENT_TYPE,
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-  
+
         # update item with invalid price
         invalid_price_data = data.copy()
         invalid_price_data["price"] = -1
@@ -627,7 +627,7 @@ class TestShopcartsService(BaseTestCase):
             content_type=DEFAULT_CONTENT_TYPE,
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-  
+
         # update item with missing name
         no_name_data = data.copy()
         no_name_data["name"] = None
@@ -638,7 +638,7 @@ class TestShopcartsService(BaseTestCase):
         )
         logging.debug(res.get_json())
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-  
+
         # update item with missing quantity
         no_quantity_data = data.copy()
         no_quantity_data["quantity"] = None
@@ -649,7 +649,7 @@ class TestShopcartsService(BaseTestCase):
         )
         logging.debug(res.get_json())
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-  
+
         # update item with missing price
         no_price_data = data.copy()
         no_price_data["price"] = None

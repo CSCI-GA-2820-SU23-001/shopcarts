@@ -5,7 +5,7 @@ from os import getenv
 from selenium import webdriver
 
 WAIT_SECONDS = int(getenv('WAIT_SECONDS', '60'))
-BASE_URL = getenv('BASE_URL', 'http://localhost:8000')
+BASE_URL = getenv('BASE_URL', 'http://localhost:8000/api')
 SHOPCART_URL = getenv('SHOPCART_URL', 'http://localhost:8000/shopcartsapi')
 ITEM_URL = getenv('ITEM_URL', 'http://localhost:8000/itemsapi')
 DRIVER = getenv('DRIVER', 'chrome').lower()

@@ -19,7 +19,7 @@ HTTP_204_NO_CONTENT = 204
 def step_impl(context):
     """ Delete all Shopcarts and load new ones """
     # List all shopcarts and delete them one by one
-    rest_endpoint = f"{context.base_url}/shopcarts"
+    rest_endpoint = f"{context.api_url}/shopcarts"
     resp = requests.get(rest_endpoint)
     assert (resp.status_code == HTTP_200_OK)
     for shopcart in resp.json():
@@ -39,7 +39,7 @@ def step_impl(context):
 
 @given("the following items")
 def step_impl(context):
-    rest_endpoint = f"{context.base_url}/shopcarts"
+    rest_endpoint = f"{context.api_url}/shopcarts"
     for row in context.table:
         resp = requests.get(rest_endpoint + "?name=" + row["shopcart_name"])
         assert (resp.status_code == HTTP_200_OK)

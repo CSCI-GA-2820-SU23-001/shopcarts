@@ -24,9 +24,7 @@ from flask_sqlalchemy import SQLAlchemy
 logger = logging.getLogger("flask.app")
 
 # Create the SQLAlchemy object to be initialized later in init_db()
-db = SQLAlchemy(
-    engine_options={"pool_recycle": 600}
-)
+db = SQLAlchemy()
 
 
 # Function to initialize the tables in DB

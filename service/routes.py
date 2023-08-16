@@ -22,7 +22,7 @@ from flask import request, abort
 from flask_restx import Resource, fields, reqparse
 
 from service.common import status  # HTTP Status Codes
-from service.models import Shopcart, Item
+from service.models import Shopcart, Item, DataValidationError
 from . import app, api
 
 DEFAULT_CONTENT_TYPE = "application/json"
@@ -222,7 +222,10 @@ class ShopcartResource(Resource):
                 f"Shopcart with id '{shopcart_id}' was not found."
             )
         data = api.payload
-        shopcart.deserialize(data)
+        try:
+            shopcart.deserialize(data)
+        except DataValidationError as error:
+            abort(status.HTTP_400_BAD_REQUEST, error.message)
         shopcart.id = shopcart_id
         shopcart.update()
         return shopcart.serialize(), status.HTTP_200_OK
@@ -307,7 +310,10 @@ class ShopcartCollection(Resource):
 
         app.logger.info("Start creating a shopcart")
         shopcart = Shopcart()
-        shopcart.deserialize(api.payload)
+        try:
+            shopcart.deserialize(api.payload)
+        except DataValidationError as error:
+            abort(status.HTTP_400_BAD_REQUEST, error.message)
         app.logger.info("Request body deserialized to shopcart")
 
         shopcart.create()  # store in table
@@ -380,7 +386,10 @@ class ItemCollection(Resource):
 
         app.logger.info("Start creating an item")
         item = Item()
-        item.deserialize(api.payload)  # validate request body schema
+        try:
+            item.deserialize(api.payload)  # validate request body schema
+        except DataValidationError as error:
+            abort(status.HTTP_400_BAD_REQUEST, error.message)
         app.logger.info("Request body deserialized to item.")
 
         if item.quantity != 1:
@@ -504,7 +513,11 @@ class ItemResource(Resource):
                 status.HTTP_404_NOT_FOUND,
                 f"Item with id '{item_id}' could not be found."
             )
-        item.deserialize(api.payload)
+
+        try:
+            item.deserialize(api.payload)
+        except DataValidationError as error:
+            abort(status.HTTP_400_BAD_REQUEST, error.message)
 
         if item.quantity <= 0:
             app.logger.error("Invalid item quantity assignment to %s.", item.quantity)

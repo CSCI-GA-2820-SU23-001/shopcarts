@@ -36,6 +36,9 @@ def init_db(app):
 
 class DataValidationError(Exception):
     """ Used for object deserialization data validation errors """
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
 
 
 class ModelBase:

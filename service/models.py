@@ -89,7 +89,7 @@ class ModelBase:
     @classmethod
     def get_by_id(cls, pk_id):
         """ Get shopcart by primary key: id """
-        logger.info("Get %s by id=%d", cls.__name__, pk_id)
+        logger.info("Get %s by id=%s", cls.__name__, pk_id)
         return cls.query.get(pk_id)
 
 
@@ -198,6 +198,7 @@ class Item(db.Model, ModelBase):
             self.shopcart_id = data["shopcart_id"]
             self.name = data["name"].strip()
             if len(self.name) == 0:
+                logger.info("data[name]=[%s]", data.get('name', ''))
                 raise DataValidationError(
                     f"Invalid {type(self).__name__}: name should contain at least one non-whitespace char"
                 )

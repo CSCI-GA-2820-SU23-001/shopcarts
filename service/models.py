@@ -218,7 +218,7 @@ class Item(db.Model, ModelBase):
             ) from error
         except AttributeError as error:
             raise DataValidationError(
-                f"Invalid {type(self).__name__}: failed to deserialize name: '{self.name}'"
+                f"Invalid {type(self).__name__}: failed to deserialize request body\nError message: {error}"
             ) from error
         except ValueError as error:
             raise DataValidationError(

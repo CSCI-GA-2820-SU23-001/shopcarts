@@ -308,20 +308,6 @@ class ShopcartCollection(Resource):
         app.logger.info("Start creating a shopcart")
         shopcart = Shopcart()
 
-        data = api.payload
-        if not data:
-            app.logger.error("Empty data")
-            abort(
-                status.HTTP_400_BAD_REQUEST,
-                "Require a body to create a shopcart."
-            )
-        if data["name"] is None or len(data["name"]) == 0 or data["name"].isspace():
-            app.logger.error("Empty name")
-            abort(
-                status.HTTP_400_BAD_REQUEST,
-                "Require a name to create a shopcart."
-            )
-
         shopcart.deserialize(api.payload)
         app.logger.info("Request body deserialized to shopcart")
 

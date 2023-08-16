@@ -188,7 +188,7 @@ class TestShopcartsService(BaseTestCase):
                                 content_type=DEFAULT_CONTENT_TYPE)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
-        # # create a shopcart with null name
+        # create a shopcart with null name
         shopcart = ShopcartFactory()
         shopcart.name = None
         resp = self.client.post(f"{self.base_url_restx}",

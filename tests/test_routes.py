@@ -242,6 +242,13 @@ class TestShopcartsService(BaseTestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
+        resp = self.client.put(
+            f"{self.base_url_restx}/0",
+            json=new_shopcart,
+            content_type=DEFAULT_CONTENT_TYPE
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_update_shopcarts_400(self):
         """ [HTTP_400_BAD_REQUEST] PUT /shopcarts/{shopcart_id} """
         shopcart = ShopcartFactory()
@@ -683,6 +690,13 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
         # update non-existent item
+        res = self.client.put(
+            f'{self.base_url_restx}/{shopcart.id}/items/-1',
+            json=data,
+            content_type=DEFAULT_CONTENT_TYPE,
+        )
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
         res = self.client.put(
             f'{self.base_url_restx}/{shopcart.id}/items/{item.id + 10000}',
             json=data,

@@ -141,6 +141,26 @@ def check_content_type(expected_content_type):
         )
 
 
+def check_shopcart_id(shopcart_id):
+    """ Check shopcart_id value type """
+    if not str(shopcart_id).isdigit():
+        app.logger.error("Invalid shopcart_id: %s", shopcart_id)
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            "shopcart_id must be a positive integer."
+        )
+
+
+def check_item_id(item_id):
+    """ Check item_id value type """
+    if not str(item_id).isdigit():
+        app.logger.error("Invalid item_id: %s", item_id)
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            "item_id must be a positive integer."
+        )
+
+
 ######################################################################
 # S H O P C A R T   A P I S
 ######################################################################
@@ -166,6 +186,8 @@ class ShopcartResource(Resource):
 
         This endpoint will return the Shopcart according to the shopcart_id specified in the path.
         """
+        check_shopcart_id(shopcart_id)
+
         app.logger.info("Request for Shopcart with id: %s", shopcart_id)
         shopcart = Shopcart.get_by_id(shopcart_id)
         if not shopcart:
@@ -189,7 +211,9 @@ class ShopcartResource(Resource):
         This endpoint will update the Shopcart based on the posted body according to the shopcart_id specified in the
         path.
         """
+        check_shopcart_id(shopcart_id)
         check_content_type(DEFAULT_CONTENT_TYPE)
+
         app.logger.info("Request to update shopcart with id: %s", shopcart_id)
         shopcart = Shopcart.get_by_id(shopcart_id)
         if not shopcart:
@@ -239,6 +263,8 @@ class ClearShopcartResource(Resource):
 
         This endpoint will clear all items in the Shopcart according to the shopcart_id specified in the path.
         """
+        check_shopcart_id(shopcart_id)
+
         app.logger.info("Request for Shopcart with id: %s", shopcart_id)
         shopcart = Shopcart.get_by_id(shopcart_id)
         if not shopcart:
@@ -341,6 +367,7 @@ class ItemCollection(Resource):
         This endpoint will add an Item to the Shopcart based on the posted body according to the shopcart_id specified
         in the path.
         """
+        check_shopcart_id(shopcart_id)
         check_content_type(DEFAULT_CONTENT_TYPE)
 
         shopcart = Shopcart.get_by_id(shopcart_id)
@@ -386,8 +413,9 @@ class ItemCollection(Resource):
 
         This endpoint will list all Items in the Shopcart according to the shopcart_id specified in the path.
         """
-        app.logger.info("Get items in the shopcart with id=%s", shopcart_id)
+        check_shopcart_id(shopcart_id)
 
+        app.logger.info("Get items in the shopcart with id=%s", shopcart_id)
         shopcart = Shopcart.get_by_id(shopcart_id)
         if not shopcart:
             abort(
@@ -422,8 +450,10 @@ class ItemResource(Resource):
 
         This endpoint will return the Item according to the shopcart_id and item_id specified in the path.
         """
-        app.logger.info("Request to retrieve Item %s for Shopcart id: %s", item_id, shopcart_id)
+        check_shopcart_id(shopcart_id)
+        check_item_id(item_id)
 
+        app.logger.info("Request to retrieve Item %s for Shopcart id: %s", item_id, shopcart_id)
         shopcart = Shopcart.get_by_id(shopcart_id)
         if not shopcart:
             abort(
@@ -456,6 +486,8 @@ class ItemResource(Resource):
         This endpoint will update the Item based on the posted body according to the shopcart_id and item_id specified
         in the path.
         """
+        check_shopcart_id(shopcart_id)
+        check_item_id(item_id)
         check_content_type(DEFAULT_CONTENT_TYPE)
 
         app.logger.info("Request update item with shopcart_id: %s and item_id: %s", shopcart_id, item_id)

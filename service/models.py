@@ -127,6 +127,7 @@ class Shopcart(db.Model, ModelBase):
         try:
             self.name = data["name"].strip()
             if len(self.name) == 0:
+                logger.info("data[name]=[%s]", data.get('name', ''))
                 raise DataValidationError(
                     f"Invalid {type(self).__name__}: name should contain at least one non-whitespace char"
                 )

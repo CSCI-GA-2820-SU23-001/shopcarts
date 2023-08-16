@@ -617,6 +617,15 @@ class TestShopcartsService(BaseTestCase):
 
         # update item with invalid quantity
         invalid_quantity_data = data.copy()
+        invalid_quantity_data["quantity"] = None
+        res = self.client.put(
+            f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
+            json=invalid_quantity_data,
+            content_type=DEFAULT_CONTENT_TYPE,
+        )
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+        invalid_quantity_data = data.copy()
         invalid_quantity_data["quantity"] = -1
         res = self.client.put(
             f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
@@ -626,6 +635,15 @@ class TestShopcartsService(BaseTestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
         # update item with invalid price
+        invalid_price_data = data.copy()
+        invalid_price_data["price"] = None
+        res = self.client.put(
+            f'{self.base_url_restx}/{shopcart.id}/items/{data["id"]}',
+            json=invalid_price_data,
+            content_type=DEFAULT_CONTENT_TYPE,
+        )
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
         invalid_price_data = data.copy()
         invalid_price_data["price"] = -1
         res = self.client.put(

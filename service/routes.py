@@ -143,7 +143,7 @@ def check_content_type(expected_content_type):
 
 def check_shopcart_id(shopcart_id):
     """ Check shopcart_id value type """
-    if not str(shopcart_id).isdigit():
+    if not shopcart_id or not str(shopcart_id).isdigit():
         app.logger.error("Invalid shopcart_id: %s", shopcart_id)
         abort(
             status.HTTP_404_NOT_FOUND,
@@ -153,7 +153,7 @@ def check_shopcart_id(shopcart_id):
 
 def check_item_id(item_id):
     """ Check item_id value type """
-    if not str(item_id).isdigit():
+    if not item_id or not str(item_id).isdigit():
         app.logger.error("Invalid item_id: %s", item_id)
         abort(
             status.HTTP_404_NOT_FOUND,
